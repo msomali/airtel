@@ -2,9 +2,9 @@ package cli
 
 import (
 	"fmt"
-	"github.com/techcraftt/base/api"
-	"github.com/techcraftt/base/api/http"
-	"github.com/techcraftt/base/internal/io"
+	"github.com/techcraftlabs/airtel/api"
+	"github.com/techcraftlabs/airtel/api/http"
+	"github.com/techcraftlabs/airtel/internal/io"
 	clix "github.com/urfave/cli/v2"
 	"log"
 	"os"

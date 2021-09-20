@@ -1,7 +1,7 @@
 package env_test
 
 import (
-	"github.com/techcraftt/base/pkg/env"
+	"github.com/techcraftlabs/airtel/pkg/env"
 	"os"
 	"reflect"
 	"testing"

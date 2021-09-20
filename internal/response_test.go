@@ -3,7 +3,7 @@ package internal
 import (
 	"encoding/json"
 	"errors"
-	"github.com/techcraftt/base/api"
+	"github.com/techcraftlabs/airtel/api"
 	"os"
 	"testing"
 )

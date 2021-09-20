@@ -3,8 +3,8 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftt/base/api"
-	"github.com/techcraftt/base/internal"
+	"github.com/techcraftlabs/airtel/api"
+	"github.com/techcraftlabs/airtel/internal"
 	"net/http"
 )
 

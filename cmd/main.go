@@ -2,7 +2,7 @@ package main
 
 import (
 	"context"
-	basehttp "github.com/techcraftt/base/api/http"
+	basehttp "github.com/techcraftlabs/airtel/api/http"
 	"log"
 	"os"
 	"os/signal"

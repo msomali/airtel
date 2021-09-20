@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/gorilla/mux"
-	"github.com/techcraftt/base/api"
-	"github.com/techcraftt/base/internal"
+	"github.com/techcraftlabs/airtel/api"
+	"github.com/techcraftlabs/airtel/internal"
 	stdhttp "net/http"
 )
 

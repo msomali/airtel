@@ -1,4 +1,4 @@
-module github.com/techcraftt/base
+module github.com/techcraftlabs/airtel
 
 go 1.16
 

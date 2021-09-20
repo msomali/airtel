@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/techcraftt/base/cli"
+	"github.com/techcraftlabs/airtel/cli"
 	"log"
 	"os"
 )
