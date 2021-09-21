@@ -92,9 +92,9 @@ func getRequestURL(env Environment, requestType RequestType, id ...string) strin
 
 	case PushEnquiry:
 		if env == STAGING {
-			return fmt.Sprintf("%s%s/%s", BaseURLStaging, PushEnquiryEndpoint, id)
+			return fmt.Sprintf("%s%s%s", BaseURLStaging, PushEnquiryEndpoint, id[0])
 		}
-		return fmt.Sprintf("%s%s/%s", BaseURLProduction, PushEnquiryEndpoint, id)
+		return fmt.Sprintf("%s%s%s", BaseURLProduction, PushEnquiryEndpoint, id[0])
 	}
 
 	return ""
