@@ -8,6 +8,7 @@ import (
 	"encoding/base64"
 	"fmt"
 	"github.com/techcraftlabs/airtel/pkg/models"
+	"time"
 )
 
 type Authenticator interface {
@@ -27,11 +28,14 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 
 	res := new(models.AirtelAuthResponse)
 
-	_, err = c.base.Do(ctx, "Token", req, res)
+	_, err = c.base.Do(ctx, "token request", req, res)
 	if err != nil {
 		return models.AirtelAuthResponse{}, err
 	}
-	//fmt.Printf("status code: %v\nheaders: %v\npayload: %v\nerror: %v\n", do.StatusCode, do.Headers, do.Payload, do.Error)
+	duration := time.Duration(res.ExpiresIn)
+	now := time.Now()
+	later := now.Add(time.Second*duration)
+	c.tokenExpiresAt = later
 	*c.token = res.AccessToken
 	return *res, nil
 }
@@ -56,6 +60,7 @@ func generateEncryptedKey(apiKey, pubKey string) (string, error) {
 	}
 
 	msg := []byte(apiKey)
+
 
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
 
