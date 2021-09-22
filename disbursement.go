@@ -2,10 +2,8 @@ package airtel
 
 import (
 	"context"
-	"fmt"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/airtel/pkg/models"
-	"time"
 )
 
 type DisbursementService interface {
@@ -14,22 +12,9 @@ type DisbursementService interface {
 }
 
 func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelDisburseResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelDisburseResponse{}, err
-			}
-		}
-		token = *c.token
+	token, err := c.checkToken(ctx)
+	if err != nil{
+		return models.AirtelDisburseResponse{}, err
 	}
 
 	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Disbursement, token, request, "")
@@ -47,22 +32,9 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 }
 
 func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelDisburseEnquiryResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelDisburseEnquiryResponse{}, err
-			}
-		}
-		token = *c.token
+	token, err := c.checkToken(ctx)
+	if err != nil{
+		return models.AirtelDisburseEnquiryResponse{}, err
 	}
 
 	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, DisbursementEnquiry, token, nil, request.ID)

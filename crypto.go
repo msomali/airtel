@@ -15,6 +15,28 @@ type Authenticator interface {
 	Token(ctx context.Context) (models.AirtelAuthResponse, error)
 }
 
+func (c *Client) checkToken(ctx context.Context)(string,error)  {
+	var token string
+	if *c.token == "" {
+		str, err := c.Token(ctx)
+		if err != nil {
+			return "", err
+		}
+		token = fmt.Sprintf("%s", str.AccessToken)
+	}
+	//Add Auth Header
+	if *c.token != "" {
+		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
+			if _, err := c.Token(ctx); err != nil {
+				return "", err
+			}
+		}
+		token = *c.token
+	}
+
+	return token, nil
+}
+
 func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	body := models.AirtelAuthRequest{
 		ClientID:     c.conf.ClientID,

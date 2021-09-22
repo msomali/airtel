@@ -41,6 +41,8 @@ type (
 	Environment string
 	RequestType uint
 	Config      struct {
+		CallbackPrivateKey string
+		CallbackAuth bool
 		PublicKey   string
 		Environment Environment
 		ClientID    string

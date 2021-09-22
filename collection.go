@@ -2,12 +2,10 @@ package airtel
 
 import (
 	"context"
-	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/airtel/pkg/models"
 	"net/http"
-	"time"
 )
 
 type CollectionService interface {
@@ -18,24 +16,10 @@ type CollectionService interface {
 }
 
 func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelPushResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
+	token, err := c.checkToken(ctx)
+	if err != nil{
+		return models.AirtelPushResponse{}, err
 	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelPushResponse{}, err
-			}
-		}
-		token = *c.token
-	}
-
 	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, USSDPush, token, request, "")
 	if err != nil {
 		return models.AirtelPushResponse{}, err
@@ -51,22 +35,9 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 }
 
 func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest) (models.AirtelRefundResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelRefundResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelRefundResponse{}, err
-			}
-		}
-		token = *c.token
+	token, err := c.checkToken(ctx)
+	if err != nil{
+		return models.AirtelRefundResponse{}, err
 	}
 
 	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Refund, token, request, "")
@@ -84,22 +55,9 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 }
 
 func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest) (models.AirtelPushEnquiryResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelPushEnquiryResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelPushEnquiryResponse{}, err
-			}
-		}
-		token = *c.token
+	token, err := c.checkToken(ctx)
+	if err != nil{
+		return models.AirtelPushEnquiryResponse{}, err
 	}
 
 	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, PushEnquiry, token, nil, request.ID)
