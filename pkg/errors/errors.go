@@ -1,6 +1,5 @@
 package errors
 
-
 const (
 	ESB000001 = "Something went wrong"
 	ESB000004 = "An error occurred while initiating the payment"

@@ -2,11 +2,19 @@ package airtel
 
 import (
 	"context"
+	"crypto/rand"
+	"crypto/rsa"
+	"crypto/x509"
+	"encoding/base64"
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/pkg/countries"
+	"github.com/techcraftlabs/airtel/pkg/models"
 	"net/http"
+	"time"
 )
+
+var _ Service = (*Client)(nil)
 
 const (
 	PRODUCTION                 Environment = "production"
@@ -19,6 +27,8 @@ const (
 	PushEnquiryEndpoint                    = "/standard/v1/payments/"
 	DisbursmentEndpoint                    = "/standard/v1/disbursements/"
 	DisbursmentEnquiryEndpoint             = "/standard/v1/disbursements/"
+
+	defaultGrantType = "client_credentials"
 )
 
 const (
@@ -34,40 +44,214 @@ type (
 	Environment string
 	RequestType uint
 	Config      struct {
+		PublicKey   string
 		Environment Environment
 		ClientID    string
 		Secret      string
 	}
 
 	Client struct {
-		conf *Config
-		base *internal.BaseClient
+		baseURL        string
+		conf           *Config
+		base           *internal.BaseClient
+		token          *string
+		tokenExpiresAt time.Time
 	}
 
 	Request struct {
 	}
 
-	AuthZRequest struct {
-		ClientID     string `json:"client_id"`
-		ClientSecret string `json:"client_secret"`
-		GrantType    string `json:"grant_type"`
-	}
-
-	AuthZResponse struct {
-		AccessToken string `json:"access_token"`
-		ExpiresIn   int    `json:"expires_in"`
-		TokenType   string `json:"token_type"`
-	}
-
 	Service interface {
-		Authorization(ctx context.Context, request AuthZRequest) (AuthZResponse, error)
-		Push()
-		Refund()
-		Enquiry()
+		Authorization(ctx context.Context) (models.AirtelAuthResponse, error)
+		Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error)
+		Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error)
+		Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error)
 		Callback()
 		Disburse()
 	}
 )
+
+func generateEncryptedKey(apiKey, pubKey string) (string, error) {
+	decodedBase64, err := base64.StdEncoding.DecodeString(pubKey)
+	if err != nil {
+		return "", fmt.Errorf("could not decode pub key to Base64 string: %w", err)
+	}
+
+	publicKeyInterface, err := x509.ParsePKIXPublicKey(decodedBase64)
+	if err != nil {
+		return "", fmt.Errorf("could not parse encoded public key (encryption key) : %w", err)
+	}
+
+	//check if the public key is RSA public key
+	publicKey, isRSAPublicKey := publicKeyInterface.(*rsa.PublicKey)
+	if !isRSAPublicKey {
+		return "", fmt.Errorf("public key parsed is not an RSA public key : %w", err)
+	}
+
+	msg := []byte(apiKey)
+
+	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
+
+	if err != nil {
+		return "", fmt.Errorf("could not encrypt api key using generated public key: %w", err)
+	}
+
+	return base64.StdEncoding.EncodeToString(encrypted), nil
+
+}
+
+func (c *Client) Authorization(ctx context.Context) (models.AirtelAuthResponse, error) {
+	body := models.AirtelAuthRequest{
+		ClientID:     c.conf.ClientID,
+		ClientSecret: c.conf.Secret,
+		GrantType:    defaultGrantType,
+	}
+	req, err := createInternalRequest("", c.conf.Environment, Authorization, "", body, "")
+	if err != nil {
+		return models.AirtelAuthResponse{}, err
+	}
+
+	res := new(models.AirtelAuthResponse)
+
+	_, err = c.base.Do(ctx, "Authorization", req, res)
+	if err != nil {
+		return models.AirtelAuthResponse{}, err
+	}
+	//fmt.Printf("status code: %v\nheaders: %v\npayload: %v\nerror: %v\n", do.StatusCode, do.Headers, do.Payload, do.Error)
+	*c.token = res.AccessToken
+	return *res, nil
+}
+
+func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
+	var token string
+	if *c.token == "" {
+		str, err := c.Authorization(ctx)
+		if err != nil {
+			return models.AirtelPushResponse{}, err
+		}
+		token = fmt.Sprintf("%s", str.AccessToken)
+	}
+	//Add Auth Header
+	if *c.token != "" {
+		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
+			if _, err := c.Authorization(ctx); err != nil {
+				return models.AirtelPushResponse{}, err
+			}
+		}
+		token = *c.token
+	}
+
+	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, USSDPush, token, request, "")
+	if err != nil {
+		return models.AirtelPushResponse{}, err
+	}
+
+	res := new(models.AirtelPushResponse)
+
+	_, err = c.base.Do(ctx, "ussd push", req, res)
+	if err != nil {
+		return models.AirtelPushResponse{}, err
+	}
+	return *res, nil
+}
+
+func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error) {
+	var token string
+	if *c.token == "" {
+		str, err := c.Authorization(ctx)
+		if err != nil {
+			return models.AirtelRefundResponse{}, err
+		}
+		token = fmt.Sprintf("%s", str.AccessToken)
+	}
+	//Add Auth Header
+	if *c.token != "" {
+		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
+			if _, err := c.Authorization(ctx); err != nil {
+				return models.AirtelRefundResponse{}, err
+			}
+		}
+		token = *c.token
+	}
+
+	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Refund, token, request, "")
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+
+	res := new(models.AirtelRefundResponse)
+
+	_, err = c.base.Do(ctx, "ussd push", req, res)
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+	return *res, nil
+}
+
+func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error) {
+	var token string
+	if *c.token == "" {
+		str, err := c.Authorization(ctx)
+		if err != nil {
+			return models.AirtelPushEnquiryResponse{}, err
+		}
+		token = fmt.Sprintf("%s", str.AccessToken)
+	}
+	//Add Auth Header
+	if *c.token != "" {
+		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
+			if _, err := c.Authorization(ctx); err != nil {
+				return models.AirtelPushEnquiryResponse{}, err
+			}
+		}
+		token = *c.token
+	}
+
+	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, PushEnquiry, token, nil, request.ID)
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+
+	res := new(models.AirtelPushEnquiryResponse)
+
+	_, err = c.base.Do(ctx, "ussd push", req, res)
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+	return *res, nil
+}
+
+func (c Client) Callback() {
+	panic("implement me")
+}
+
+func (c Client) Disburse() {
+	panic("implement me")
+}
+
+func NewClient(config *Config, environment Environment, debugMode bool) *Client {
+	token := new(string)
+	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
+	baseURL := new(string)
+	switch environment {
+	case STAGING:
+		*baseURL = BaseURLStaging
+
+	case PRODUCTION:
+		*baseURL = BaseURLProduction
+
+	default:
+		*baseURL = BaseURLStaging
+	}
+
+	url := *baseURL
+	return &Client{
+		baseURL: url,
+		conf:    config,
+		base:    base,
+		token:   token,
+	}
+}
 
 func getRequestURL(env Environment, requestType RequestType, id ...string) string {
 
@@ -102,11 +286,18 @@ func getRequestURL(env Environment, requestType RequestType, id ...string) strin
 }
 
 func createInternalRequest(countryName string, env Environment, requestType RequestType, token string, body interface{}, id string) (*internal.Request, error) {
+	var (
+		country countries.Country
+		err     error
+	)
 
-	country, err := countries.Get(countryName)
-	if err != nil {
-		return nil, err
+	if requestType != Authorization {
+		country, err = countries.Get(countryName)
+		if err != nil {
+			return nil, err
+		}
 	}
+
 	switch requestType {
 	case Authorization:
 		reqURL := getRequestURL(env, Authorization)
@@ -117,6 +308,8 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 		return internal.NewRequest(http.MethodPost, reqURL, internal.JsonPayload, body, internal.WithRequestHeaders(hs)), nil
 
 	case USSDPush:
+		fmt.Printf("case ussdpush: the token is %v\n",token)
+
 		reqURL := getRequestURL(env, USSDPush)
 		hs := map[string]string{
 			"Content-Type":  "application/json",
