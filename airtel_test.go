@@ -49,3 +49,63 @@ func Test_getRequestURL(t *testing.T) {
 		})
 	}
 }
+
+func TestConfig_SetAllowedCountries(t *testing.T) {
+	type fields struct {
+		AllowedCountries     map[string][]string
+		DisbursePIN          string
+		CallbackPrivateKey   string
+		CallbackAuth         bool
+		PublicKey            string
+		Environment          Environment
+		ClientID             string
+		Secret               string
+	}
+	type args struct {
+		apiName   string
+		countries []string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+		args   args
+	}{
+		{
+			name:   "",
+			fields: fields{
+				AllowedCountries:     nil,
+				DisbursePIN:          "",
+				CallbackPrivateKey:   "",
+				CallbackAuth:         false,
+				PublicKey:            "",
+				Environment:          "",
+				ClientID:             "",
+				Secret:               "",
+			},
+			args:   args{
+				apiName:   CollectionAPIName,
+				countries: []string{"Tanzania","Kenya","Uganda"},
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			config := &Config{
+				AllowedCountries:     tt.fields.AllowedCountries,
+				DisbursePIN:          tt.fields.DisbursePIN,
+				CallbackPrivateKey:   tt.fields.CallbackPrivateKey,
+				CallbackAuth:         tt.fields.CallbackAuth,
+				PublicKey:            tt.fields.PublicKey,
+				Environment:          tt.fields.Environment,
+				ClientID:             tt.fields.ClientID,
+				Secret:               tt.fields.Secret,
+			}
+
+			config.SetAllowedCountries(tt.args.apiName,tt.args.countries)
+
+			t.Logf("allowed countries for %s api are %v\n",tt.args.apiName,config.AllowedCountries[tt.args.apiName])
+		})
+
+
+	}
+}
