@@ -20,7 +20,11 @@ func main() {
 		Secret:      "9c8ded86-f45a-48f4-a9ee-8063cf8f43a0",
 	}
 
-	client := airtel.NewClient(config, airtel.STAGING, true)
+	fn := func(request models.AirtelCallbackRequest) error {
+		return nil
+	}
+
+	client := airtel.NewClient(config, fn, true)
 
 	response, err := client.Token(context.TODO())
 	if err != nil {

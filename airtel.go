@@ -1,11 +1,6 @@
 package airtel
 
 import (
-	"context"
-	"crypto/rand"
-	"crypto/rsa"
-	"crypto/x509"
-	"encoding/base64"
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/pkg/countries"
@@ -57,212 +52,21 @@ type (
 		conf           *Config
 		base           *internal.BaseClient
 		token          *string
-		tokenExpiresAt time.Time
-		callbacker func(request models.AirtelCallbackRequest)error
+		tokenExpiresAt   time.Time
+		pushCallbackFunc PushCallbackFunc
 	}
+
+	PushCallbackFunc func(request models.AirtelCallbackRequest)error
 
 	Request struct {
 	}
-
-	Authenticator interface {
-		Token(ctx context.Context) (models.AirtelAuthResponse, error)
-	}
-
-	CollectionService interface {
-		Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error)
-		Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error)
-		Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error)
-		CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
-	}
-
-	DisbursementService interface {
-		Disburse(ctx context.Context, request models.AirtelDisburseRequest)(models.AirtelDisburseResponse,error)
-		TransactionEnquiry(ctx context.Context, response models.AirtelDisburseEnquiryRequest)(models.AirtelDisburseEnquiryResponse,error)
-	}
 )
 
-func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error) {
-	panic("implement me")
-}
-
-func (c *Client) TransactionEnquiry(ctx context.Context, response models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
-	panic("implement me")
-}
-
-func generateEncryptedKey(apiKey, pubKey string) (string, error) {
-
-	decodedBase64, err := base64.StdEncoding.DecodeString(pubKey)
-	if err != nil {
-		return "", fmt.Errorf("could not decode pub key to Base64 string: %w", err)
-	}
-
-	publicKeyInterface, err := x509.ParsePKIXPublicKey(decodedBase64)
-	if err != nil {
-		return "", fmt.Errorf("could not parse encoded public key (encryption key) : %w", err)
-	}
-
-	//check if the public key is RSA public key
-	publicKey, isRSAPublicKey := publicKeyInterface.(*rsa.PublicKey)
-	if !isRSAPublicKey {
-		return "", fmt.Errorf("public key parsed is not an RSA public key : %w", err)
-	}
-
-	msg := []byte(apiKey)
-
-	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
-
-	if err != nil {
-		return "", fmt.Errorf("could not encrypt api key using generated public key: %w", err)
-	}
-
-	return base64.StdEncoding.EncodeToString(encrypted), nil
-
-}
-
-func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
-	body := models.AirtelAuthRequest{
-		ClientID:     c.conf.ClientID,
-		ClientSecret: c.conf.Secret,
-		GrantType:    defaultGrantType,
-	}
-	req, err := createInternalRequest("", c.conf.Environment, Authorization, "", body, "")
-	if err != nil {
-		return models.AirtelAuthResponse{}, err
-	}
-
-	res := new(models.AirtelAuthResponse)
-
-	_, err = c.base.Do(ctx, "Token", req, res)
-	if err != nil {
-		return models.AirtelAuthResponse{}, err
-	}
-	//fmt.Printf("status code: %v\nheaders: %v\npayload: %v\nerror: %v\n", do.StatusCode, do.Headers, do.Payload, do.Error)
-	*c.token = res.AccessToken
-	return *res, nil
-}
-
-func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelPushResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelPushResponse{}, err
-			}
-		}
-		token = *c.token
-	}
-
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, USSDPush, token, request, "")
-	if err != nil {
-		return models.AirtelPushResponse{}, err
-	}
-
-	res := new(models.AirtelPushResponse)
-
-	_, err = c.base.Do(ctx, "ussd push", req, res)
-	if err != nil {
-		return models.AirtelPushResponse{}, err
-	}
-	return *res, nil
-}
-
-func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelRefundResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelRefundResponse{}, err
-			}
-		}
-		token = *c.token
-	}
-
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Refund, token, request, "")
-	if err != nil {
-		return models.AirtelRefundResponse{}, err
-	}
-
-	res := new(models.AirtelRefundResponse)
-
-	_, err = c.base.Do(ctx, "ussd push", req, res)
-	if err != nil {
-		return models.AirtelRefundResponse{}, err
-	}
-	return *res, nil
-}
-
-func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error) {
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.AirtelPushEnquiryResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.AirtelPushEnquiryResponse{}, err
-			}
-		}
-		token = *c.token
-	}
-
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, PushEnquiry, token, nil, request.ID)
-	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
-	}
-
-	res := new(models.AirtelPushEnquiryResponse)
-
-	_, err = c.base.Do(ctx, "ussd push", req, res)
-	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
-	}
-	return *res, nil
-}
-
-func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	body := new(models.AirtelCallbackRequest)
-	err := internal.ReceivePayload(request, body)
-	if err != nil {
-		http.Error(writer,err.Error(),http.StatusInternalServerError)
-		return
-	}
-	reqBody := *body
-
-	//todo: check the hash if it is OK
-	err = c.callbacker(reqBody)
-	if err != nil {
-		http.Error(writer,err.Error(),http.StatusInternalServerError)
-		return
-	}
-	writer.WriteHeader(http.StatusOK)
-}
-
-func NewClient(config *Config, environment Environment, debugMode bool) *Client {
+func NewClient(config *Config, pushCallbackFunc PushCallbackFunc, debugMode bool) *Client {
 	token := new(string)
 	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
 	baseURL := new(string)
-	switch environment {
+	switch config.Environment {
 	case STAGING:
 		*baseURL = BaseURLStaging
 
@@ -275,10 +79,11 @@ func NewClient(config *Config, environment Environment, debugMode bool) *Client 
 
 	url := *baseURL
 	return &Client{
-		baseURL: url,
-		conf:    config,
-		base:    base,
-		token:   token,
+		baseURL:          url,
+		conf:             config,
+		base:             base,
+		token:            token,
+		pushCallbackFunc: pushCallbackFunc,
 	}
 }
 
