@@ -22,7 +22,7 @@ func main() {
 
 	client := airtel.NewClient(config, airtel.STAGING, true)
 
-	response, err := client.Authorization(context.TODO())
+	response, err := client.Token(context.TODO())
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)

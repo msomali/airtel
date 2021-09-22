@@ -158,6 +158,26 @@ type AirtelDisburseRequest struct {
 	} `json:"transaction"`
 }
 
+type AirtelDisburseResponse struct {
+	Data struct {
+		Transaction struct {
+			ReferenceID   string `json:"reference_id"`
+			AirtelMoneyID string `json:"airtel_money_id"`
+			ID            string `json:"id"`
+		} `json:"transaction"`
+	} `json:"data"`
+	Status struct {
+		Code       string `json:"code"`
+		Message    string `json:"message"`
+		ResultCode string `json:"result_code"`
+		Success    bool   `json:"success"`
+	} `json:"status"`
+}
+
+type AirtelDisburseEnquiryRequest struct {
+	ID string `json:"id"`
+}
+
 type AirtelDisburseEnquiryResponse struct {
 	Data struct {
 		Transaction struct {

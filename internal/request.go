@@ -80,7 +80,7 @@ func basicAuth(username, password string) string {
 // WithBasicAuth add password and username to request headers
 func WithBasicAuth(username, password string) RequestOption {
 	return func(request *Request) {
-		request.Headers["Authorization"] = "Basic " + basicAuth(username, password)
+		request.Headers["Token"] = "Basic " + basicAuth(username, password)
 	}
 }
 

@@ -14,7 +14,9 @@ import (
 	"time"
 )
 
-var _ Service = (*Client)(nil)
+var _ CollectionService = (*Client)(nil)
+var _ Authenticator = (*Client)(nil)
+var _ DisbursementService = (*Client)(nil)
 
 const (
 	PRODUCTION                 Environment = "production"
@@ -56,22 +58,39 @@ type (
 		base           *internal.BaseClient
 		token          *string
 		tokenExpiresAt time.Time
+		callbacker func(request models.AirtelCallbackRequest)error
 	}
 
 	Request struct {
 	}
 
-	Service interface {
-		Authorization(ctx context.Context) (models.AirtelAuthResponse, error)
+	Authenticator interface {
+		Token(ctx context.Context) (models.AirtelAuthResponse, error)
+	}
+
+	CollectionService interface {
 		Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error)
 		Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error)
 		Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error)
-		Callback()
-		Disburse()
+		CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
+	}
+
+	DisbursementService interface {
+		Disburse(ctx context.Context, request models.AirtelDisburseRequest)(models.AirtelDisburseResponse,error)
+		TransactionEnquiry(ctx context.Context, response models.AirtelDisburseEnquiryRequest)(models.AirtelDisburseEnquiryResponse,error)
 	}
 )
 
+func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error) {
+	panic("implement me")
+}
+
+func (c *Client) TransactionEnquiry(ctx context.Context, response models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
+	panic("implement me")
+}
+
 func generateEncryptedKey(apiKey, pubKey string) (string, error) {
+
 	decodedBase64, err := base64.StdEncoding.DecodeString(pubKey)
 	if err != nil {
 		return "", fmt.Errorf("could not decode pub key to Base64 string: %w", err)
@@ -100,7 +119,7 @@ func generateEncryptedKey(apiKey, pubKey string) (string, error) {
 
 }
 
-func (c *Client) Authorization(ctx context.Context) (models.AirtelAuthResponse, error) {
+func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	body := models.AirtelAuthRequest{
 		ClientID:     c.conf.ClientID,
 		ClientSecret: c.conf.Secret,
@@ -113,7 +132,7 @@ func (c *Client) Authorization(ctx context.Context) (models.AirtelAuthResponse, 
 
 	res := new(models.AirtelAuthResponse)
 
-	_, err = c.base.Do(ctx, "Authorization", req, res)
+	_, err = c.base.Do(ctx, "Token", req, res)
 	if err != nil {
 		return models.AirtelAuthResponse{}, err
 	}
@@ -125,7 +144,7 @@ func (c *Client) Authorization(ctx context.Context) (models.AirtelAuthResponse, 
 func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
 	var token string
 	if *c.token == "" {
-		str, err := c.Authorization(ctx)
+		str, err := c.Token(ctx)
 		if err != nil {
 			return models.AirtelPushResponse{}, err
 		}
@@ -134,7 +153,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	//Add Auth Header
 	if *c.token != "" {
 		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Authorization(ctx); err != nil {
+			if _, err := c.Token(ctx); err != nil {
 				return models.AirtelPushResponse{}, err
 			}
 		}
@@ -158,7 +177,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)(models.AirtelRefundResponse,error) {
 	var token string
 	if *c.token == "" {
-		str, err := c.Authorization(ctx)
+		str, err := c.Token(ctx)
 		if err != nil {
 			return models.AirtelRefundResponse{}, err
 		}
@@ -167,7 +186,7 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 	//Add Auth Header
 	if *c.token != "" {
 		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Authorization(ctx); err != nil {
+			if _, err := c.Token(ctx); err != nil {
 				return models.AirtelRefundResponse{}, err
 			}
 		}
@@ -191,7 +210,7 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest)(models.AirtelPushEnquiryResponse,error) {
 	var token string
 	if *c.token == "" {
-		str, err := c.Authorization(ctx)
+		str, err := c.Token(ctx)
 		if err != nil {
 			return models.AirtelPushEnquiryResponse{}, err
 		}
@@ -200,7 +219,7 @@ func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRe
 	//Add Auth Header
 	if *c.token != "" {
 		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Authorization(ctx); err != nil {
+			if _, err := c.Token(ctx); err != nil {
 				return models.AirtelPushEnquiryResponse{}, err
 			}
 		}
@@ -221,12 +240,22 @@ func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRe
 	return *res, nil
 }
 
-func (c Client) Callback() {
-	panic("implement me")
-}
+func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
+	body := new(models.AirtelCallbackRequest)
+	err := internal.ReceivePayload(request, body)
+	if err != nil {
+		http.Error(writer,err.Error(),http.StatusInternalServerError)
+		return
+	}
+	reqBody := *body
 
-func (c Client) Disburse() {
-	panic("implement me")
+	//todo: check the hash if it is OK
+	err = c.callbacker(reqBody)
+	if err != nil {
+		http.Error(writer,err.Error(),http.StatusInternalServerError)
+		return
+	}
+	writer.WriteHeader(http.StatusOK)
 }
 
 func NewClient(config *Config, environment Environment, debugMode bool) *Client {
@@ -316,7 +345,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":        "*/*",
 			"X-Country":     country.Code,
 			"X-Currency":    country.CurrencyCode,
-			"Authorization": fmt.Sprintf("Bearer %s", token),
+			"Token": fmt.Sprintf("Bearer %s", token),
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL, internal.JsonPayload, body, internal.WithRequestHeaders(hs)), nil
@@ -329,7 +358,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":        "*/*",
 			"X-Country":     country.Code,
 			"X-Currency":    country.CurrencyCode,
-			"Authorization": fmt.Sprintf("Bearer %s", token),
+			"Token": fmt.Sprintf("Bearer %s", token),
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL, internal.JsonPayload, body, internal.WithRequestHeaders(hs)), nil
@@ -341,7 +370,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":        "*/*",
 			"X-Country":     country.Code,
 			"X-Currency":    country.CurrencyCode,
-			"Authorization": fmt.Sprintf("Bearer %s", token),
+			"Token": fmt.Sprintf("Bearer %s", token),
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL, internal.JsonPayload, body, internal.WithRequestHeaders(hs)), nil
