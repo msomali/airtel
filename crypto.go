@@ -34,12 +34,11 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	}
 	duration := time.Duration(res.ExpiresIn)
 	now := time.Now()
-	later := now.Add(time.Second*duration)
+	later := now.Add(time.Second * duration)
 	c.tokenExpiresAt = later
 	*c.token = res.AccessToken
 	return *res, nil
 }
-
 
 func generateEncryptedKey(apiKey, pubKey string) (string, error) {
 
@@ -60,7 +59,6 @@ func generateEncryptedKey(apiKey, pubKey string) (string, error) {
 	}
 
 	msg := []byte(apiKey)
-
 
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
 

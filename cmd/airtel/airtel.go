@@ -64,18 +64,18 @@ func main() {
 	}
 	fmt.Printf("push response: %v\n", pushResponse)
 
-
 	refundRequest := models.AirtelRefundRequest{
 		Transaction: struct {
 			AirtelMoneyID string `json:"airtel_money_id"`
-		}(struct{
-			AirtelMoneyID string }{AirtelMoneyID:"heyspecialid"}),
+		}(struct {
+			AirtelMoneyID string
+		}{AirtelMoneyID: "heyspecialid"}),
 	}
 
-	refundResponse, err := client.Refund(context.TODO(),refundRequest)
+	refundResponse, err := client.Refund(context.TODO(), refundRequest)
 	if err != nil {
 		fmt.Printf("%v\n", err)
 		os.Exit(1)
 	}
-	fmt.Printf("refund response: %v\n",refundResponse)
+	fmt.Printf("refund response: %v\n", refundResponse)
 }

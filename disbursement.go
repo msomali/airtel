@@ -32,7 +32,7 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 		token = *c.token
 	}
 
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Disbursment, token, request, "")
+	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Disbursement, token, request, "")
 	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}
@@ -65,7 +65,7 @@ func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDi
 		token = *c.token
 	}
 
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, PushEnquiry, token, nil, request.ID)
+	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, DisbursementEnquiry, token, nil, request.ID)
 	if err != nil {
 		return models.AirtelDisburseEnquiryResponse{}, err
 	}
@@ -78,4 +78,3 @@ func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDi
 	}
 	return *res, nil
 }
-
