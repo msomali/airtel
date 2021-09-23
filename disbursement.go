@@ -21,7 +21,7 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 	}
 
 	countryName := request.CountryOfTransaction
-	country, err := countries.Get(countryName)
+	country, err := countries.GetByName(countryName)
 	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}
@@ -48,23 +48,5 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 }
 
 func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
-	//token, err := c.checkToken(ctx)
-	//if err != nil{
-	//	return models.AirtelDisburseEnquiryResponse{}, err
-	//}
-	//
-	//req, err := createInternalRequest(countries.TANZANIA, c.Conf.Environment, DisbursementEnquiry, token, nil, request.ID)
-	//if err != nil {
-	//	return models.AirtelDisburseEnquiryResponse{}, err
-	//}
-	//
-	//res := new(models.AirtelDisburseEnquiryResponse)
-	//
-	//_, err = c.base.Do(ctx, "ussd push", req, res)
-	//if err != nil {
-	//	return models.AirtelDisburseEnquiryResponse{}, err
-	//}
-	//return *res, nil
-
 	panic("")
 }

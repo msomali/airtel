@@ -22,7 +22,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 		return models.AirtelPushResponse{}, err
 	}
 	countryName := request.Transaction.Country
-	country, err := countries.Get(countryName)
+	country, err := countries.GetByCode(countryName)
 	if err != nil {
 		return models.AirtelPushResponse{}, err
 	}

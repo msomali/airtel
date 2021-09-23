@@ -83,7 +83,7 @@ func Names() []string {
 	return names
 }
 
-func Get(name string) (Country, error) {
+func GetByName(name string) (Country, error) {
 	name = strings.TrimSpace(strings.ToLower(name))
 	countries := List()
 	for _, country := range countries {
@@ -94,6 +94,19 @@ func Get(name string) (Country, error) {
 	}
 
 	return Country{}, fmt.Errorf("error: the country %s is not supported", name)
+}
+
+func GetByCode(name string) (Country, error) {
+	name = strings.TrimSpace(strings.ToLower(name))
+	countries := List()
+	for _, country := range countries {
+		n := strings.TrimSpace(strings.ToLower(country.Code))
+		if name == n {
+			return country, nil
+		}
+	}
+
+	return Country{}, fmt.Errorf("error: the country with code %s is not supported", name)
 }
 
 func List() []Country {

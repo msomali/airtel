@@ -3,6 +3,7 @@ package api
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
+	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
@@ -20,6 +21,9 @@ type ReqAdapter struct {
 
 
 func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest {
+
+	subCountry, _ := countries.GetByName(request.SubscriberCountry)
+	transCountry, _ := countries.GetByName(request.TransactionCountry)
 	return models.AirtelPushRequest{
 		Reference: request.Reference,
 		Subscriber: struct {
@@ -27,8 +31,8 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushR
 			Currency string `json:"currency"`
 			Msisdn   string `json:"msisdn"`
 		}{
-			Country:  request.SubscriberCountry,
-			Currency: request.SubscriberCurrency,
+			Country:  subCountry.Code,
+			Currency: subCountry.CurrencyCode,
 			Msisdn:   request.SubscriberMsisdn,
 		},
 		Transaction: struct {
@@ -38,8 +42,8 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushR
 			ID       string `json:"id"`
 		}{
 			Amount:   request.TransactionAmount,
-			Country:  request.TransactionCountry,
-			Currency: request.TransactionCurrency,
+			Country:  transCountry.Code,
+			Currency: transCountry.CurrencyCode,
 			ID:       request.TransactionID,
 		},
 	}

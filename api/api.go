@@ -8,11 +8,9 @@ type (
 	PushPayRequest struct {
 		Reference           string
 		SubscriberCountry   string
-		SubscriberCurrency  string
 		SubscriberMsisdn    string
 		TransactionAmount   int
 		TransactionCountry  string
-		TransactionCurrency string
 		TransactionID       string
 	}
 

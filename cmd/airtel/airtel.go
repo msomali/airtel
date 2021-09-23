@@ -46,17 +46,17 @@ func main() {
 	apiClient := http.NewClient(apiConfig,airtelClient)
 
 	req := api.PushPayRequest{
-		Reference:           "this is a test transaction",
-		SubscriberCountry:   countries.TANZANIA_CODE,
-		SubscriberCurrency:  countries.TANZANIA_CURRENCY_CODE,
+		Reference:           "this is a test",
+		SubscriberCountry:   countries.TANZANIA,
 		SubscriberMsisdn:    "765992153",
 		TransactionAmount:   500,
-		TransactionCountry:  countries.TANZANIA_CODE,
-		TransactionCurrency: countries.TANZANIA_CURRENCY_CODE,
+		TransactionCountry:  countries.TANZANIA,
 		TransactionID:       fmt.Sprintf("%v",time.Now().UnixNano()),
 	}
+	fmt.Printf("perform push pay\n")
 	pushPayResponse, err := apiClient.Push(context.TODO(), req)
 	if err != nil {
+		fmt.Printf("error %v\n",err)
 		return 
 	}
 
@@ -70,8 +70,11 @@ func main() {
 		CountryOfTransaction: countries.TANZANIA,
 	}
 
+
+	fmt.Printf("Performing Disbursement")
 	disburseResponse, err := apiClient.Disburse(context.TODO(),req2)
 	if err != nil {
+		fmt.Printf("error %v\n",err)
 		return
 	}
 

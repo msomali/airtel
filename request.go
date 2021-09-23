@@ -60,7 +60,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 	)
 
 	if requestType != Authorization {
-		country, err = countries.Get(countryName)
+		country, err = countries.GetByName(countryName)
 		if err != nil {
 			return nil, err
 		}
