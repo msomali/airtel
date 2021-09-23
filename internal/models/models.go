@@ -107,6 +107,11 @@ type AirtelCallbackRequest struct {
 	Hash string `json:"hash"`
 }
 
+type AirtelUserEnquiryRequest struct {
+	MSISDN string
+	CountryOfTransaction string
+}
+
 type AirtelUserEnquiryResponse struct {
 	Data struct {
 		FirstName    string `json:"first_name,omitempty"`
@@ -132,6 +137,11 @@ type AirtelUserEnquiryResponse struct {
 	Error            string `json:"error,omitempty"`
 	StatusMessage    string `json:"status_message,omitempty"`
 	StatusCode       string `json:"status_code,omitempty"`
+}
+
+type AirtelBalanceEnquiryRequest struct {
+	MSISDN string
+	CountryOfTransaction string
 }
 
 type AirtelBalanceEnquiryResponse struct {

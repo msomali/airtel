@@ -16,6 +16,7 @@ const (
 	DisbursementEndpoint       = "/standard/v1/disbursements/"
 	DisbursmentEnquiryEndpoint = "/standard/v1/disbursements/"
 	TransactionSummaryEndpoint = "/merchant/v1/transactions"
+	BalanceEnquiryEndpoint     = "/standard/v1/users/balance"
 	defaultGrantType           = "client_credentials"
 	CollectionAPIName          = "collection"
 	DisbursementAPIName        = "disbursement"
@@ -30,7 +31,7 @@ const (
 	PushEnquiry
 	PushCallback
 	Disbursement
-	AccountBalance
+	BalanceEnquiry
 	DisbursementEnquiry
 	TransactionSummary
 	UserEnquiry
@@ -115,7 +116,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 
 		return internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs)), nil
 
-	case AccountBalance:
+	case BalanceEnquiry:
 		return nil, err
 
 	case Disbursement:
@@ -166,6 +167,13 @@ func requestURL(env Environment, requestType RequestType) string {
 			return fmt.Sprintf("%s%s", BaseURLStaging, TransactionSummaryEndpoint)
 		}
 		return fmt.Sprintf("%s%s", BaseURLProduction, TransactionSummaryEndpoint)
+
+	case BalanceEnquiry:
+		if env == STAGING {
+			return fmt.Sprintf("%s%s", BaseURLStaging, BalanceEnquiryEndpoint)
+		}
+		return fmt.Sprintf("%s%s", BaseURLProduction, BalanceEnquiryEndpoint)
+
 	}
 	return ""
 
