@@ -84,7 +84,7 @@ func TestConfig_SetAllowedCountries(t *testing.T) {
 			},
 			args:   args{
 				apiName:   CollectionAPIName,
-				countries: []string{"Tanzania","Kenya","Uganda"},
+				countries: []string{"Kenya","Uganda"},
 			},
 		},
 	}
@@ -109,3 +109,16 @@ func TestConfig_SetAllowedCountries(t *testing.T) {
 
 	}
 }
+
+func TestSomeTypeImplementsSomeInterface(t *testing.T) {
+	// won't compile if SomeType does not implement SomeInterface
+	var(
+		_ AccountService      = (*Client)(nil)
+		_ CollectionService   = (*Client)(nil)
+		_ Authenticator       = (*Client)(nil)
+		_ DisbursementService = (*Client)(nil)
+		_ TransactionService  = (*Client)(nil)
+		_ KYCService          = (*Client)(nil)
+	)
+}
+

@@ -161,17 +161,21 @@ type AirtelDisburseRequest struct {
 type AirtelDisburseResponse struct {
 	Data struct {
 		Transaction struct {
-			ReferenceID   string `json:"reference_id"`
-			AirtelMoneyID string `json:"airtel_money_id"`
-			ID            string `json:"id"`
-		} `json:"transaction"`
-	} `json:"data"`
+			ReferenceID   string `json:"reference_id,omitempty"`
+			AirtelMoneyID string `json:"airtel_money_id,omitempty"`
+			ID            string `json:"id,omitempty"`
+		} `json:"transaction,omitempty"`
+	} `json:"data,omitempty"`
 	Status struct {
-		Code       string `json:"code"`
-		Message    string `json:"message"`
-		ResultCode string `json:"result_code"`
-		Success    bool   `json:"success"`
-	} `json:"status"`
+		Code       string `json:"code,omitempty"`
+		Message    string `json:"message,omitempty"`
+		ResultCode string `json:"result_code,omitempty"`
+		Success    bool   `json:"success,omitempty"`
+	} `json:"status,omitempty"`
+	ErrorDescription string `json:"error_description,omitempty"`
+	Error            string `json:"error,omitempty"`
+	StatusMessage    string `json:"status_message,omitempty"`
+	StatusCode       string `json:"status_code,omitempty"`
 }
 
 type AirtelDisburseEnquiryRequest struct {
@@ -192,6 +196,10 @@ type AirtelDisburseEnquiryResponse struct {
 		ResultCode string `json:"result_code"`
 		Success    bool   `json:"success"`
 	} `json:"status"`
+	ErrorDescription string `json:"error_description,omitempty"`
+	Error            string `json:"error,omitempty"`
+	StatusMessage    string `json:"status_message,omitempty"`
+	StatusCode       string `json:"status_code,omitempty"`
 }
 
 type ListTransactionsResponse struct {

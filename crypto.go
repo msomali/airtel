@@ -62,7 +62,7 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	return *res, nil
 }
 
-func generateEncryptedKey(apiKey, pubKey string) (string, error) {
+func PinEncryption(pin string, pubKey string) (string, error) {
 
 	decodedBase64, err := base64.StdEncoding.DecodeString(pubKey)
 	if err != nil {
@@ -80,7 +80,7 @@ func generateEncryptedKey(apiKey, pubKey string) (string, error) {
 		return "", fmt.Errorf("public key parsed is not an RSA public key : %w", err)
 	}
 
-	msg := []byte(apiKey)
+	msg := []byte(pin)
 
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
 

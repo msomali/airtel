@@ -3,6 +3,7 @@ package http
 import (
 	"context"
 	"fmt"
+	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/internal"
 	"net/http"
@@ -14,6 +15,8 @@ type (
 	Client struct {
 		BaseURL string
 		Port    uint64
+		conf    *airtel.Config
+		adapter api.RequestAdapter
 		base    *internal.BaseClient
 	}
 )
