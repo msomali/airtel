@@ -2,8 +2,8 @@ package airtel
 
 import (
 	"context"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
 type (

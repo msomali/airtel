@@ -4,8 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"github.com/techcraftlabs/airtel/pkg/models"
 	"net/http"
 )
 

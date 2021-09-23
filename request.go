@@ -15,6 +15,7 @@ const (
 	PushEnquiryEndpoint        = "/standard/v1/payments/"
 	DisbursementEndpoint       = "/standard/v1/disbursements/"
 	DisbursmentEnquiryEndpoint = "/standard/v1/disbursements/"
+	TransactionSummaryEndpoint = "/merchant/v1/transactions"
 	defaultGrantType           = "client_credentials"
 	CollectionAPIName          = "collection"
 	DisbursementAPIName        = "disbursement"
@@ -159,6 +160,12 @@ func requestURL(env Environment, requestType RequestType) string {
 			return fmt.Sprintf("%s%s", BaseURLStaging, DisbursementEndpoint)
 		}
 		return fmt.Sprintf("%s%s", BaseURLProduction, DisbursementEndpoint)
+
+	case TransactionSummary:
+		if env == STAGING {
+			return fmt.Sprintf("%s%s", BaseURLStaging, TransactionSummaryEndpoint)
+		}
+		return fmt.Sprintf("%s%s", BaseURLProduction,TransactionSummaryEndpoint)
 	}
 	return ""
 

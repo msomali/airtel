@@ -3,8 +3,8 @@ package api
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
 var _ RequestAdapter = (*ReqAdapter)(nil)

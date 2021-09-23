@@ -5,6 +5,7 @@ import (
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/internal"
+	"github.com/techcraftlabs/airtel/internal/models"
 )
 
 var _ api.Service = (*Client)(nil)
@@ -23,6 +24,10 @@ type (
 		airtel     *airtel.Client
 	}
 )
+
+func (c *Client) Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error) {
+	return c.airtel.Summary(ctx,params)
+}
 
 func NewClient(conf *Config, client *airtel.Client) *Client {
 

@@ -2,7 +2,7 @@ package airtel
 
 import (
 	"github.com/techcraftlabs/airtel/internal"
-	"github.com/techcraftlabs/airtel/pkg/models"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"strings"
 	"time"
 )

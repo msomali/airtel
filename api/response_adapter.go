@@ -1,7 +1,7 @@
 package api
 
 import (
-	"github.com/techcraftlabs/airtel/pkg/models"
+	"github.com/techcraftlabs/airtel/internal/models"
 )
 
 var (

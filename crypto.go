@@ -7,7 +7,7 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
-	"github.com/techcraftlabs/airtel/pkg/models"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"time"
 )
 

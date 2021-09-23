@@ -4,10 +4,8 @@ import (
 	"context"
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/api/http"
-	"github.com/techcraftlabs/airtel/pkg/countries"
-	"github.com/techcraftlabs/airtel/pkg/models"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"time"
 )
 
@@ -44,38 +42,52 @@ func main() {
 
 	apiClient := http.NewClient(apiConfig, airtelClient)
 
-	req := api.PushPayRequest{
-		Reference:          "this is a test",
-		SubscriberCountry:  countries.TANZANIA,
-		SubscriberMsisdn:   "765992153",
-		TransactionAmount:  500,
-		TransactionCountry: countries.TANZANIA,
-		TransactionID:      fmt.Sprintf("%v", time.Now().UnixNano()),
+	//req := api.PushPayRequest{
+	//	Reference:          "this is a test",
+	//	SubscriberCountry:  countries.TANZANIA,
+	//	SubscriberMsisdn:   "1783839412",
+	//	TransactionAmount:  6000000,
+	//	TransactionCountry: countries.TANZANIA,
+	//	TransactionID:      fmt.Sprintf("%v", time.Now().UnixNano()),
+	//}
+	//fmt.Printf("perform push pay\n")
+	//pushPayResponse, err := apiClient.Push(context.TODO(), req)
+	//if err != nil {
+	//	fmt.Printf("error %v\n", err)
+	//	return
+	//}
+	//
+	//fmt.Printf("pushpay response: %v\n", pushPayResponse)
+
+	//req2 := api.DisburseRequest{
+	//	ID:                   fmt.Sprintf("%v", time.Now().UnixNano()),
+	//	MSISDN:               "783839412",
+	//	Amount:               3000,
+	//	Reference:            "test request",
+	//	CountryOfTransaction: countries.TANZANIA,
+	//}
+	//
+	//fmt.Printf("Performing Disbursement")
+	//disburseResponse, err := apiClient.Disburse(context.TODO(), req2)
+	//if err != nil {
+	//	fmt.Printf("error %v\n", err)
+	//	return
+	//}
+	//
+	//fmt.Printf("disburse response: %v\n", disburseResponse)
+	params := airtel.Params{
+		From:   time.Now().UnixNano(),
+		To:     time.Now().UnixNano(),
+		Limit:  4,
+		Offset: 1,
 	}
-	fmt.Printf("perform push pay\n")
-	pushPayResponse, err := apiClient.Push(context.TODO(), req)
+	resp, err := apiClient.Summary(context.TODO(),params)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
 		return
 	}
 
-	fmt.Printf("pushpay response: %v\n", pushPayResponse)
+	fmt.Printf("summary response: %v\n", resp)
 
-	req2 := api.DisburseRequest{
-		ID:                   fmt.Sprintf("%v", time.Now().UnixNano()),
-		MSISDN:               "765992153",
-		Amount:               500,
-		Reference:            "test request",
-		CountryOfTransaction: countries.TANZANIA,
-	}
-
-	fmt.Printf("Performing Disbursement")
-	disburseResponse, err := apiClient.Disburse(context.TODO(), req2)
-	if err != nil {
-		fmt.Printf("error %v\n", err)
-		return
-	}
-
-	fmt.Printf("disburse response: %v\n", disburseResponse)
 
 }

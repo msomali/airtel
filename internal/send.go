@@ -12,6 +12,10 @@ import (
 	"strings"
 )
 
+
+const errStatusCodeMargin = 400
+var DoErr = errors.New("result code is above or equal to 400")
+
 func (client *BaseClient) Do(ctx context.Context, rn string, request *Request, body interface{}) (*Response, error) {
 
 	var (
@@ -115,6 +119,9 @@ func (client *BaseClient) Do(ctx context.Context, rn string, request *Request, b
 		}
 	}
 
+	if !isOK{
+		response.Error = DoErr
+	}
 	return response, nil
 
 }

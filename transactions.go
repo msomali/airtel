@@ -3,8 +3,9 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/pkg/models"
-	"time"
+	"github.com/techcraftlabs/airtel/internal"
+	"github.com/techcraftlabs/airtel/internal/models"
+	"net/http"
 )
 
 type (
@@ -24,37 +25,49 @@ type (
 	}
 )
 
+func queryParamsOptions(params Params, m map[string]string) internal.RequestOption {
+	from, to, limit, offset := params.From, params.To, params.Limit, params.Offset
+	if from > 0 {
+		m["from"] = fmt.Sprintf("%d", from)
+	}
+	if to > 0 {
+		m["to"] = fmt.Sprintf("%d", to)
+	}
+	if limit > 0 {
+		m["limit"] = fmt.Sprintf("%d", limit)
+	}
+	if offset > 0 {
+		m["offset"] = fmt.Sprintf("%d", offset)
+	}
+
+	return internal.WithQueryParams(m)
+}
+
 func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransactionsResponse, error) {
 
-	//?from=4&to=7&offset=4&limit=8
-	queryString := fmt.Sprintf("?from=%d&to=%d&limit=%d&offset=%d", params.From, params.To, params.Limit, params.Offset)
-	fmt.Printf("query string: %s\n", queryString)
-
-	var token string
-	if *c.token == "" {
-		str, err := c.Token(ctx)
-		if err != nil {
-			return models.ListTransactionsResponse{}, err
-		}
-		token = fmt.Sprintf("%s", str.AccessToken)
-	}
-	//Add Auth Header
-	if *c.token != "" {
-		if !c.tokenExpiresAt.IsZero() && time.Until(c.tokenExpiresAt) < (60*time.Second) {
-			if _, err := c.Token(ctx); err != nil {
-				return models.ListTransactionsResponse{}, err
-			}
-		}
-		token = *c.token
-	}
-	req, err := createInternalRequest("", c.Conf.Environment, AccountBalance, token, nil, "")
+	token, err := c.checkToken(ctx)
 	if err != nil {
 		return models.ListTransactionsResponse{}, err
 	}
 
+	var opts []internal.RequestOption
+
+	hs := map[string]string{
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"Authorization": fmt.Sprintf("Bearer %s", token),
+	}
+	queryMap := make(map[string]string, 4)
+	queryMapOpt := queryParamsOptions(params,queryMap)
+	headersOpt := internal.WithRequestHeaders(hs)
+	opts = append(opts, headersOpt, queryMapOpt)
+
+	reqUrl := requestURL(c.Conf.Environment, TransactionSummary)
+	req := internal.NewRequest(http.MethodGet, reqUrl, nil, opts...)
+
 	res := new(models.ListTransactionsResponse)
 
-	_, err = c.base.Do(ctx, "check balance", req, res)
+	_, err = c.base.Do(ctx, "transaction summary", req, res)
 	if err != nil {
 		return models.ListTransactionsResponse{}, err
 	}

@@ -4,8 +4,7 @@ import (
 	"context"
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
-	"github.com/techcraftlabs/airtel/pkg/countries"
-	"github.com/techcraftlabs/airtel/pkg/models"
+	"github.com/techcraftlabs/airtel/internal/models"
 	"net/http"
 )
 
@@ -21,18 +20,18 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	if err != nil {
 		return models.AirtelPushResponse{}, err
 	}
-	countryName := request.Transaction.Country
-	country, err := countries.GetByCode(countryName)
-	if err != nil {
-		return models.AirtelPushResponse{}, err
-	}
+
+	transaction := request.Transaction
+	countryCodeName := transaction.Country
+	currencyCodeName := transaction.Currency
+
 	var opts []internal.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
 		"Accept":        "*/*",
-		"X-Country":     country.CodeName,
-		"X-Currency":    country.CurrencyCode,
+		"X-Country":     countryCodeName,
+		"X-Currency":    currencyCodeName,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
