@@ -48,5 +48,34 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 }
 
 func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
-	panic("")
+	token, err := c.checkToken(ctx)
+	if err != nil {
+		return models.AirtelDisburseEnquiryResponse{}, err
+	}
+
+	countryName := request.CountryOfTransaction
+	country, err := countries.GetByName(countryName)
+	if err != nil {
+		return models.AirtelDisburseEnquiryResponse{}, err
+	}
+	var opts []internal.RequestOption
+
+	hs := map[string]string{
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
+	}
+	headersOpt := internal.WithRequestHeaders(hs)
+	endpointOption := internal.WithEndpoint(request.ID)
+	opts = append(opts, headersOpt,endpointOption)
+	reqUrl := requestURL(c.Conf.Environment, DisbursementEnquiry)
+	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
+	res := new(models.AirtelDisburseEnquiryResponse)
+	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)
+	if err != nil {
+		return models.AirtelDisburseEnquiryResponse{}, err
+	}
+	return *res, nil
 }

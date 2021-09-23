@@ -165,7 +165,7 @@ func requestURL(env Environment, requestType RequestType) string {
 		if env == STAGING {
 			return fmt.Sprintf("%s%s", BaseURLStaging, TransactionSummaryEndpoint)
 		}
-		return fmt.Sprintf("%s%s", BaseURLProduction,TransactionSummaryEndpoint)
+		return fmt.Sprintf("%s%s", BaseURLProduction, TransactionSummaryEndpoint)
 	}
 	return ""
 

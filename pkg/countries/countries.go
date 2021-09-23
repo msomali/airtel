@@ -66,9 +66,9 @@ const (
 
 type (
 	Country struct {
-		Name     string
-		CodeName string
-		Currency string
+		Name         string
+		CodeName     string
+		Currency     string
 		CurrencyCode string
 	}
 )
@@ -95,7 +95,6 @@ func GetByName(name string) (Country, error) {
 
 	return Country{}, fmt.Errorf("error: the country %s is not supported", name)
 }
-
 
 func List() []Country {
 

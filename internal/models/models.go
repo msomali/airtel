@@ -47,7 +47,8 @@ type AirtelPushResponse struct {
 }
 
 type AirtelRefundRequest struct {
-	Transaction struct {
+	CountryOfTransaction string `json:"-"`
+	Transaction          struct {
 		AirtelMoneyID string `json:"airtel_money_id"`
 	} `json:"transaction"`
 }
@@ -71,7 +72,8 @@ type AirtelRefundResponse struct {
 	StatusCode       string `json:"status_code,omitempty"`
 }
 type AirtelPushEnquiryRequest struct {
-	ID string `json:"id"`
+	ID                   string `json:"id"`
+	CountryOfTransaction string `json:"country"`
 }
 
 type AirtelPushEnquiryResponse struct {
@@ -180,6 +182,7 @@ type AirtelDisburseResponse struct {
 }
 
 type AirtelDisburseEnquiryRequest struct {
+	CountryOfTransaction string
 	ID string `json:"id"`
 }
 

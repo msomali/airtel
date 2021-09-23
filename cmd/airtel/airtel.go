@@ -81,13 +81,12 @@ func main() {
 		Limit:  4,
 		Offset: 1,
 	}
-	resp, err := apiClient.Summary(context.TODO(),params)
+	resp, err := apiClient.Summary(context.TODO(), params)
 	if err != nil {
 		fmt.Printf("error %v\n", err)
 		return
 	}
 
 	fmt.Printf("summary response: %v\n", resp)
-
 
 }

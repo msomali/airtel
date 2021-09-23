@@ -26,7 +26,7 @@ type (
 )
 
 func (c *Client) Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error) {
-	return c.airtel.Summary(ctx,params)
+	return c.airtel.Summary(ctx, params)
 }
 
 func NewClient(conf *Config, client *airtel.Client) *Client {

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/pkg/countries"
 	"net/http"
 )
 
@@ -45,9 +46,6 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	if err != nil {
 		return models.AirtelPushResponse{}, err
 	}
-	if err != nil {
-		return models.AirtelPushResponse{}, err
-	}
 
 	res := new(models.AirtelPushResponse)
 	_, err = c.base.Do(ctx, "ussd push", req, res)
@@ -58,11 +56,77 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 }
 
 func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest) (models.AirtelRefundResponse, error) {
-	panic("")
+	country, err := countries.GetByName(request.CountryOfTransaction)
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+	token, err := c.checkToken(ctx)
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+	var opts []internal.RequestOption
+	hs := map[string]string{
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
+	}
+	headersOpt := internal.WithRequestHeaders(hs)
+	opts = append(opts, headersOpt)
+	reqUrl := requestURL(c.Conf.Environment, Refund)
+
+	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
+
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+
+	res := new(models.AirtelRefundResponse)
+	_, err = c.base.Do(ctx, "refund", req, res)
+	if err != nil {
+		return models.AirtelRefundResponse{}, err
+	}
+	return *res, nil
+
 }
 
 func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest) (models.AirtelPushEnquiryResponse, error) {
-	panic("")
+
+	country, err := countries.GetByName(request.CountryOfTransaction)
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+	token, err := c.checkToken(ctx)
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+	var opts []internal.RequestOption
+	hs := map[string]string{
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
+	}
+	headersOpt := internal.WithRequestHeaders(hs)
+	endpointOpt := internal.WithEndpoint(request.ID)
+	opts = append(opts, headersOpt, endpointOpt)
+
+	reqUrl := requestURL(c.Conf.Environment, PushEnquiry)
+
+	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
+
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+
+	res := new(models.AirtelPushEnquiryResponse)
+	_, err = c.base.Do(ctx, "ussd push enquiry", req, res)
+	if err != nil {
+		return models.AirtelPushEnquiryResponse{}, err
+	}
+	return *res, nil
 }
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {

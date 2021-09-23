@@ -58,7 +58,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 	queryMap := make(map[string]string, 4)
-	queryMapOpt := queryParamsOptions(params,queryMap)
+	queryMapOpt := queryParamsOptions(params, queryMap)
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt, queryMapOpt)
 

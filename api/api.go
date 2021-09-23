@@ -34,8 +34,6 @@ type (
 		CountryOfTransaction string
 	}
 
-
-
 	DisburseResponse struct {
 		ID               string `json:"id,omitempty"`
 		Reference        string `json:"reference,omitempty"`
@@ -51,6 +49,6 @@ type (
 	Service interface {
 		Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error)
 		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
-		Summary(ctx context.Context,params airtel.Params)(models.ListTransactionsResponse,error)
+		Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error)
 	}
 )
