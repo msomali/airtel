@@ -19,26 +19,28 @@ type responseAdapter struct {
 
 func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) (DisburseResponse, error) {
 
-	if response.Data.Transaction.AirtelMoneyID != "" {
-		transaction := response.Data.Transaction
-		status := response.Status
-		return DisburseResponse{
-			ID:            transaction.ID,
-			Reference:     transaction.ReferenceID,
-			AirtelMoneyID: transaction.AirtelMoneyID,
-			ResultCode:    status.ResultCode,
-			Success:       status.Success,
-			StatusMessage: status.Message,
-			StatusCode:    status.Code,
-		}, nil
-	}
-	resp := DisburseResponse{
-		ErrorDescription: response.ErrorDescription,
-		Error:            response.Error,
-		StatusMessage:    response.StatusMessage,
-		StatusCode:       response.StatusCode,
-	}
+	isErr := response.Error == "" && response.ErrorDescription == ""
+	if isErr {
+		resp := DisburseResponse{
+			ErrorDescription: response.ErrorDescription,
+			Error:            response.Error,
+			StatusMessage:    response.StatusMessage,
+			StatusCode:       response.StatusCode,
+		}
 
-	return resp, nil
+		return resp, nil
+	}
+	transaction := response.Data.Transaction
+	status := response.Status
+
+	return DisburseResponse{
+		ID:            transaction.ID,
+		Reference:     transaction.ReferenceID,
+		AirtelMoneyID: transaction.AirtelMoneyID,
+		ResultCode:    status.ResultCode,
+		Success:       status.Success,
+		StatusMessage: status.Message,
+		StatusCode:    status.Code,
+	}, nil
+
 }
-

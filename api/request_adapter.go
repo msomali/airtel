@@ -9,12 +9,39 @@ import (
 var _ RequestAdapter = (*requestAdapter)(nil)
 
 type RequestAdapter interface {
+	ToPushPayRequest(request PushPayRequest)models.AirtelPushRequest
 	ToDisburseRequest(request DisburseRequest) (models.AirtelDisburseRequest, error)
 }
 
 
 type requestAdapter struct {
 	conf *airtel.Config
+}
+
+func (r *requestAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest {
+	return models.AirtelPushRequest{
+		Reference: request.Reference,
+		Subscriber: struct {
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			Msisdn   string `json:"msisdn"`
+		}{
+			Country:  request.SubscriberCountry,
+			Currency: request.SubscriberCurrency,
+			Msisdn:   request.SubscriberMsisdn,
+		},
+		Transaction: struct {
+			Amount   int    `json:"amount"`
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			ID       string `json:"id"`
+		}{
+			Amount:   request.TransactionAmount,
+			Country:  request.TransactionCountry,
+			Currency: request.TransactionCurrency,
+			ID:       request.TransactionID,
+		},
+	}
 }
 
 func (r *requestAdapter) ToDisburseRequest(request DisburseRequest) (models.AirtelDisburseRequest, error) {
@@ -38,6 +65,5 @@ func (r *requestAdapter) ToDisburseRequest(request DisburseRequest) (models.Airt
 			ID:     request.ID,
 		},
 	}
-
 	return req, nil
 }

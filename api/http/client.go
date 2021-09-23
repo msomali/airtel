@@ -13,11 +13,12 @@ var _ api.Service = (*Client)(nil)
 
 type (
 	Client struct {
-		BaseURL string
-		Port    uint64
-		conf    *airtel.Config
-		adapter api.RequestAdapter
-		base    *internal.BaseClient
+		BaseURL    string
+		Port       uint64
+		conf       *airtel.Config
+		reqAdapter api.RequestAdapter
+		resAdapter api.ResponseAdapter
+		base       *internal.BaseClient
 	}
 )
 

@@ -5,6 +5,20 @@ import (
 )
 
 type (
+	PushPayRequest struct {
+		Reference           string
+		SubscriberCountry   string
+		SubscriberCurrency  string
+		SubscriberMsisdn    string
+		TransactionAmount   int
+		TransactionCountry  string
+		TransactionCurrency string
+		TransactionID       string
+	}
+
+	PushPayResponse struct {
+
+	}
 	DisburseRequest struct {
 		ID        string
 		MSISDN    string
@@ -25,7 +39,7 @@ type (
 	}
 
 	Service2 interface {
+		Push(ctx context.Context, request PushPayRequest)(PushPayResponse,error)
 		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
 	}
 )
-
