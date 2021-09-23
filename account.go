@@ -16,7 +16,7 @@ func (c *Client) Balance(ctx context.Context) (models.AirtelBalanceEnquiryRespon
 	if err != nil{
 		return models.AirtelBalanceEnquiryResponse{}, err
 	}
-	req, err := createInternalRequest("", c.conf.Environment, AccountBalance, token, nil, "")
+	req, err := createInternalRequest("", c.Conf.Environment, AccountBalance, token, nil, "")
 	if err != nil {
 		return models.AirtelBalanceEnquiryResponse{}, err
 	}

@@ -1,12 +1,11 @@
 package api
 
 import (
-	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
 var (
-	_ ResponseAdapter = (*responseAdapter)(nil)
+	_ ResponseAdapter = (*ResAdapter)(nil)
 )
 
 type ResponseAdapter interface {
@@ -14,11 +13,10 @@ type ResponseAdapter interface {
 	ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse
 }
 
-type responseAdapter struct {
-	conf *airtel.Config
+type ResAdapter struct {
 }
 
-func (r *responseAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
+func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
 
 	isErr := response.Error == "" && response.ErrorDescription == ""
 	if isErr {
@@ -45,7 +43,7 @@ func (r *responseAdapter) ToPushPayResponse(response models.AirtelPushResponse) 
 	}
 }
 
-func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse {
+func (r *ResAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse {
 
 	isErr := response.Error == "" && response.ErrorDescription == ""
 	if isErr {

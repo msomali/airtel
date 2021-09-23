@@ -19,7 +19,7 @@ func (c *Client) UserEnquiry(ctx context.Context, msisdn string) (models.AirtelU
 		return models.AirtelUserEnquiryResponse{}, err
 	}
 
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, UserEnquiry, token, nil, msisdn)
+	req, err := createInternalRequest(countries.TANZANIA, c.Conf.Environment, UserEnquiry, token, nil, msisdn)
 	if err != nil {
 		return models.AirtelUserEnquiryResponse{}, err
 	}

@@ -39,11 +39,11 @@ func (c *Client) checkToken(ctx context.Context)(string,error)  {
 
 func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	body := models.AirtelAuthRequest{
-		ClientID:     c.conf.ClientID,
-		ClientSecret: c.conf.Secret,
+		ClientID:     c.Conf.ClientID,
+		ClientSecret: c.Conf.Secret,
 		GrantType:    defaultGrantType,
 	}
-	req, err := createInternalRequest("", c.conf.Environment, Authorization, "", body, "")
+	req, err := createInternalRequest("", c.Conf.Environment, Authorization, "", body, "")
 	if err != nil {
 		return models.AirtelAuthResponse{}, err
 	}

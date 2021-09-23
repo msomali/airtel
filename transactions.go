@@ -47,7 +47,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 		}
 		token = *c.token
 	}
-	req, err := createInternalRequest("", c.conf.Environment, AccountBalance, token, nil, "")
+	req, err := createInternalRequest("", c.Conf.Environment, AccountBalance, token, nil, "")
 	if err != nil {
 		return models.ListTransactionsResponse{}, err
 	}

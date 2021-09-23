@@ -33,17 +33,25 @@ type (
 	}
 
 	Client struct {
-		baseURL          string
-		conf             *Config
-		base             *internal.BaseClient
+		baseURL string
+		Conf    *Config
+		base    *internal.BaseClient
 		token            *string
 		tokenExpiresAt   time.Time
-		pushCallbackFunc PushCallbackFunc
+		pushCallbackFunc PushCallbackHandler
+
 	}
 
+	PushCallbackHandler interface {
+		Handle(request models.AirtelCallbackRequest) error
+	}
 	PushCallbackFunc func(request models.AirtelCallbackRequest) error
 
 )
+
+func (pf PushCallbackFunc)Handle(request models.AirtelCallbackRequest) error {
+	return pf(request)
+}
 
 func (config *Config)SetAllowedCountries(apiName string, countries []string)  {
 	if config.AllowedCountries == nil{
@@ -73,7 +81,7 @@ func checkIfCountryIsAllowed(api string, country string, allCountries map[string
 	return contains(a, country)
 }
 
-func NewClient(config *Config, pushCallbackFunc PushCallbackFunc, debugMode bool) *Client {
+func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
 	if config.AllowedCountries == nil{
 		m := make(map[string][]string)
 		config.AllowedCountries = m
@@ -102,7 +110,7 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackFunc, debugMode bool
 	url := *baseURL
 	return &Client{
 		baseURL:          url,
-		conf:             config,
+		Conf:             config,
 		base:             base,
 		token:            token,
 		pushCallbackFunc: pushCallbackFunc,

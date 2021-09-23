@@ -28,12 +28,12 @@ func add(svc api.Service) *clix.Command {
 		Before:      beforeAddFunc,
 		After:       afterAddFunc,
 		Action: func(context *clix.Context) error {
-			res, err := svc.Add(10, 20)
-			if err != nil {
-				return err
-			}
-
-			fmt.Printf("answer: %v\n", res)
+			//res, err := svc.Add(10, 20)
+			//if err != nil {
+			//	return err
+			//}
+			//
+			//fmt.Printf("answer: %v\n", res)
 			return nil
 		},
 		OnUsageError: onAddErrFunc,
@@ -51,11 +51,11 @@ func div(svc api.Service) *clix.Command {
 		Before:      beforeDivFunc,
 		After:       afterDivFunc,
 		Action: func(context *clix.Context) error {
-			res, err := svc.Divide(100, 0)
-			if err != nil {
-				return err
-			}
-			fmt.Printf("answer: %v\n", res)
+			//res, err := svc.Divide(100, 0)
+			//if err != nil {
+			//	return err
+			//}
+			//fmt.Printf("answer: %v\n", res)
 			return nil
 		},
 		OnUsageError: onDivErrFunc,
@@ -119,7 +119,7 @@ func authors(auth ...*clix.Author) []*clix.Author {
 }
 
 func New(base string, port uint64) *App {
-	client := http.NewClient(base, port)
+	client := http.NewClient(nil,nil)
 	author1 := &clix.Author{
 		Name:  "Pius Alfred",
 		Email: "me.pius1102@gmail.com",

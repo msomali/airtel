@@ -39,7 +39,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts,headersOpt)
 
-	reqUrl := requestURL(c.conf.Environment,USSDPush)
+	reqUrl := requestURL(c.Conf.Environment,USSDPush)
 
 	req := internal.NewRequest(http.MethodPost,reqUrl,request,opts...)
 
@@ -76,7 +76,7 @@ func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Req
 	reqBody := *body
 
 	//todo: check the hash if it is OK
-	err = c.pushCallbackFunc(reqBody)
+	err = c.pushCallbackFunc.Handle(reqBody)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return

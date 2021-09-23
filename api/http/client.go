@@ -26,10 +26,14 @@ type (
 
 
 func NewClient(conf *Config, client *airtel.Client) *Client {
+
+	airtelConf := client.Conf
 	return &Client{
-		conf : conf,
-		airtel: client,
-		base:    internal.NewBaseClient(internal.WithDebugMode(conf.DebugMode)),
+		conf:       conf,
+		reqAdapter: &api.ReqAdapter{Conf: airtelConf},
+		resAdapter: &api.ResAdapter{},
+		base:       internal.NewBaseClient(internal.WithDebugMode(conf.DebugMode)),
+		airtel:     client,
 	}
 }
 

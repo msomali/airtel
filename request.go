@@ -41,7 +41,7 @@ type (
 
 func (c *Client) request(ctx context.Context,requestType RequestType, body interface{}, opts... internal.RequestOption)  (*internal.Request,error){
 
-	reqUrl := requestURL(c.conf.Environment,requestType)
+	reqUrl := requestURL(c.Conf.Environment,requestType)
 
 	switch requestType {
 	case USSDPush:

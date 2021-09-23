@@ -6,7 +6,7 @@ import (
 	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
-var _ RequestAdapter = (*requestAdapter)(nil)
+var _ RequestAdapter = (*ReqAdapter)(nil)
 
 type RequestAdapter interface {
 	ToPushPayRequest(request PushPayRequest)models.AirtelPushRequest
@@ -14,11 +14,12 @@ type RequestAdapter interface {
 }
 
 
-type requestAdapter struct {
-	conf *airtel.Config
+type ReqAdapter struct {
+	Conf *airtel.Config
 }
 
-func (r *requestAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest {
+
+func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest {
 	return models.AirtelPushRequest{
 		Reference: request.Reference,
 		Subscriber: struct {
@@ -44,8 +45,8 @@ func (r *requestAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelP
 	}
 }
 
-func (r *requestAdapter) ToDisburseRequest(request DisburseRequest) (models.AirtelDisburseRequest, error) {
-	encryptedPin, err := airtel.PinEncryption(r.conf.DisbursePIN, r.conf.PublicKey)
+func (r *ReqAdapter) ToDisburseRequest(request DisburseRequest) (models.AirtelDisburseRequest, error) {
+	encryptedPin, err := airtel.PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
 		return models.AirtelDisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}

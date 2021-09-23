@@ -1,13 +1,8 @@
 package internal
 
 import (
-	"bytes"
-	"context"
 	"crypto/tls"
 	"crypto/x509"
-	"encoding/json"
-	"encoding/xml"
-	"errors"
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal/io"
 	stdio "io"
@@ -92,79 +87,6 @@ func (client *BaseClient) logOut(name string, request *http.Request, response *h
 	}
 
 	return
-}
-
-func (client *BaseClient) Send(ctx context.Context, rn string, request *Request, v interface{}) error {
-	var (
-		_, cancel = context.WithTimeout(ctx, defaultTimeout)
-	)
-
-	defer cancel()
-	var req *http.Request
-	var res *http.Response
-
-	var reqBodyBytes []byte
-	var resBodyBytes []byte
-	defer func(debug bool) {
-		if debug {
-			req.Body = stdio.NopCloser(bytes.NewBuffer(reqBodyBytes))
-			name := strings.ToUpper(rn)
-			if res == nil {
-				client.logOut(name, req, nil)
-				return
-			}
-			res.Body = stdio.NopCloser(bytes.NewBuffer(resBodyBytes))
-			client.logOut(name, req, res)
-
-		}
-	}(client.DebugMode)
-
-	//creates http request with context
-	req, err := NewRequestWithContext(ctx, request)
-
-	if err != nil {
-		return err
-	}
-
-	if req.Body != nil {
-		reqBodyBytes, _ = stdio.ReadAll(req.Body)
-	}
-
-	if v == nil {
-		return errors.New("v interface can not be empty")
-	}
-
-	req.Body = stdio.NopCloser(bytes.NewBuffer(reqBodyBytes))
-	res, err = client.Http.Do(req)
-
-	if err != nil {
-		return err
-	}
-
-	if res.Body != nil {
-		resBodyBytes, _ = stdio.ReadAll(res.Body)
-	}
-
-	contentType := res.Header.Get("Content-Type")
-
-	payloadType := categorizeContentType(contentType)
-
-	if payloadType == JsonPayload {
-		if err := json.NewDecoder(bytes.NewBuffer(resBodyBytes)).Decode(v); err != nil {
-			if err != stdio.EOF {
-				return err
-			}
-		}
-	}
-
-	if payloadType == XmlPayload || payloadType == TextXml {
-		if err := xml.NewDecoder(bytes.NewBuffer(resBodyBytes)).Decode(v); err != nil {
-			if !errors.Is(err, stdio.EOF) {
-				return err
-			}
-		}
-	}
-	return nil
 }
 
 // WithDebugMode set debug mode to true or false
