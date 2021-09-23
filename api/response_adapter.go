@@ -18,7 +18,7 @@ type ResAdapter struct {
 
 func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
 
-	isErr := response.Error == "" && response.ErrorDescription == ""
+	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {
 		resp := PushPayResponse{
 			ErrorDescription: response.ErrorDescription,
@@ -45,7 +45,7 @@ func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushP
 
 func (r *ResAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse {
 
-	isErr := response.Error == "" && response.ErrorDescription == ""
+	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {
 		resp := DisburseResponse{
 			ErrorDescription: response.ErrorDescription,

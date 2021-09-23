@@ -33,7 +33,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 		"Accept":       "*/*",
 		"X-Country":    country.Code,
 		"X-Currency":   country.CurrencyCode,
-		"Token":        fmt.Sprintf("Bearer %s", token),
+		"Authorization":        fmt.Sprintf("Bearer %s", token),  
 	}
 
 	headersOpt := internal.WithRequestHeaders(hs)

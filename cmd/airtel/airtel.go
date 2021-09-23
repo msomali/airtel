@@ -21,10 +21,10 @@ func callbacker()airtel.PushCallbackFunc{
 func main() {
 
 	pubKey := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
-
+//	pubKey2 := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
 	config := &airtel.Config{
 		AllowedCountries:   nil,
-		DisbursePIN:        "",
+		DisbursePIN:        "4094",
 		CallbackPrivateKey: "",
 		CallbackAuth:       false,
 		PublicKey:          pubKey,
@@ -47,12 +47,12 @@ func main() {
 
 	req := api.PushPayRequest{
 		Reference:           "this is a test transaction",
-		SubscriberCountry:   countries.TANZANIA,
-		SubscriberCurrency:  countries.TANZANIA_CURRENCY,
+		SubscriberCountry:   countries.TANZANIA_CODE,
+		SubscriberCurrency:  countries.TANZANIA_CURRENCY_CODE,
 		SubscriberMsisdn:    "765992153",
 		TransactionAmount:   500,
-		TransactionCountry:  countries.TANZANIA,
-		TransactionCurrency: countries.TANZANIA_CURRENCY,
+		TransactionCountry:  countries.TANZANIA_CODE,
+		TransactionCurrency: countries.TANZANIA_CURRENCY_CODE,
 		TransactionID:       fmt.Sprintf("%v",time.Now().UnixNano()),
 	}
 	pushPayResponse, err := apiClient.Push(context.TODO(), req)
@@ -64,7 +64,7 @@ func main() {
 
 	req2 := api.DisburseRequest{
 		ID:                   fmt.Sprintf("%v",time.Now().UnixNano()),
-		MSISDN:               "65992153",
+		MSISDN:               "765992153",
 		Amount:               500,
 		Reference:            "test request",
 		CountryOfTransaction: countries.TANZANIA,

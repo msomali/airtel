@@ -84,7 +84,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":       "*/*",
 			"X-Country":    country.Code,
 			"X-Currency":   country.CurrencyCode,
-			"Token":        fmt.Sprintf("Bearer %s", token),
+			"Authorization":        fmt.Sprintf("Bearer %s", token),  
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
@@ -97,7 +97,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":       "*/*",
 			"X-Country":    country.Code,
 			"X-Currency":   country.CurrencyCode,
-			"Token":        fmt.Sprintf("Bearer %s", token),
+			"Authorization":        fmt.Sprintf("Bearer %s", token),  
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
@@ -109,7 +109,7 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Accept":       "*/*",
 			"X-Country":    country.Code,
 			"X-Currency":   country.CurrencyCode,
-			"Token":        fmt.Sprintf("Bearer %s", token),
+			"Authorization":        fmt.Sprintf("Bearer %s", token),  
 		}
 
 		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil

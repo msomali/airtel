@@ -36,7 +36,7 @@ const (
 	MALAWI_CODE                     = "MW"
 	UGANDA_CURRENCY_CODE            = "UGX"
 	NIGERIA_CURRENCY_CODE           = "NGN"
-	TANZANIA_CURRENCY_CODE          = "TZN"
+	TANZANIA_CURRENCY_CODE          = "TZS"
 	KENYA_CURRENCY_CODE             = "KES"
 	RWANDA_CURRENCY_CODE            = "RWF"
 	ZAMBIA_CURRENCY_CODE            = "ZMW"
