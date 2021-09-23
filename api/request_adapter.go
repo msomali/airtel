@@ -50,6 +50,7 @@ func (r *requestAdapter) ToDisburseRequest(request DisburseRequest) (models.Airt
 		return models.AirtelDisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}
 	req := models.AirtelDisburseRequest{
+		CountryOfTransaction: request.CountryOfTransaction,
 		Payee: struct {
 			Msisdn string `json:"msisdn"`
 		}{

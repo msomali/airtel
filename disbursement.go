@@ -2,8 +2,11 @@ package airtel
 
 import (
 	"context"
+	"fmt"
+	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/airtel/pkg/models"
+	"net/http"
 )
 
 type DisbursementService interface {
@@ -17,14 +20,31 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 		return models.AirtelDisburseResponse{}, err
 	}
 
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, Disbursement, token, request, "")
+	countryName := request.CountryOfTransaction
+	country, err := countries.Get(countryName)
 	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}
+	var opts []internal.RequestOption
+
+	hs := map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "*/*",
+		"X-Country":    country.Code,
+		"X-Currency":   country.CurrencyCode,
+		"Token":        fmt.Sprintf("Bearer %s", token),
+	}
+
+	headersOpt := internal.WithRequestHeaders(hs)
+	opts = append(opts,headersOpt)
+
+	reqUrl := requestURL(c.conf.Environment,Disbursement)
+
+	req := internal.NewRequest(http.MethodPost,reqUrl,request,opts...)
 
 	res := new(models.AirtelDisburseResponse)
 
-	_, err = c.base.Do(ctx, "ussd push", req, res)
+	_, err = c.base.Do(ctx, "disbursement", req, res)
 	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}
@@ -32,21 +52,23 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 }
 
 func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
-	token, err := c.checkToken(ctx)
-	if err != nil{
-		return models.AirtelDisburseEnquiryResponse{}, err
-	}
+	//token, err := c.checkToken(ctx)
+	//if err != nil{
+	//	return models.AirtelDisburseEnquiryResponse{}, err
+	//}
+	//
+	//req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, DisbursementEnquiry, token, nil, request.ID)
+	//if err != nil {
+	//	return models.AirtelDisburseEnquiryResponse{}, err
+	//}
+	//
+	//res := new(models.AirtelDisburseEnquiryResponse)
+	//
+	//_, err = c.base.Do(ctx, "ussd push", req, res)
+	//if err != nil {
+	//	return models.AirtelDisburseEnquiryResponse{}, err
+	//}
+	//return *res, nil
 
-	req, err := createInternalRequest(countries.TANZANIA, c.conf.Environment, DisbursementEnquiry, token, nil, request.ID)
-	if err != nil {
-		return models.AirtelDisburseEnquiryResponse{}, err
-	}
-
-	res := new(models.AirtelDisburseEnquiryResponse)
-
-	_, err = c.base.Do(ctx, "ussd push", req, res)
-	if err != nil {
-		return models.AirtelDisburseEnquiryResponse{}, err
-	}
-	return *res, nil
+	panic("")
 }

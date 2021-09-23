@@ -2,71 +2,59 @@ package http
 
 import (
 	"context"
-	"fmt"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/internal"
-	"net/http"
 )
 
 var _ api.Service = (*Client)(nil)
 
 type (
-	Client struct {
+	Config struct {
 		BaseURL    string
 		Port       uint64
-		conf       *airtel.Config
+		DebugMode bool
+	}
+	Client struct {
+		conf *Config
 		reqAdapter api.RequestAdapter
 		resAdapter api.ResponseAdapter
 		base       *internal.BaseClient
+		airtel     *airtel.Client
 	}
 )
 
-func NewClient(base string, port uint64) *Client {
+
+func NewClient(conf *Config, client *airtel.Client) *Client {
 	return &Client{
-		BaseURL: base,
-		Port:    port,
-		base:    internal.NewBaseClient(internal.WithDebugMode(true)),
+		conf : conf,
+		airtel: client,
+		base:    internal.NewBaseClient(internal.WithDebugMode(conf.DebugMode)),
 	}
 }
 
-func (c *Client) requestURL(endpoint string) string {
-	return fmt.Sprintf("http://%s:%d/%s", c.BaseURL, c.Port, endpoint)
+func (c *Client) Push(ctx context.Context, request api.PushPayRequest) (api.PushPayResponse, error) {
+	pushRequest := c.reqAdapter.ToPushPayRequest(request)
+	pushResponse, err := c.airtel.Push(ctx,pushRequest)
+	if err != nil{
+		return api.PushPayResponse{}, err
+	}
+	response := c.resAdapter.ToPushPayResponse(pushResponse)
+	return response,nil
 }
 
-func (c *Client) Add(a, b int64) (int64, error) {
-	req := api.Request{
-		A: a,
-		B: b,
-	}
-	request := internal.NewRequest(http.MethodGet, c.requestURL("add"), internal.JsonPayload, req)
-
-	var response api.Response
-	err := c.base.Send(context.TODO(), "add", request, &response)
+func (c *Client) Disburse(ctx context.Context, request api.DisburseRequest) (api.DisburseResponse, error) {
+	disburseRequest, err := c.reqAdapter.ToDisburseRequest(request)
 	if err != nil {
-		return 0, err
+		return api.DisburseResponse{}, err
 	}
 
-	return response.Answer, nil
-}
-
-func (c *Client) Divide(a, b int64) (int64, error) {
-	req := api.Request{
-		A: a,
-		B: b,
-	}
-	request := internal.NewRequest(http.MethodGet, c.requestURL("div"), internal.JsonPayload, req)
-
-	response := new(api.DivResponse)
-	do, err := c.base.Do(context.TODO(), "divide", request, response)
+	disburseResponse, err := c.airtel.Disburse(ctx, disburseRequest)
 	if err != nil {
-		return 0, err
+		return api.DisburseResponse{}, err
 	}
-	//jsonString, _ := do.MarshalJSON()
-	//log.Printf("the response returned by Do is %s\n", string(jsonString))
-	if do.Error != nil {
-		return 0, fmt.Errorf("%s:%s", response.Err, response.Message)
-	}
+	response := c.resAdapter.ToDisburseResponse(disburseResponse)
 
-	return response.Answer, nil
+	return response,nil
 }
+

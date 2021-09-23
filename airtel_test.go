@@ -1,6 +1,11 @@
 package airtel
 
-import "testing"
+import (
+	"context"
+	"github.com/techcraftlabs/airtel/internal"
+	"net/http"
+	"testing"
+)
 
 func Test_getRequestURL(t *testing.T) {
 	type args struct {
@@ -43,8 +48,8 @@ func Test_getRequestURL(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getRequestURL(tt.args.env, tt.args.requestType, tt.args.id...); got != tt.want {
-				t.Errorf("getRequestURL() = %v, want %v", got, tt.want)
+			if got := requestURL(tt.args.env, tt.args.requestType, tt.args.id...); got != tt.want {
+				t.Errorf("requestURL() = %v, want %v", got, tt.want)
 			}
 		})
 	}
@@ -109,6 +114,66 @@ func TestConfig_SetAllowedCountries(t *testing.T) {
 
 	}
 }
+
+func TestWithEndpoint(t *testing.T) {
+	type args struct {
+		url string
+		endpoint string
+	}
+	tests := []struct {
+		name string
+		args args
+		want string
+	}{
+		{
+			name: "normal endpoint",
+			args: args{
+				url: "www.server.com/users",
+				endpoint: "0001",
+			},
+			want: "www.server.com/users/0001",
+		},
+		{
+			name: "uel has /",
+			args: args{
+				url: "www.server.com/users/",
+				endpoint: "0001",
+			},
+			want: "www.server.com/users/0001",
+		},
+		{
+			name: "endpoint has /",
+			args: args{
+				url: "www.server.com/users",
+				endpoint: "/0001",
+			},
+			want: "www.server.com/users/0001",
+		},
+		{
+			name: "both have /",
+			args: args{
+				url: "www.server.com/users/",
+				endpoint: "/0001",
+			},
+			want: "www.server.com/users/0001",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			url, endpoint := tt.args.url, tt.args.endpoint
+			req := internal.NewRequest(http.MethodHead,url,nil,internal.WithEndpoint(endpoint))
+			reqWithCtx, err := internal.NewRequestWithContext(context.TODO(),req)
+			if err != nil{
+				t.Errorf("%v\n",err)
+			}
+			got := reqWithCtx.URL.String()
+			if got != tt.want {
+				t.Errorf("WithEndpoint() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
 
 func TestSomeTypeImplementsSomeInterface(t *testing.T) {
 	// won't compile if SomeType does not implement SomeInterface

@@ -1,26 +1,53 @@
 package api
 
+import (
+	"context"
+)
+
 type (
-	Request struct {
-		A int64 `json:"a"`
-		B int64 `json:"b"`
+	PushPayRequest struct {
+		Reference           string
+		SubscriberCountry   string
+		SubscriberCurrency  string
+		SubscriberMsisdn    string
+		TransactionAmount   int
+		TransactionCountry  string
+		TransactionCurrency string
+		TransactionID       string
 	}
 
-	Response struct {
-		Answer int64 `json:"answer"`
+	PushPayResponse struct {
+		ID     string `json:"id,omitempty"`
+		Status string `json:"status,omitempty"`
+		ResultCode string `json:"result_code,omitempty"`
+		Success    bool   `json:"success,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+	DisburseRequest struct {
+		ID        string
+		MSISDN    string
+		Amount    int
+		Reference string
+		CountryOfTransaction string
 	}
 
-	ErrResponse struct {
-		Err     string `json:"err,omitempty"`
-		Message string `json:"message,omitempty"`
+	DisburseResponse struct {
+		ID               string `json:"id,omitempty"`
+		Reference        string `json:"reference,omitempty"`
+		AirtelMoneyID    string `json:"airtel_money_id,omitempty"`
+		ResultCode       string `json:"result_code,omitempty"`
+		Success          bool   `json:"success,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
 	}
-	DivResponse struct {
-		Answer  int64  `json:"answer,omitempty"`
-		Err     string `json:"err,omitempty"`
-		Message string `json:"message,omitempty"`
-	}
+
 	Service interface {
-		Add(a, b int64) (int64, error)
-		Divide(a, b int64) (int64, error)
+		Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error)
+		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
 	}
 )

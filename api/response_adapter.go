@@ -10,14 +10,42 @@ var (
 )
 
 type ResponseAdapter interface {
-	ToDisburseResponse(response models.AirtelDisburseResponse) (DisburseResponse, error)
+	ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse
+	ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse
 }
 
 type responseAdapter struct {
 	conf *airtel.Config
 }
 
-func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) (DisburseResponse, error) {
+func (r *responseAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
+
+	isErr := response.Error == "" && response.ErrorDescription == ""
+	if isErr {
+		resp := PushPayResponse{
+			ErrorDescription: response.ErrorDescription,
+			Error:            response.Error,
+			StatusMessage:    response.StatusMessage,
+			StatusCode:       response.StatusCode,
+		}
+		return resp
+	}
+
+	transaction := response.Data.Transaction
+	status := response.Status
+	return PushPayResponse{
+		ID:               transaction.ID,
+		Status:           transaction.Status,
+		ResultCode:       status.ResultCode,
+		Success:          status.Success,
+		ErrorDescription:  response.ErrorDescription,
+		Error:            response.Error,
+		StatusMessage:    response.StatusMessage,
+		StatusCode:       response.StatusCode,
+	}
+}
+
+func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse {
 
 	isErr := response.Error == "" && response.ErrorDescription == ""
 	if isErr {
@@ -28,7 +56,7 @@ func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseRespo
 			StatusCode:       response.StatusCode,
 		}
 
-		return resp, nil
+		return resp
 	}
 	transaction := response.Data.Transaction
 	status := response.Status
@@ -41,6 +69,6 @@ func (r *responseAdapter) ToDisburseResponse(response models.AirtelDisburseRespo
 		Success:       status.Success,
 		StatusMessage: status.Message,
 		StatusCode:    status.Code,
-	}, nil
+	}
 
 }
