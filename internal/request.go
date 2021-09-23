@@ -38,7 +38,7 @@ func NewRequest(method, url string, payload interface{}, opts ...RequestOption) 
 		Method:      method,
 		URL:         url,
 		PayloadType: JsonPayload,
-		Endpoint: "",
+		Endpoint:    "",
 		Payload:     payload,
 		Headers:     defaultRequestHeaders,
 	}
@@ -61,7 +61,6 @@ func WithEndpoint(endpoint string) RequestOption {
 		request.Endpoint = endpoint
 	}
 }
-
 
 // WithRequestHeaders replaces all the available headers with new ones
 // WithMoreHeaders appends headers does not replace them
@@ -101,25 +100,25 @@ func (request *Request) AddHeader(key, value string) {
 	request.Headers[key] = value
 }
 
-func appendEndpoint(url string, endpoint string)string{
-	url, endpoint = strings.TrimSpace(url),strings.TrimSpace(endpoint)
-	urlHasSuffix, endpointHasPrefix := strings.HasSuffix(url,"/"),strings.HasPrefix(endpoint,"/")
+func appendEndpoint(url string, endpoint string) string {
+	url, endpoint = strings.TrimSpace(url), strings.TrimSpace(endpoint)
+	urlHasSuffix, endpointHasPrefix := strings.HasSuffix(url, "/"), strings.HasPrefix(endpoint, "/")
 
 	bothTrue := urlHasSuffix == true && endpointHasPrefix == true
 	bothFalse := urlHasSuffix == false && endpointHasPrefix == false
 	notEqual := urlHasSuffix != endpointHasPrefix
 
-	if notEqual{
-		return fmt.Sprintf("%s%s",url,endpoint)
+	if notEqual {
+		return fmt.Sprintf("%s%s", url, endpoint)
 	}
 
-	if bothFalse{
-		return fmt.Sprintf("%s/%s",url,endpoint)
+	if bothFalse {
+		return fmt.Sprintf("%s/%s", url, endpoint)
 	}
 
-	if bothTrue{
-		endp := strings.TrimPrefix(endpoint,"/")
-		return fmt.Sprintf("%s%s",url,endp)
+	if bothTrue {
+		endp := strings.TrimPrefix(endpoint, "/")
+		return fmt.Sprintf("%s%s", url, endp)
 	}
 
 	return ""
@@ -129,8 +128,8 @@ func appendEndpoint(url string, endpoint string)string{
 func NewRequestWithContext(ctx context.Context, request *Request) (req *http.Request, err error) {
 	requestURL := request.URL
 	requestEndpoint := request.Endpoint
-	if requestEndpoint != ""{
-		request.URL = appendEndpoint(requestURL,requestEndpoint)
+	if requestEndpoint != "" {
+		request.URL = appendEndpoint(requestURL, requestEndpoint)
 	}
 	if request.Payload == nil {
 		req, err = http.NewRequestWithContext(ctx, request.Method, request.URL, nil)

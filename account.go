@@ -13,7 +13,7 @@ type (
 
 func (c *Client) Balance(ctx context.Context) (models.AirtelBalanceEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
-	if err != nil{
+	if err != nil {
 		return models.AirtelBalanceEnquiryResponse{}, err
 	}
 	req, err := createInternalRequest("", c.Conf.Environment, AccountBalance, token, nil, "")

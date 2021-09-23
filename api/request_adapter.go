@@ -10,15 +10,13 @@ import (
 var _ RequestAdapter = (*ReqAdapter)(nil)
 
 type RequestAdapter interface {
-	ToPushPayRequest(request PushPayRequest)models.AirtelPushRequest
+	ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest
 	ToDisburseRequest(request DisburseRequest) (models.AirtelDisburseRequest, error)
 }
-
 
 type ReqAdapter struct {
 	Conf *airtel.Config
 }
-
 
 func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushRequest {
 
@@ -31,7 +29,7 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushR
 			Currency string `json:"currency"`
 			Msisdn   string `json:"msisdn"`
 		}{
-			Country:  subCountry.Code,
+			Country:  subCountry.CodeName,
 			Currency: subCountry.CurrencyCode,
 			Msisdn:   request.SubscriberMsisdn,
 		},
@@ -42,7 +40,7 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushR
 			ID       string `json:"id"`
 		}{
 			Amount:   request.TransactionAmount,
-			Country:  transCountry.Code,
+			Country:  transCountry.CodeName,
 			Currency: transCountry.CurrencyCode,
 			ID:       request.TransactionID,
 		},

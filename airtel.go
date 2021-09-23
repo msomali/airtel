@@ -8,53 +8,51 @@ import (
 )
 
 const (
-	PRODUCTION                 Environment = "production"
-	STAGING                    Environment = "staging"
-	BaseURLProduction                      = "https://openapi.airtel.africa"
-	BaseURLStaging                         = "https://openapiuat.airtel.africa"
+	PRODUCTION        Environment = "production"
+	STAGING           Environment = "staging"
+	BaseURLProduction             = "https://openapi.airtel.africa"
+	BaseURLStaging                = "https://openapiuat.airtel.africa"
 )
 
 const (
-	TransactionAPIName  = "transaction"
+	TransactionAPIName = "transaction"
 )
 
 type (
 	Environment string
 
-	Config      struct {
-		AllowedCountries     map[string][]string
-		DisbursePIN          string
-		CallbackPrivateKey   string
-		CallbackAuth         bool
-		PublicKey            string
-		Environment          Environment
-		ClientID             string
-		Secret               string
+	Config struct {
+		AllowedCountries   map[string][]string
+		DisbursePIN        string
+		CallbackPrivateKey string
+		CallbackAuth       bool
+		PublicKey          string
+		Environment        Environment
+		ClientID           string
+		Secret             string
 	}
 
 	Client struct {
-		baseURL string
-		Conf    *Config
-		base    *internal.BaseClient
+		baseURL          string
+		Conf             *Config
+		base             *internal.BaseClient
 		token            *string
 		tokenExpiresAt   time.Time
 		pushCallbackFunc PushCallbackHandler
-
 	}
 
 	PushCallbackHandler interface {
 		Handle(request models.AirtelCallbackRequest) error
 	}
 	PushCallbackFunc func(request models.AirtelCallbackRequest) error
-
 )
 
-func (pf PushCallbackFunc)Handle(request models.AirtelCallbackRequest) error {
+func (pf PushCallbackFunc) Handle(request models.AirtelCallbackRequest) error {
 	return pf(request)
 }
 
-func (config *Config)SetAllowedCountries(apiName string, countries []string)  {
-	if config.AllowedCountries == nil{
+func (config *Config) SetAllowedCountries(apiName string, countries []string) {
+	if config.AllowedCountries == nil {
 		m := make(map[string][]string)
 		config.AllowedCountries = m
 	}
@@ -82,21 +80,21 @@ func checkIfCountryIsAllowed(api string, country string, allCountries map[string
 }
 
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
-	if config.AllowedCountries == nil{
+	if config.AllowedCountries == nil {
 		m := make(map[string][]string)
 		config.AllowedCountries = m
-		config.SetAllowedCountries(CollectionAPIName,[]string{"Tanzania"})
-		config.SetAllowedCountries(DisbursementAPIName,[]string{"Tanzania"})
-		config.SetAllowedCountries(AccountAPIName,[]string{"Tanzania"})
-		config.SetAllowedCountries(KYCAPIName,[]string{"Tanzania"})
-		config.SetAllowedCountries(TransactionAPIName,[]string{"Tanzania"})
+		config.SetAllowedCountries(CollectionAPIName, []string{"Tanzania"})
+		config.SetAllowedCountries(DisbursementAPIName, []string{"Tanzania"})
+		config.SetAllowedCountries(AccountAPIName, []string{"Tanzania"})
+		config.SetAllowedCountries(KYCAPIName, []string{"Tanzania"})
+		config.SetAllowedCountries(TransactionAPIName, []string{"Tanzania"})
 
 	}
 	token := new(string)
 	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
 	baseURL := new(string)
 	env := config.Environment
-	switch env{
+	switch env {
 	case STAGING:
 		*baseURL = BaseURLStaging
 

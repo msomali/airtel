@@ -39,14 +39,14 @@ type (
 	RequestType uint
 )
 
-func (c *Client) request(ctx context.Context,requestType RequestType, body interface{}, opts... internal.RequestOption)  (*internal.Request,error){
+func (c *Client) request(ctx context.Context, requestType RequestType, body interface{}, opts ...internal.RequestOption) (*internal.Request, error) {
 
-	reqUrl := requestURL(c.Conf.Environment,requestType)
+	reqUrl := requestURL(c.Conf.Environment, requestType)
 
 	switch requestType {
 	case USSDPush:
 
-		return internal.NewRequest(http.MethodPost,reqUrl,body, opts...), nil
+		return internal.NewRequest(http.MethodPost, reqUrl, body, opts...), nil
 
 	default:
 		return nil, nil
@@ -73,46 +73,46 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 			"Content-Type": "application/json",
 			"Accept":       "*/*",
 		}
-		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
+		return internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs)), nil
 
 	case USSDPush:
 		fmt.Printf("case ussdpush: the token is %v\n", token)
 
 		reqURL := requestURL(env, USSDPush)
 		hs := map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "*/*",
-			"X-Country":    country.Code,
-			"X-Currency":   country.CurrencyCode,
-			"Authorization":        fmt.Sprintf("Bearer %s", token),  
+			"Content-Type":  "application/json",
+			"Accept":        "*/*",
+			"X-Country":     country.CodeName,
+			"X-Currency":    country.CurrencyCode,
+			"Authorization": fmt.Sprintf("Bearer %s", token),
 		}
 
-		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
+		return internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs)), nil
 
 	case Refund:
 
 		reqURL := requestURL(env, USSDPush)
 		hs := map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "*/*",
-			"X-Country":    country.Code,
-			"X-Currency":   country.CurrencyCode,
-			"Authorization":        fmt.Sprintf("Bearer %s", token),  
+			"Content-Type":  "application/json",
+			"Accept":        "*/*",
+			"X-Country":     country.CodeName,
+			"X-Currency":    country.CurrencyCode,
+			"Authorization": fmt.Sprintf("Bearer %s", token),
 		}
 
-		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
+		return internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs)), nil
 
 	case PushEnquiry:
 		reqURL := requestURL(env, PushEnquiry)
 		hs := map[string]string{
-			"Content-Type": "application/json",
-			"Accept":       "*/*",
-			"X-Country":    country.Code,
-			"X-Currency":   country.CurrencyCode,
-			"Authorization":        fmt.Sprintf("Bearer %s", token),  
+			"Content-Type":  "application/json",
+			"Accept":        "*/*",
+			"X-Country":     country.CodeName,
+			"X-Currency":    country.CurrencyCode,
+			"Authorization": fmt.Sprintf("Bearer %s", token),
 		}
 
-		return internal.NewRequest(http.MethodPost, reqURL,   body, internal.WithRequestHeaders(hs)), nil
+		return internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs)), nil
 
 	case AccountBalance:
 		return nil, err
@@ -126,7 +126,6 @@ func createInternalRequest(countryName string, env Environment, requestType Requ
 
 	return nil, nil
 }
-
 
 func requestURL(env Environment, requestType RequestType) string {
 

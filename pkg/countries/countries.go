@@ -66,9 +66,9 @@ const (
 
 type (
 	Country struct {
-		Name         string
-		Code         string
-		Currency     string
+		Name     string
+		CodeName string
+		Currency string
 		CurrencyCode string
 	}
 )
@@ -100,7 +100,7 @@ func GetByCode(name string) (Country, error) {
 	name = strings.TrimSpace(strings.ToLower(name))
 	countries := List()
 	for _, country := range countries {
-		n := strings.TrimSpace(strings.ToLower(country.Code))
+		n := strings.TrimSpace(strings.ToLower(country.CodeName))
 		if name == n {
 			return country, nil
 		}
@@ -115,96 +115,96 @@ func List() []Country {
 	var (
 		uganda = Country{
 			Name:         UGANDA,
-			Code:         UGANDA_CODE,
+			CodeName:     UGANDA_CODE,
 			Currency:     UGANDA_CURRENCY,
 			CurrencyCode: UGANDA_CURRENCY_CODE,
 		}
 
 		sych = Country{
 			Name:         SEYCHELLES,
-			Code:         SEYCHELLES_CODE,
+			CodeName:     SEYCHELLES_CODE,
 			Currency:     SEYCHELLES_CURRENCY,
 			CurrencyCode: SEYCHELLES_CURRENCY_CODE,
 		}
 
 		brazzaville = Country{
 			Name:         CONGO_BRAZZAVILLE,
-			Code:         CONGO_BRAZZAVILLE_CODE,
+			CodeName:     CONGO_BRAZZAVILLE_CODE,
 			Currency:     CONGO_BRAZZAVILLE_CURRENCY,
 			CurrencyCode: CONGO_BRAZZAVILLE_CURRENCY_CODE,
 		}
 
 		kenya = Country{
 			Name:         KENYA,
-			Code:         KENYA_CODE,
+			CodeName:     KENYA_CODE,
 			Currency:     KENYA_CURRENCY,
 			CurrencyCode: KENYA_CURRENCY_CODE,
 		}
 
 		nigeria = Country{
 			Name:         NIGERIA,
-			Code:         NIGERIA_CODE,
+			CodeName:     NIGERIA_CODE,
 			Currency:     NIGERIA_CURRENCY,
 			CurrencyCode: NIGERIA_CURRENCY_CODE,
 		}
 
 		rwanda = Country{
 			Name:         RWANDA,
-			Code:         RWANDA_CODE,
+			CodeName:     RWANDA_CODE,
 			Currency:     RWANDA_CURRENCY,
 			CurrencyCode: RWANDA_CURRENCY_CODE,
 		}
 
 		niger = Country{
 			Name:         NIGER,
-			Code:         NIGER_CODE,
+			CodeName:     NIGER_CODE,
 			Currency:     NIGER_CURRENCY,
 			CurrencyCode: NIGER_CURRENCY_CODE,
 		}
 
 		chad = Country{
 			Name:         CHAD,
-			Code:         CHAD_CODE,
+			CodeName:     CHAD_CODE,
 			Currency:     CHAD_CURRENCY,
 			CurrencyCode: CHAD_CURRENCY_CODE,
 		}
 
 		congo = Country{
 			Name:         DR_CONGO,
-			Code:         DR_CONGO_CODE,
+			CodeName:     DR_CONGO_CODE,
 			Currency:     DR_CONGO_CURRENCY,
 			CurrencyCode: DR_CONGO_CURRENCY_CODE,
 		}
 
 		madagascar = Country{
 			Name:         MADAGASCAR,
-			Code:         MADAGASCAR_CODE,
+			CodeName:     MADAGASCAR_CODE,
 			Currency:     MADAGASCAR_CURRENCY,
 			CurrencyCode: MADAGASCAR_CURRENCY_CODE,
 		}
 
 		zambia = Country{
 			Name:         ZAMBIA,
-			Code:         ZAMBIA_CODE,
+			CodeName:     ZAMBIA_CODE,
 			Currency:     ZAMBIA_CURRENCY,
 			CurrencyCode: ZAMBIA_CURRENCY_CODE,
 		}
 
 		gabon = Country{
 			Name:         GABON,
-			Code:         GABON_CODE,
+			CodeName:     GABON_CODE,
 			Currency:     GABON_CURRENCY,
 			CurrencyCode: GABON_CURRENCY_CODE,
 		}
 		tz = Country{
 			Name:         TANZANIA,
-			Code:         TANZANIA_CODE,
+			CodeName:     TANZANIA_CODE,
 			Currency:     TANZANIA_CURRENCY,
 			CurrencyCode: TANZANIA_CURRENCY_CODE,
 		}
 		malawi = Country{
 			Name:         MALAWI,
-			Code:         MALAWI_CODE,
+			CodeName:     MALAWI_CODE,
 			Currency:     MALAWI_CURRENCY,
 			CurrencyCode: MALAWI_CURRENCY_CODE,
 		}

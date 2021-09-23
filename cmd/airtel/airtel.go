@@ -11,8 +11,7 @@ import (
 	"time"
 )
 
-
-func callbacker()airtel.PushCallbackFunc{
+func callbacker() airtel.PushCallbackFunc {
 	return func(request models.AirtelCallbackRequest) error {
 		return nil
 	}
@@ -21,7 +20,7 @@ func callbacker()airtel.PushCallbackFunc{
 func main() {
 
 	pubKey := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
-//	pubKey2 := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
+	//	pubKey2 := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
 	config := &airtel.Config{
 		AllowedCountries:   nil,
 		DisbursePIN:        "4094",
@@ -42,42 +41,41 @@ func main() {
 		Port:      0,
 		DebugMode: false,
 	}
-	
-	apiClient := http.NewClient(apiConfig,airtelClient)
+
+	apiClient := http.NewClient(apiConfig, airtelClient)
 
 	req := api.PushPayRequest{
-		Reference:           "this is a test",
-		SubscriberCountry:   countries.TANZANIA,
-		SubscriberMsisdn:    "765992153",
-		TransactionAmount:   500,
-		TransactionCountry:  countries.TANZANIA,
-		TransactionID:       fmt.Sprintf("%v",time.Now().UnixNano()),
+		Reference:          "this is a test",
+		SubscriberCountry:  countries.TANZANIA,
+		SubscriberMsisdn:   "765992153",
+		TransactionAmount:  500,
+		TransactionCountry: countries.TANZANIA,
+		TransactionID:      fmt.Sprintf("%v", time.Now().UnixNano()),
 	}
 	fmt.Printf("perform push pay\n")
 	pushPayResponse, err := apiClient.Push(context.TODO(), req)
 	if err != nil {
-		fmt.Printf("error %v\n",err)
-		return 
+		fmt.Printf("error %v\n", err)
+		return
 	}
 
-	fmt.Printf("pushpay response: %v\n",pushPayResponse)
+	fmt.Printf("pushpay response: %v\n", pushPayResponse)
 
 	req2 := api.DisburseRequest{
-		ID:                   fmt.Sprintf("%v",time.Now().UnixNano()),
+		ID:                   fmt.Sprintf("%v", time.Now().UnixNano()),
 		MSISDN:               "765992153",
 		Amount:               500,
 		Reference:            "test request",
 		CountryOfTransaction: countries.TANZANIA,
 	}
 
-
 	fmt.Printf("Performing Disbursement")
-	disburseResponse, err := apiClient.Disburse(context.TODO(),req2)
+	disburseResponse, err := apiClient.Disburse(context.TODO(), req2)
 	if err != nil {
-		fmt.Printf("error %v\n",err)
+		fmt.Printf("error %v\n", err)
 		return
 	}
 
-	fmt.Printf("disburse response: %v\n",disburseResponse)
+	fmt.Printf("disburse response: %v\n", disburseResponse)
 
 }

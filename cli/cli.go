@@ -119,7 +119,7 @@ func authors(auth ...*clix.Author) []*clix.Author {
 }
 
 func New(base string, port uint64) *App {
-	client := http.NewClient(nil,nil)
+	client := http.NewClient(nil, nil)
 	author1 := &clix.Author{
 		Name:  "Pius Alfred",
 		Email: "me.pius1102@gmail.com",

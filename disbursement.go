@@ -16,7 +16,7 @@ type DisbursementService interface {
 
 func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error) {
 	token, err := c.checkToken(ctx)
-	if err != nil{
+	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}
 
@@ -28,17 +28,17 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 	var opts []internal.RequestOption
 
 	hs := map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "*/*",
-		"X-Country":    country.Code,
-		"X-Currency":   country.CurrencyCode,
-		"Authorization":        fmt.Sprintf("Bearer %s", token),  
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
 	headersOpt := internal.WithRequestHeaders(hs)
-	opts = append(opts,headersOpt)
-	reqUrl := requestURL(c.Conf.Environment,Disbursement)
-	req := internal.NewRequest(http.MethodPost,reqUrl,request,opts...)
+	opts = append(opts, headersOpt)
+	reqUrl := requestURL(c.Conf.Environment, Disbursement)
+	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
 	res := new(models.AirtelDisburseResponse)
 	_, err = c.base.Do(ctx, "disbursement", req, res)
 	if err != nil {

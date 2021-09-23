@@ -27,8 +27,8 @@ type (
 func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransactionsResponse, error) {
 
 	//?from=4&to=7&offset=4&limit=8
-	queryString := fmt.Sprintf("?from=%d&to=%d&limit=%d&offset=%d",params.From, params.To,params.Limit,params.Offset)
-	fmt.Printf("query string: %s\n",queryString)
+	queryString := fmt.Sprintf("?from=%d&to=%d&limit=%d&offset=%d", params.From, params.To, params.Limit, params.Offset)
+	fmt.Printf("query string: %s\n", queryString)
 
 	var token string
 	if *c.token == "" {

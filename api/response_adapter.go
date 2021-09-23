@@ -36,7 +36,7 @@ func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushP
 		Status:           transaction.Status,
 		ResultCode:       status.ResultCode,
 		Success:          status.Success,
-		ErrorDescription:  response.ErrorDescription,
+		ErrorDescription: response.ErrorDescription,
 		Error:            response.Error,
 		StatusMessage:    response.StatusMessage,
 		StatusCode:       response.StatusCode,

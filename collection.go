@@ -18,7 +18,7 @@ type CollectionService interface {
 
 func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
 	token, err := c.checkToken(ctx)
-	if err != nil{
+	if err != nil {
 		return models.AirtelPushResponse{}, err
 	}
 	countryName := request.Transaction.Country
@@ -29,19 +29,19 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	var opts []internal.RequestOption
 
 	hs := map[string]string{
-		"Content-Type": "application/json",
-		"Accept":       "*/*",
-		"X-Country":    country.Code,
-		"X-Currency":   country.CurrencyCode,
-		"Authorization":        fmt.Sprintf("Bearer %s", token),  
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
 	headersOpt := internal.WithRequestHeaders(hs)
-	opts = append(opts,headersOpt)
+	opts = append(opts, headersOpt)
 
-	reqUrl := requestURL(c.Conf.Environment,USSDPush)
+	reqUrl := requestURL(c.Conf.Environment, USSDPush)
 
-	req := internal.NewRequest(http.MethodPost,reqUrl,request,opts...)
+	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
 
 	if err != nil {
 		return models.AirtelPushResponse{}, err

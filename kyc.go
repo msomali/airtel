@@ -6,16 +6,16 @@ import (
 	"github.com/techcraftlabs/airtel/pkg/models"
 )
 
-type(
+type (
 	KYCService interface {
-		UserEnquiry(ctx context.Context, msisdn string)(models.AirtelUserEnquiryResponse,error)
+		UserEnquiry(ctx context.Context, msisdn string) (models.AirtelUserEnquiryResponse, error)
 	}
 )
 
 func (c *Client) UserEnquiry(ctx context.Context, msisdn string) (models.AirtelUserEnquiryResponse, error) {
 
 	token, err := c.checkToken(ctx)
-	if err != nil{
+	if err != nil {
 		return models.AirtelUserEnquiryResponse{}, err
 	}
 

@@ -15,7 +15,7 @@ type Authenticator interface {
 	Token(ctx context.Context) (models.AirtelAuthResponse, error)
 }
 
-func (c *Client) checkToken(ctx context.Context)(string,error)  {
+func (c *Client) checkToken(ctx context.Context) (string, error) {
 	var token string
 	if *c.token == "" {
 		str, err := c.Token(ctx)

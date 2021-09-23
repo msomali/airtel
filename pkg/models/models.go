@@ -148,7 +148,7 @@ type AirtelBalanceEnquiryResponse struct {
 
 type AirtelDisburseRequest struct {
 	CountryOfTransaction string `json:"-"`
-	Payee struct {
+	Payee                struct {
 		Msisdn string `json:"msisdn"`
 	} `json:"payee"`
 	Reference   string `json:"reference"`

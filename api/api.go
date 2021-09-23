@@ -6,29 +6,29 @@ import (
 
 type (
 	PushPayRequest struct {
-		Reference           string
-		SubscriberCountry   string
-		SubscriberMsisdn    string
-		TransactionAmount   int
-		TransactionCountry  string
-		TransactionID       string
+		Reference          string
+		SubscriberCountry  string
+		SubscriberMsisdn   string
+		TransactionAmount  int
+		TransactionCountry string
+		TransactionID      string
 	}
 
 	PushPayResponse struct {
-		ID     string `json:"id,omitempty"`
-		Status string `json:"status,omitempty"`
-		ResultCode string `json:"result_code,omitempty"`
-		Success    bool   `json:"success,omitempty"`
+		ID               string `json:"id,omitempty"`
+		Status           string `json:"status,omitempty"`
+		ResultCode       string `json:"result_code,omitempty"`
+		Success          bool   `json:"success,omitempty"`
 		ErrorDescription string `json:"error_description,omitempty"`
 		Error            string `json:"error,omitempty"`
 		StatusMessage    string `json:"status_message,omitempty"`
 		StatusCode       string `json:"status_code,omitempty"`
 	}
 	DisburseRequest struct {
-		ID        string
-		MSISDN    string
-		Amount    int
-		Reference string
+		ID                   string
+		MSISDN               string
+		Amount               int
+		Reference            string
 		CountryOfTransaction string
 	}
 

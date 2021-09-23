@@ -57,14 +57,14 @@ func Test_getRequestURL(t *testing.T) {
 
 func TestConfig_SetAllowedCountries(t *testing.T) {
 	type fields struct {
-		AllowedCountries     map[string][]string
-		DisbursePIN          string
-		CallbackPrivateKey   string
-		CallbackAuth         bool
-		PublicKey            string
-		Environment          Environment
-		ClientID             string
-		Secret               string
+		AllowedCountries   map[string][]string
+		DisbursePIN        string
+		CallbackPrivateKey string
+		CallbackAuth       bool
+		PublicKey          string
+		Environment        Environment
+		ClientID           string
+		Secret             string
 	}
 	type args struct {
 		apiName   string
@@ -76,48 +76,47 @@ func TestConfig_SetAllowedCountries(t *testing.T) {
 		args   args
 	}{
 		{
-			name:   "",
+			name: "",
 			fields: fields{
-				AllowedCountries:     nil,
-				DisbursePIN:          "",
-				CallbackPrivateKey:   "",
-				CallbackAuth:         false,
-				PublicKey:            "",
-				Environment:          "",
-				ClientID:             "",
-				Secret:               "",
+				AllowedCountries:   nil,
+				DisbursePIN:        "",
+				CallbackPrivateKey: "",
+				CallbackAuth:       false,
+				PublicKey:          "",
+				Environment:        "",
+				ClientID:           "",
+				Secret:             "",
 			},
-			args:   args{
+			args: args{
 				apiName:   CollectionAPIName,
-				countries: []string{"Kenya","Uganda"},
+				countries: []string{"Kenya", "Uganda"},
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			config := &Config{
-				AllowedCountries:     tt.fields.AllowedCountries,
-				DisbursePIN:          tt.fields.DisbursePIN,
-				CallbackPrivateKey:   tt.fields.CallbackPrivateKey,
-				CallbackAuth:         tt.fields.CallbackAuth,
-				PublicKey:            tt.fields.PublicKey,
-				Environment:          tt.fields.Environment,
-				ClientID:             tt.fields.ClientID,
-				Secret:               tt.fields.Secret,
+				AllowedCountries:   tt.fields.AllowedCountries,
+				DisbursePIN:        tt.fields.DisbursePIN,
+				CallbackPrivateKey: tt.fields.CallbackPrivateKey,
+				CallbackAuth:       tt.fields.CallbackAuth,
+				PublicKey:          tt.fields.PublicKey,
+				Environment:        tt.fields.Environment,
+				ClientID:           tt.fields.ClientID,
+				Secret:             tt.fields.Secret,
 			}
 
-			config.SetAllowedCountries(tt.args.apiName,tt.args.countries)
+			config.SetAllowedCountries(tt.args.apiName, tt.args.countries)
 
-			t.Logf("allowed countries for %s api are %v\n",tt.args.apiName,config.AllowedCountries[tt.args.apiName])
+			t.Logf("allowed countries for %s api are %v\n", tt.args.apiName, config.AllowedCountries[tt.args.apiName])
 		})
-
 
 	}
 }
 
 func TestWithEndpoint(t *testing.T) {
 	type args struct {
-		url string
+		url      string
 		endpoint string
 	}
 	tests := []struct {
@@ -128,7 +127,7 @@ func TestWithEndpoint(t *testing.T) {
 		{
 			name: "normal endpoint",
 			args: args{
-				url: "www.server.com/users",
+				url:      "www.server.com/users",
 				endpoint: "0001",
 			},
 			want: "www.server.com/users/0001",
@@ -136,7 +135,7 @@ func TestWithEndpoint(t *testing.T) {
 		{
 			name: "uel has /",
 			args: args{
-				url: "www.server.com/users/",
+				url:      "www.server.com/users/",
 				endpoint: "0001",
 			},
 			want: "www.server.com/users/0001",
@@ -144,7 +143,7 @@ func TestWithEndpoint(t *testing.T) {
 		{
 			name: "endpoint has /",
 			args: args{
-				url: "www.server.com/users",
+				url:      "www.server.com/users",
 				endpoint: "/0001",
 			},
 			want: "www.server.com/users/0001",
@@ -152,7 +151,7 @@ func TestWithEndpoint(t *testing.T) {
 		{
 			name: "both have /",
 			args: args{
-				url: "www.server.com/users/",
+				url:      "www.server.com/users/",
 				endpoint: "/0001",
 			},
 			want: "www.server.com/users/0001",
@@ -161,10 +160,10 @@ func TestWithEndpoint(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			url, endpoint := tt.args.url, tt.args.endpoint
-			req := internal.NewRequest(http.MethodHead,url,nil,internal.WithEndpoint(endpoint))
-			reqWithCtx, err := internal.NewRequestWithContext(context.TODO(),req)
-			if err != nil{
-				t.Errorf("%v\n",err)
+			req := internal.NewRequest(http.MethodHead, url, nil, internal.WithEndpoint(endpoint))
+			reqWithCtx, err := internal.NewRequestWithContext(context.TODO(), req)
+			if err != nil {
+				t.Errorf("%v\n", err)
 			}
 			got := reqWithCtx.URL.String()
 			if got != tt.want {
@@ -174,10 +173,9 @@ func TestWithEndpoint(t *testing.T) {
 	}
 }
 
-
 func TestSomeTypeImplementsSomeInterface(t *testing.T) {
 	// won't compile if SomeType does not implement SomeInterface
-	var(
+	var (
 		_ AccountService      = (*Client)(nil)
 		_ CollectionService   = (*Client)(nil)
 		_ Authenticator       = (*Client)(nil)
@@ -186,4 +184,3 @@ func TestSomeTypeImplementsSomeInterface(t *testing.T) {
 		_ KYCService          = (*Client)(nil)
 	)
 }
-
