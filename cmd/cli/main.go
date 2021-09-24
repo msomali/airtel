@@ -26,6 +26,8 @@
 package main
 
 import (
+	_ "github.com/joho/godotenv/autoload"
+
 	"fmt"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/api/http"
@@ -37,6 +39,7 @@ import (
 )
 
 const (
+	envBaseURL                     = "AIRTEL_MONEY_BASE_URL"
 	envPublicKey                   = "AIRTEL_MONEY_PUBKEY"
 	envDisbursePin                 = "AIRTEL_MONEY_DISBURSE_PIN"
 	envClientId                    = "AIRTEL_MONEY_CLIENT_ID"
@@ -55,6 +58,7 @@ const (
 	envTransactionSummaryEndpoint  = "AIRTEL_MONEY_SUMMARY_ENDPOINT"
 	envBalanceEnquiryEndpoint      = "AIRTEL_MONEY_BALANCE_ENDPOINT"
 	envUserEnquiryEndpoint         = "AIRTEL_MONEY_USER_ENDPOINT"
+	defBaseURL                     = "https://openapiuat.airtel.africa/"
 	defPublicKey                   = ""
 	defDisbursePin                 = "4094"
 	defClientId                    = "747b6063-5eea-4464-b27c-a8f89c2e1fe3"
@@ -62,7 +66,7 @@ const (
 	defDebugMode                   = true
 	defDeploymentEnv               = "staging"
 	defCallbackAuth                = false
-	defCallbackPrivKey             = ""
+	defCallbackPrivKey             = "zITVAAGYSlzl1WkUQJn81kbpT5drH3koffT8jCkcJJA="
 	defCountries                   = "tanzania"
 	defAuthEndpoint                = "/auth/oauth2/token"
 	defPushEndpoint                = "/merchant/v1/payments/"
@@ -84,6 +88,7 @@ func callbacker() airtel.PushCallbackFunc {
 func main() {
 
 	var (
+		baseURL         = env.String(envBaseURL, defBaseURL)
 		pubKey          = env.String(envPublicKey, defPublicKey)
 		disbursePin     = env.String(envDisbursePin, defDisbursePin)
 		callbackPrivKey = env.String(envCallbackPrivKey, defCallbackPrivKey)
@@ -107,6 +112,7 @@ func main() {
 	)
 
 	config := &airtel.Config{
+		BaseURL:   baseURL,
 		Endpoints: endpoints,
 		AllowedCountries: map[string][]string{
 			airtel.TransactionApiGroup:  countries,
@@ -128,13 +134,7 @@ func main() {
 
 	airtelClient := airtel.NewClient(config, fn, debugMode)
 
-	apiConfig := &http.Config{
-		BaseURL:   "",
-		Port:      0,
-		DebugMode: false,
-	}
-
-	apiClient := http.NewClient(apiConfig, airtelClient)
+	apiClient := http.NewClient(airtelClient)
 
 	app := cli.New(apiClient)
 

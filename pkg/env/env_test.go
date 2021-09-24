@@ -27,122 +27,32 @@ package env_test
 
 import (
 	"github.com/techcraftlabs/airtel/pkg/env"
-	"os"
-	"reflect"
 	"testing"
 )
 
-const (
-	envTechcraftBaseName = "TECHCRAFT_BASENAME"
-	defTechcraftBaseName = "default name"
-	setTechcraftBaseName = "setenv name"
-
-	envTechcraftBaseAge = "TECHCRAFT_BASEAGE"
-	defTechcraftBaseAge = 10
-	setTechcraftBaseAge = 50
-
-	envTechcraftBaseAge64       = "TECHCRAFT_BASEAGE64"
-	defTechcraftBaseAge64 int64 = 10
-	setTechcraftBaseAge64 int64 = 50
-
-	envTechcraftBaseSalary = "TECHCRAFT_BASE_SALARY"
-	defTechcraftBaseSalary = 10.0000
-	setTechcraftBaseSalary = 50.0000
-
-	envTechcraftBaseStatus = "TECHCRAFT_BASE_STATUS"
-	defTechcraftBaseStatus = true
-	setTechcraftBaseStatus = true
-)
-
-func TestGet(t *testing.T) {
+func TestFloat64(t *testing.T) {
 	type args struct {
 		key          string
-		valueInEnv   string
-		defaultValue interface{}
+		defaultValue float64
 	}
 	tests := []struct {
 		name string
 		args args
-		want interface{}
+		want float64
 	}{
 		{
-			name: "test normal string",
+			name: "read error",
 			args: args{
-				key:          envTechcraftBaseName,
-				valueInEnv:   setTechcraftBaseName,
-				defaultValue: defTechcraftBaseName,
+				key:          "HOME",
+				defaultValue: 16.1,
 			},
-			want: setTechcraftBaseName,
-		},
-		{
-			name: "testing integer vars",
-			args: args{
-				key:          envTechcraftBaseAge,
-				valueInEnv:   "50",
-				defaultValue: defTechcraftBaseAge,
-			},
-			want: setTechcraftBaseAge,
-		},
-		{
-			name: "testing integer vars",
-			args: args{
-				key:          envTechcraftBaseAge64,
-				valueInEnv:   "50",
-				defaultValue: defTechcraftBaseAge64,
-			},
-			want: setTechcraftBaseAge64,
-		},
-		{
-			name: "testing float vars",
-			args: args{
-				key:          envTechcraftBaseSalary,
-				valueInEnv:   "50.0000",
-				defaultValue: defTechcraftBaseSalary,
-			},
-			want: setTechcraftBaseSalary,
-		},
-		{
-			name: "testing bool vars",
-			args: args{
-				key:          envTechcraftBaseStatus,
-				valueInEnv:   "true",
-				defaultValue: defTechcraftBaseStatus,
-			},
-			want: setTechcraftBaseStatus,
-		},
-		{
-			name: "testing bool vars",
-			args: args{
-				key:          envTechcraftBaseStatus,
-				valueInEnv:   "",
-				defaultValue: defTechcraftBaseStatus,
-			},
-			want: true,
+			want: 0,
 		},
 	}
 	for _, tt := range tests {
-		key, valueInEnv, defValue, want := tt.args.key, tt.args.valueInEnv, tt.args.defaultValue, tt.want
 		t.Run(tt.name, func(t *testing.T) {
-			err := os.Setenv(key, valueInEnv)
-			if err != nil {
-				t.Errorf("error while set the env %s to %s: %v\n", key, valueInEnv, err)
-			}
-
-			defer func(key, value string) {
-				err := os.Setenv(key, value)
-				if err != nil {
-					t.Logf("error in usetting the env %s to %s,%v\n", key, value, err)
-				}
-			}(key, "")
-
-			loaded := os.Getenv(key)
-
-			t.Logf("loaded \"%s\" from os.Getenv is \"%s\"", key, loaded)
-
-			got := env.Get(key, defValue)
-
-			if !reflect.DeepEqual(got, want) {
-				t.Errorf("\nGet() = \"%v\"\nwant = \"%v\"\n", got, tt.want)
+			if got := env.Float64(tt.args.key, tt.args.defaultValue); got != tt.want {
+				t.Errorf("Float64() = %v, want %v", got, tt.want)
 			}
 		})
 	}

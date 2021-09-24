@@ -31,94 +31,45 @@ import (
 	"strconv"
 )
 
-func Get(key string, defaultValue interface{}) interface{} {
+func get(key string, defaultValue interface{}) interface{} {
 	var strValue string
 	if strValue = os.Getenv(key); strValue == "" {
 		return defaultValue
 	}
 
-	switch defaultValue.(type) {
-	case string:
+	return strValue
 
-		return strValue
-
-	case int:
-		retValue, err := strconv.Atoi(strValue)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-
-	case int64:
-		retValue, err := strconv.ParseInt(strValue, 10, 64)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-
-	case int32:
-		retValue, err := strconv.ParseInt(strValue, 10, 32)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-
-	case int8:
-		retValue, err := strconv.ParseInt(strValue, 10, 8)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-
-	case int16:
-		retValue, err := strconv.ParseInt(strValue, 10, 16)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-	case bool:
-		retValue, err := strconv.ParseBool(strValue)
-		if err != nil {
-
-			return defaultValue
-		}
-
-		return retValue
-
-	case float32:
-		retValue, err := strconv.ParseFloat(strValue, 32)
-		if err != nil {
-
-			return defaultValue
-		}
-
-		return retValue
-
-	case float64:
-		retValue, err := strconv.ParseFloat(strValue, 64)
-		if err != nil {
-			return defaultValue
-		}
-
-		return retValue
-
-	default:
-		return strValue
-	}
 }
 
 func String(key string, defaultValue interface{}) string {
-	i := Get(key, defaultValue)
-	return fmt.Sprintf("%v\n", i)
+	i := get(key, defaultValue)
+	return fmt.Sprintf("%v", i)
 }
 
-func Bool(key string, defaultValue interface{}) bool {
+func Bool(key string, defaultValue bool) bool {
 	i := String(key, defaultValue)
 	parseBool, _ := strconv.ParseBool(i)
 	return parseBool
+}
+
+func Int64(key string, defaultValue int64) int64 {
+	i := String(key, defaultValue)
+	parseInt, err := strconv.ParseInt(i, 10, 64)
+	if err != nil {
+		text := fmt.Sprintf("environment variable %s is suppored to be of type int64 but it reads as ${%s}, %s will be=%v", key, key, key, defaultValue)
+		textEnv := os.ExpandEnv(text)
+		_, _ = fmt.Fprintln(os.Stderr, textEnv)
+	}
+	return parseInt
+}
+
+func Float64(key string, defaultValue float64) float64 {
+	i := String(key, defaultValue)
+	parseFloat, err := strconv.ParseFloat(i, 64)
+	if err != nil {
+		text := fmt.Sprintf("environment variable %s is suppored to be of type float64 but it reads as ${%s}, %s will be=%v", key, key, key, defaultValue)
+		textEnv := os.ExpandEnv(text)
+		_, _ = fmt.Fprintln(os.Stderr, textEnv)
+	}
+	return parseFloat
 }

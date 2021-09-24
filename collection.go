@@ -137,7 +137,7 @@ func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRe
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOpt := internal.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOpt)
-	req := c.makeInternalRequest(PushEnquiry,request, opts...)
+	req := c.makeInternalRequest(PushEnquiry, request, opts...)
 	if err != nil {
 		return models.AirtelPushEnquiryResponse{}, err
 	}

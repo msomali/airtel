@@ -39,7 +39,6 @@ const (
 	BaseURLStaging                = "https://openapiuat.airtel.africa"
 )
 
-
 type (
 	Environment string
 
@@ -116,22 +115,8 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	}
 	token := new(string)
 	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
-	//baseURL := new(string)
-	//env := config.Environment
-	//switch env {
-	//case STAGING:
-	//	*baseURL = BaseURLStaging
-	//
-	//case PRODUCTION:
-	//	*baseURL = BaseURLProduction
-	//
-	//default:
-	//	*baseURL = BaseURLStaging
-	//}
 
-	//	url := *baseURL
 	return &Client{
-		//	baseURL:          url,
 		Conf:             config,
 		base:             base,
 		token:            token,

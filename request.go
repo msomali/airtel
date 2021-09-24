@@ -29,6 +29,7 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"net/http"
+	"strings"
 )
 
 const (
@@ -38,7 +39,7 @@ const (
 	DisbursementApiGroup = "disbursement"
 	AccountApiGroup      = "account"
 	KycApiGroup          = "kyc"
-	TransactionApiGroup = "transaction"
+	TransactionApiGroup  = "transaction"
 )
 
 const (
@@ -54,13 +55,13 @@ const (
 	UserEnquiry
 )
 
-func (t RequestType)HttpMexprethod() string {
+func (t RequestType) HttpMexprethod() string {
 	switch t {
-	case Authorization,UssdPush,Refund,PushCallback,Disbursement:
+	case Authorization, UssdPush, Refund, PushCallback, Disbursement:
 		return http.MethodPost
 
-	case PushEnquiry,DisbursementEnquiry,UserEnquiry,BalanceEnquiry,
-	TransactionSummary:
+	case PushEnquiry, DisbursementEnquiry, UserEnquiry, BalanceEnquiry,
+		TransactionSummary:
 		return http.MethodGet
 
 	default:
@@ -68,10 +69,10 @@ func (t RequestType)HttpMexprethod() string {
 	}
 }
 
-func (t RequestType) Name()string  {
-	return []string{"authorization","ussd push","refund","push enquiry","push callback",
-		"disbursement","disbursement enquiry","balance enquiry","transaction summary",
-	"user enquiry"}[t]
+func (t RequestType) Name() string {
+	return []string{"authorization", "ussd push", "refund", "push enquiry", "push callback",
+		"disbursement", "disbursement enquiry", "balance enquiry", "transaction summary",
+		"user enquiry"}[t]
 }
 
 func (t RequestType) Group() string {
@@ -99,7 +100,7 @@ func (t RequestType) Group() string {
 	}
 }
 
-func (t RequestType)Endpoint(es Endpoints) string {
+func (t RequestType) Endpoint(es Endpoints) string {
 	switch t {
 	case Authorization:
 		return es.AuthEndpoint
@@ -148,10 +149,34 @@ type (
 	}
 )
 
-func (c *Client)makeInternalRequest(requestType RequestType, payload interface{},opts... internal.RequestOption)*internal.Request{
+func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...internal.RequestOption) *internal.Request {
 	url := c.requestURL(requestType)
 	method := requestType.HttpMexprethod()
-	return internal.NewRequest(method,url,payload,opts...)
+	return internal.NewRequest(method, url, payload, opts...)
+}
+
+func appendEndpoint(url string, endpoint string) string {
+	url, endpoint = strings.TrimSpace(url), strings.TrimSpace(endpoint)
+	urlHasSuffix, endpointHasPrefix := strings.HasSuffix(url, "/"), strings.HasPrefix(endpoint, "/")
+
+	bothTrue := urlHasSuffix == true && endpointHasPrefix == true
+	bothFalse := urlHasSuffix == false && endpointHasPrefix == false
+	notEqual := urlHasSuffix != endpointHasPrefix
+
+	if notEqual {
+		return fmt.Sprintf("%s%s", url, endpoint)
+	}
+
+	if bothFalse {
+		return fmt.Sprintf("%s/%s", url, endpoint)
+	}
+
+	if bothTrue {
+		endp := strings.TrimPrefix(endpoint, "/")
+		return fmt.Sprintf("%s%s", url, endp)
+	}
+
+	return ""
 }
 
 func (c *Client) requestURL(requestType RequestType) string {
@@ -160,27 +185,32 @@ func (c *Client) requestURL(requestType RequestType) string {
 
 	switch requestType {
 	case Authorization:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.AuthEndpoint)
+		return appendEndpoint(baseURL, endpoints.AuthEndpoint)
 
 	case UssdPush:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.PushEndpoint)
+		return appendEndpoint(baseURL, endpoints.PushEndpoint)
 
 	case Refund:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.RefundEndpoint)
+		return appendEndpoint(baseURL, endpoints.RefundEndpoint)
 
 	case PushEnquiry:
 
-		return fmt.Sprintf("%s%s", baseURL, endpoints.PushEnquiryEndpoint)
+		return appendEndpoint(baseURL, endpoints.PushEnquiryEndpoint)
 
 	case Disbursement:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.DisbursementEndpoint)
+		return appendEndpoint(baseURL, endpoints.DisbursementEndpoint)
+
+	case DisbursementEnquiry:
+		return appendEndpoint(baseURL, endpoints.DisbursementEnquiryEndpoint)
 
 	case TransactionSummary:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.TransactionSummaryEndpoint)
+		return appendEndpoint(baseURL, endpoints.TransactionSummaryEndpoint)
 
 	case BalanceEnquiry:
-		return fmt.Sprintf("%s%s", baseURL, endpoints.BalanceEnquiryEndpoint)
+		return appendEndpoint(baseURL, endpoints.BalanceEnquiryEndpoint)
 
+	case UserEnquiry:
+		return appendEndpoint(baseURL, endpoints.UserEnquiryEndpoint)
 	}
 	return ""
 

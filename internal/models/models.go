@@ -32,9 +32,10 @@ type AirtelAuthRequest struct {
 }
 
 type AirtelAuthResponse struct {
-	AccessToken string `json:"access_token"`
-	ExpiresIn   int    `json:"expires_in"`
-	TokenType   string `json:"token_type"`
+	AccessToken string `json:"access_token,omitempty"`
+	ExpiresIn   int    `json:"expires_in,omitempty"`
+	TokenType   string `json:"token_type,omitempty"`
+	Message     string `json:"message,omitempty"`
 }
 
 type AirtelPushRequest struct {

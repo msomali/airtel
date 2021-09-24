@@ -77,7 +77,7 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	}
 
 	opts = append(opts, internal.WithRequestHeaders(hs))
-	req := c.makeInternalRequest(Authorization,body,opts...)
+	req := c.makeInternalRequest(Authorization, body, opts...)
 
 	res := new(models.AirtelAuthResponse)
 	reqName := Authorization.Name()
