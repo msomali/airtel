@@ -87,7 +87,7 @@ func (r *ReqAdapter) ToDisburseRequest(request DisburseRequest) (models.AirtelDi
 		Reference: request.Reference,
 		Pin:       encryptedPin,
 		Transaction: struct {
-			Amount int    `json:"amount"`
+			Amount int64    `json:"amount"`
 			ID     string `json:"id"`
 		}{
 			Amount: request.Amount,

@@ -105,7 +105,9 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 	}
 
 	res := new(models.AirtelRefundResponse)
-	_, err = c.base.Do(ctx, "refund", req, res)
+	env := c.Conf.Environment
+	rn := fmt.Sprintf("%v: %s: %s",env,Refund.Group(), Refund.Name())
+	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
 		return models.AirtelRefundResponse{}, err
 	}

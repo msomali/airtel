@@ -50,16 +50,6 @@ func (c *Client) Summary(ctx context.Context, params airtel.Params) (models.List
 	return c.airtel.Summary(ctx, params)
 }
 
-func NewClient(client *airtel.Client) *Client {
-
-	airtelConf := client.Conf
-	return &Client{
-		reqAdapter: &api.ReqAdapter{Conf: airtelConf},
-		resAdapter: &api.ResAdapter{},
-		airtel:     client,
-	}
-}
-
 func (c *Client) Push(ctx context.Context, request api.PushPayRequest) (api.PushPayResponse, error) {
 	pushRequest := c.reqAdapter.ToPushPayRequest(request)
 	pushResponse, err := c.airtel.Push(ctx, pushRequest)
@@ -84,3 +74,14 @@ func (c *Client) Disburse(ctx context.Context, request api.DisburseRequest) (api
 
 	return response, nil
 }
+
+func NewClient(client *airtel.Client) *Client {
+
+	airtelConf := client.Conf
+	return &Client{
+		reqAdapter: &api.ReqAdapter{Conf: airtelConf},
+		resAdapter: &api.ResAdapter{},
+		airtel:     client,
+	}
+}
+

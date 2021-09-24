@@ -54,7 +54,7 @@ type (
 	DisburseRequest struct {
 		ID                   string
 		MSISDN               string
-		Amount               int
+		Amount               int64
 		Reference            string
 		CountryOfTransaction string
 	}

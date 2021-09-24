@@ -64,7 +64,9 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
 	res := new(models.AirtelDisburseResponse)
-	_, err = c.base.Do(ctx, "disbursement", req, res)
+	env := c.Conf.Environment
+	rn := fmt.Sprintf("%v: %s: %s",env,Disbursement.Group(), Disbursement.Name())
+	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
 		return models.AirtelDisburseResponse{}, err
 	}

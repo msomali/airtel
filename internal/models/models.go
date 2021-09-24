@@ -192,7 +192,7 @@ type AirtelDisburseRequest struct {
 	Reference   string `json:"reference"`
 	Pin         string `json:"pin"`
 	Transaction struct {
-		Amount int    `json:"amount"`
+		Amount int64    `json:"amount"`
 		ID     string `json:"id"`
 	} `json:"transaction"`
 }

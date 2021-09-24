@@ -45,7 +45,8 @@ type (
 func commands(client *http.Client) []*clix.Command {
 	tokenCmd := internal.TokenCommand(client).Command()
 	pushCmd := internal.PushCommand(client).Command()
-	return appendCommands(tokenCmd, pushCmd)
+	disburseCmd := internal.DisburseCommand(client).Command()
+	return appendCommands(tokenCmd, pushCmd,disburseCmd)
 }
 
 func appendCommands(comm ...*clix.Command) []*clix.Command {

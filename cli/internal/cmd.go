@@ -140,6 +140,35 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 
 		return nil
 
+	case airtel.Disbursement:
+		ref := ctx.String("reference")
+		phone := ctx.String("phone")
+		amount := ctx.Int64("amount")
+		enquiry := ctx.Bool("enquiry")
+		if enquiry {
+			id := ctx.String("reference")
+			fmt.Printf("enquire about transaction of id %v\n", id)
+			return nil
+		}
+		req := api.DisburseRequest{
+			Reference:          ref,
+			MSISDN: phone,
+			Amount: amount,
+			CountryOfTransaction: countries.TANZANIA,
+		    ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+		}
+		disburseResponse, err := c.ApiClient.Disburse(ctx.Context, req)
+		if err != nil {
+			return err
+		}
+
+		err = c.PrintOut(disburseResponse, text)
+		if err != nil {
+			return err
+		}
+
+		return nil
+
 	default:
 		return nil
 	}
@@ -167,6 +196,13 @@ func (c *Cmd) PrintOut(payload interface{}, format outFormat) error {
 		pushResponsePrintOut(resp)
 		return nil
 
+	case airtel.Disbursement:
+		resp, ok := payload.(api.DisburseResponse)
+		if !ok {
+			return fmt.Errorf("bad request expected models.AirtelDisburseResponse")
+		}
+		disburseResponsePrintOut(resp)
+		return nil
 	}
 	return nil
 }
