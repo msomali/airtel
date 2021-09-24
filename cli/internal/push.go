@@ -1,3 +1,28 @@
+/*
+ * MIT License
+ *
+ * Copyright (c) 2021 TECHCRAFT TECHNOLOGIES CO LTD.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all
+ * copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+ * SOFTWARE.
+ *
+ */
+
 package internal
 
 import (
@@ -10,22 +35,22 @@ import (
 	"text/tabwriter"
 )
 
-func PushCommand(client *http.Client) *Cmd{
-	flags := []cli.Flag {
+func PushCommand(client *http.Client) *Cmd {
+	flags := []cli.Flag{
 		&cli.StringFlag{
-			Name: "phone",
+			Name:    "phone",
 			Aliases: []string{"p"},
-			Usage: "phone number to send push request",
+			Usage:   "phone number to send push request",
 		},
 		&cli.Int64Flag{
-			Name:        "amount",
-			Aliases:     []string{"a"},
-			Usage:       "amount for push pay",
+			Name:    "amount",
+			Aliases: []string{"a"},
+			Usage:   "amount for push pay",
 		},
 		&cli.StringFlag{
-			Name: "reference",
-			Aliases: []string{"ref","r"},
-			Usage: "push pay message/description",
+			Name:    "reference",
+			Aliases: []string{"ref", "r"},
+			Usage:   "push pay message/description",
 		},
 	}
 	return &Cmd{
@@ -39,7 +64,7 @@ func PushCommand(client *http.Client) *Cmd{
 	}
 }
 
-func pushResponsePrintOut(response api.PushPayResponse)  {
+func pushResponsePrintOut(response api.PushPayResponse) {
 	// initialize tabwriter
 	w := new(tabwriter.Writer)
 
@@ -51,7 +76,6 @@ func pushResponsePrintOut(response api.PushPayResponse)  {
 			fmt.Printf("error while closing tabwriter: %v\n", err)
 		}
 	}(w)
-
 
 	_, _ = fmt.Fprintf(w, "\n %s\t", "PUSH RESPONSE")
 	_, _ = fmt.Fprintf(w, "\n %s\t", "--------------")
