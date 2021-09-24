@@ -32,7 +32,9 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
+	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"net/http"
 	"time"
 )
 
@@ -68,14 +70,17 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 		ClientSecret: c.Conf.Secret,
 		GrantType:    defaultGrantType,
 	}
-	req, err := createInternalRequest("", c.Conf.Environment, Authorization, "", body, "")
-	if err != nil {
-		return models.AirtelAuthResponse{}, err
+
+	reqURL := requestURL(c.Conf.Environment, Authorization)
+	hs := map[string]string{
+		"Content-Type": "application/json",
+		"Accept":       "*/*",
 	}
+	req := internal.NewRequest(http.MethodPost, reqURL, body, internal.WithRequestHeaders(hs))
 
 	res := new(models.AirtelAuthResponse)
 
-	_, err = c.base.Do(ctx, "token request", req, res)
+	_, err := c.base.Do(ctx, "token request", req, res)
 	if err != nil {
 		return models.AirtelAuthResponse{}, err
 	}
