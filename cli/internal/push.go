@@ -42,6 +42,15 @@ func PushCommand(client *http.Client) *Cmd {
 			Aliases: []string{"p"},
 			Usage:   "phone number to send push request",
 		},
+		&cli.BoolFlag{
+			Name:    "enquiry",
+			Aliases: []string{"e"},
+			Usage:   "enquiry about status of the push request",
+		},
+		&cli.StringFlag{
+			Name:    "id",
+			Usage:   "id of the transaction to enquiry about",
+		},
 		&cli.Int64Flag{
 			Name:    "amount",
 			Aliases: []string{"a"},

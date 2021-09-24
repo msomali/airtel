@@ -109,11 +109,17 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 		}
 
 		return nil
-
+//0784956141
 	case airtel.USSDPush:
 		ref := ctx.String("reference")
 		phone := ctx.String("phone")
 		amount := ctx.Int64("amount")
+		enquiry := ctx.Bool("enquiry")
+		if enquiry{
+			id := ctx.String("reference")
+			fmt.Printf("enquire about transaction of id %v\n",id)
+			return nil
+		}
 		req := api.PushPayRequest{
 			Reference:          ref,
 			SubscriberCountry:  countries.TANZANIA,

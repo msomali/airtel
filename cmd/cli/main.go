@@ -49,7 +49,7 @@ func main() {
 		CallbackPrivateKey: "",
 		CallbackAuth:       false,
 		PublicKey:          pubKey,
-		Environment:        airtel.STAGING,
+		Environment:        airtel.PRODUCTION,
 		ClientID:           "747b6063-5eea-4464-b27c-a8f89c2e1fe3",
 		Secret:             "9c8ded86-f45a-48f4-a9ee-8063cf8f43a0",
 	}
