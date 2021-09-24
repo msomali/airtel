@@ -11,7 +11,7 @@ type (
 		Reference          string
 		SubscriberCountry  string
 		SubscriberMsisdn   string
-		TransactionAmount  int
+		TransactionAmount  int64
 		TransactionCountry string
 		TransactionID      string
 	}
@@ -50,5 +50,6 @@ type (
 		Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error)
 		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
 		Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error)
+		Token(ctx context.Context) (models.AirtelAuthResponse, error)
 	}
 )

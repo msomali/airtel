@@ -11,7 +11,7 @@ import (
 //
 //type (
 //	Config struct {
-//		Name     string `env:"name"`
+//		Command     string `env:"name"`
 //		Port     int    `env:"port"`
 //		Password string `env:"password"`
 //	}
@@ -19,7 +19,7 @@ import (
 //
 //// Unmarshal read environmental variables and set them into a struct
 ////	type Config struct {
-////		Name     string `env:"name"`
+////		Command     string `env:"name"`
 ////		Port     int    `env:"port"`
 ////		Password string `env:"password"`
 ////	}
@@ -37,7 +37,7 @@ import (
 //	t := reflect.TypeOf(v)
 //
 //	// Get the type and kind of our user variable
-//	fmt.Println("Type:", t.Name())
+//	fmt.Println("Type:", t.Command())
 //	fmt.Println("Kind:", t.Kind())
 //
 //	// Iterate over all available fields and read the tag value
@@ -48,7 +48,7 @@ import (
 //		// Get the field tag value
 //		tag := field.Tag.Get(tagName)
 //
-//		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Name, field.Type.Name(), tag)
+//		fmt.Printf("%d. %v (%v), tag: '%v'\n", i+1, field.Command, field.Type.Command(), tag)
 //	}
 //
 //	return nil

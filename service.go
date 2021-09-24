@@ -1,5 +1,7 @@
 package airtel
 
+var _ Service = (*Client)(nil)
+
 type (
 	Service interface {
 		CollectionService

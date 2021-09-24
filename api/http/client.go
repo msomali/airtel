@@ -25,6 +25,10 @@ type (
 	}
 )
 
+func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
+	return c.airtel.Token(ctx)
+}
+
 func (c *Client) Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error) {
 	return c.airtel.Summary(ctx, params)
 }

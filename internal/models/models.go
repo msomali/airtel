@@ -20,7 +20,7 @@ type AirtelPushRequest struct {
 		Msisdn   string `json:"msisdn"`
 	} `json:"subscriber"`
 	Transaction struct {
-		Amount   int    `json:"amount"`
+		Amount   int64    `json:"amount"`
 		Country  string `json:"country"`
 		Currency string `json:"currency"`
 		ID       string `json:"id"`

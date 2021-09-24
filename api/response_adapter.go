@@ -17,7 +17,17 @@ type ResAdapter struct {
 }
 
 func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
+	transaction := response.Data.Transaction
+	status := response.Status
 
+	if !status.Success{
+		return PushPayResponse{
+			ResultCode:       status.ResultCode,
+			Success:          status.Success,
+			StatusMessage:    status.Message,
+			StatusCode:       status.Code,
+		}
+	}
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {
 		resp := PushPayResponse{
@@ -29,8 +39,6 @@ func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushP
 		return resp
 	}
 
-	transaction := response.Data.Transaction
-	status := response.Status
 	return PushPayResponse{
 		ID:               transaction.ID,
 		Status:           transaction.Status,

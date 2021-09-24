@@ -34,7 +34,7 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.AirtelPushR
 			Msisdn:   request.SubscriberMsisdn,
 		},
 		Transaction: struct {
-			Amount   int    `json:"amount"`
+			Amount   int64    `json:"amount"`
 			Country  string `json:"country"`
 			Currency string `json:"currency"`
 			ID       string `json:"id"`

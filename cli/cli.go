@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/api/http"
+	"github.com/techcraftlabs/airtel/cli/internal"
 	"github.com/techcraftlabs/airtel/internal/io"
 	clix "github.com/urfave/cli/v2"
-	"log"
 	"os"
 )
 
@@ -17,84 +17,13 @@ type (
 	}
 )
 
-func add(svc api.Service) *clix.Command {
-	return &clix.Command{
-		Name:        "add",
-		Aliases:     nil,
-		Usage:       "add two numbers",
-		UsageText:   "add [number] [number]",
-		Description: "perform addition",
-		ArgsUsage:   "args usage add command",
-		Before:      beforeAddFunc,
-		After:       afterAddFunc,
-		Action: func(context *clix.Context) error {
-			//res, err := svc.Add(10, 20)
-			//if err != nil {
-			//	return err
-			//}
-			//
-			//fmt.Printf("answer: %v\n", res)
-			return nil
-		},
-		OnUsageError: onAddErrFunc,
-	}
+func commands(client *http.Client) []*clix.Command {
+	tokenCmd := internal.TokenCommand(client).Command()
+	pushCmd := internal.PushCommand(client).Command()
+	return appendCommands(tokenCmd,pushCmd)
 }
 
-func div(svc api.Service) *clix.Command {
-	return &clix.Command{
-		Name:        "div",
-		Aliases:     nil,
-		Usage:       "divide two numbers",
-		UsageText:   "div [number] [number]",
-		Description: "perform division",
-		ArgsUsage:   "args usage div command",
-		Before:      beforeDivFunc,
-		After:       afterDivFunc,
-		Action: func(context *clix.Context) error {
-			//res, err := svc.Divide(100, 0)
-			//if err != nil {
-			//	return err
-			//}
-			//fmt.Printf("answer: %v\n", res)
-			return nil
-		},
-		OnUsageError: onDivErrFunc,
-	}
-}
-
-func afterDivFunc(context *clix.Context) error {
-	log.Printf("after div func")
-	return nil
-}
-
-func beforeDivFunc(context *clix.Context) error {
-	log.Printf("starting div func")
-	return nil
-}
-
-func onDivErrFunc(context *clix.Context, err error, subcommand bool) error {
-	log.Printf("error occurred during division: %v\n", err)
-	return nil
-}
-
-func onAddErrFunc(context *clix.Context, err error, subcommand bool) error {
-	fmt.Printf("add error: %v\n", err)
-	return nil
-}
-
-func onAddActionFunc(context *clix.Context) error {
-	return nil
-}
-
-func afterAddFunc(context *clix.Context) error {
-	return nil
-}
-
-func beforeAddFunc(context *clix.Context) error {
-	return nil
-}
-
-func commands(comm ...*clix.Command) []*clix.Command {
+func appendCommands(comm ...*clix.Command) []*clix.Command {
 	var commands []*clix.Command
 	for _, command := range comm {
 		commands = append(commands, command)
@@ -118,20 +47,20 @@ func authors(auth ...*clix.Author) []*clix.Author {
 	return authors
 }
 
-func New(base string, port uint64) *App {
-	client := http.NewClient(nil, nil)
+func New(httpApiClient *http.Client ) *App {
+
 	author1 := &clix.Author{
 		Name:  "Pius Alfred",
 		Email: "me.pius1102@gmail.com",
 	}
 
 	app := &clix.App{
-		Name:                 "calc",
-		Usage:                "perform simple calculations",
-		UsageText:            "calc add <first-integer> <second-integer>",
+		Name:                 "airtel",
+		Usage:                "commandline tool to test/interact with Airtel Money API",
+		UsageText:            "airtel push|disburse|balance|user|summary|refund|token|enquiry",
 		Version:              "1.0.0",
-		Description:          "perform simple addition and division of base64 integers",
-		Commands:             commands(add(client), div(client)),
+		Description:          "interact with airtel money api",
+		Commands:             commands(httpApiClient),
 		Flags:                flags(),
 		EnableBashCompletion: true,
 		Before:               beforeActionFunc,
@@ -144,7 +73,7 @@ func New(base string, port uint64) *App {
 	}
 
 	return &App{
-		client: client,
+		client: httpApiClient,
 		app:    app,
 	}
 }
@@ -154,10 +83,6 @@ func beforeActionFunc(context *clix.Context) error {
 }
 
 func afterActionFunc(context *clix.Context) error {
-	return nil
-}
-
-func onActionFunc(context *clix.Context) error {
 	return nil
 }
 
