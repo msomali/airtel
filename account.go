@@ -63,7 +63,7 @@ func (c *Client) Balance(ctx context.Context, request models.AirtelBalanceEnquir
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := requestURL(c.Conf.Environment, BalanceEnquiry)
+	reqUrl := c.requestURL(BalanceEnquiry)
 	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
 	res := new(models.AirtelBalanceEnquiryResponse)
 	_, err = c.base.Do(ctx, "balance enquiry", req, res)

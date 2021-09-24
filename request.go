@@ -27,84 +27,159 @@ package airtel
 
 import (
 	"fmt"
+	"github.com/techcraftlabs/airtel/internal"
+	"net/http"
 )
 
 const (
-	AuthEndpoint               = "/auth/oauth2/token"
-	PushEndpoint               = "/merchant/v1/payments/"
-	RefundEndpoint             = "/standard/v1/payments/refund"
-	PushEnquiryEndpoint        = "/standard/v1/payments/"
-	DisbursementEndpoint       = "/standard/v1/disbursements/"
-	DisbursmentEnquiryEndpoint = "/standard/v1/disbursements/"
-	TransactionSummaryEndpoint = "/merchant/v1/transactions"
-	BalanceEnquiryEndpoint     = "/standard/v1/users/balance"
-	defaultGrantType           = "client_credentials"
-	CollectionAPIName          = "collection"
-	DisbursementAPIName        = "disbursement"
-	AccountAPIName             = "account"
-	KYCAPIName                 = "kyc"
+	defaultGrantType     = "client_credentials"
+	AuthApiGroup         = "authorization"
+	CollectionApiGroup   = "collection"
+	DisbursementApiGroup = "disbursement"
+	AccountApiGroup      = "account"
+	KycApiGroup          = "kyc"
+	TransactionApiGroup = "transaction"
 )
 
 const (
 	Authorization RequestType = iota
-	USSDPush
+	UssdPush
 	Refund
 	PushEnquiry
 	PushCallback
 	Disbursement
-	BalanceEnquiry
 	DisbursementEnquiry
+	BalanceEnquiry
 	TransactionSummary
 	UserEnquiry
 )
 
+func (t RequestType)HttpMexprethod() string {
+	switch t {
+	case Authorization,UssdPush,Refund,PushCallback,Disbursement:
+		return http.MethodPost
+
+	case PushEnquiry,DisbursementEnquiry,UserEnquiry,BalanceEnquiry,
+	TransactionSummary:
+		return http.MethodGet
+
+	default:
+		return ""
+	}
+}
+
+func (t RequestType) Name()string  {
+	return []string{"authorization","ussd push","refund","push enquiry","push callback",
+		"disbursement","disbursement enquiry","balance enquiry","transaction summary",
+	"user enquiry"}[t]
+}
+
+func (t RequestType) Group() string {
+	switch t {
+	case Authorization:
+		return AuthApiGroup
+
+	case PushCallback, Refund, PushEnquiry, UssdPush:
+		return CollectionApiGroup
+
+	case Disbursement, DisbursementEnquiry:
+		return DisbursementApiGroup
+
+	case BalanceEnquiry:
+		return AccountApiGroup
+
+	case UserEnquiry:
+		return KycApiGroup
+
+	case TransactionSummary:
+		return TransactionApiGroup
+
+	default:
+		return "unknown/unsupported api group"
+	}
+}
+
+func (t RequestType)Endpoint(es Endpoints) string {
+	switch t {
+	case Authorization:
+		return es.AuthEndpoint
+
+	case UssdPush:
+		return es.PushEndpoint
+
+	case PushEnquiry:
+		return es.PushEnquiryEndpoint
+
+	case Refund:
+		return es.RefundEndpoint
+
+	case Disbursement:
+		return es.DisbursementEndpoint
+
+	case DisbursementEnquiry:
+		return es.DisbursementEnquiryEndpoint
+
+	case UserEnquiry:
+		return es.UserEnquiryEndpoint
+
+	case BalanceEnquiry:
+		return es.BalanceEnquiryEndpoint
+
+	case TransactionSummary:
+		return es.TransactionSummaryEndpoint
+
+	default:
+		return ""
+	}
+}
+
 type (
 	RequestType uint
+	Endpoints   struct {
+		AuthEndpoint                string
+		PushEndpoint                string
+		RefundEndpoint              string
+		PushEnquiryEndpoint         string
+		DisbursementEndpoint        string
+		DisbursementEnquiryEndpoint string
+		TransactionSummaryEndpoint  string
+		BalanceEnquiryEndpoint      string
+		UserEnquiryEndpoint         string
+	}
 )
-func requestURL(env Environment, requestType RequestType) string {
+
+func (c *Client)makeInternalRequest(requestType RequestType, payload interface{},opts... internal.RequestOption)*internal.Request{
+	url := c.requestURL(requestType)
+	method := requestType.HttpMexprethod()
+	return internal.NewRequest(method,url,payload,opts...)
+}
+
+func (c *Client) requestURL(requestType RequestType) string {
+	baseURL := c.Conf.BaseURL
+	endpoints := c.Conf.Endpoints
 
 	switch requestType {
 	case Authorization:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, AuthEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, AuthEndpoint)
+		return fmt.Sprintf("%s%s", baseURL, endpoints.AuthEndpoint)
 
-	case USSDPush:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, PushEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, PushEndpoint)
+	case UssdPush:
+		return fmt.Sprintf("%s%s", baseURL, endpoints.PushEndpoint)
 
 	case Refund:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, RefundEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, RefundEndpoint)
+		return fmt.Sprintf("%s%s", baseURL, endpoints.RefundEndpoint)
 
 	case PushEnquiry:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, PushEnquiryEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, PushEnquiryEndpoint)
+
+		return fmt.Sprintf("%s%s", baseURL, endpoints.PushEnquiryEndpoint)
 
 	case Disbursement:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, DisbursementEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, DisbursementEndpoint)
+		return fmt.Sprintf("%s%s", baseURL, endpoints.DisbursementEndpoint)
 
 	case TransactionSummary:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, TransactionSummaryEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, TransactionSummaryEndpoint)
+		return fmt.Sprintf("%s%s", baseURL, endpoints.TransactionSummaryEndpoint)
 
 	case BalanceEnquiry:
-		if env == STAGING {
-			return fmt.Sprintf("%s%s", BaseURLStaging, BalanceEnquiryEndpoint)
-		}
-		return fmt.Sprintf("%s%s", BaseURLProduction, BalanceEnquiryEndpoint)
+		return fmt.Sprintf("%s%s", baseURL, endpoints.BalanceEnquiryEndpoint)
 
 	}
 	return ""

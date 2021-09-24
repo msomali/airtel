@@ -26,6 +26,7 @@
 package env
 
 import (
+	"fmt"
 	"os"
 	"strconv"
 )
@@ -41,7 +42,7 @@ func Get(key string, defaultValue interface{}) interface{} {
 
 		return strValue
 
-	case int, int64, int8, int16, int32:
+	case int:
 		retValue, err := strconv.Atoi(strValue)
 		if err != nil {
 			return defaultValue
@@ -49,6 +50,37 @@ func Get(key string, defaultValue interface{}) interface{} {
 
 		return retValue
 
+	case int64:
+		retValue, err := strconv.ParseInt(strValue, 10, 64)
+		if err != nil {
+			return defaultValue
+		}
+
+		return retValue
+
+	case int32:
+		retValue, err := strconv.ParseInt(strValue, 10, 32)
+		if err != nil {
+			return defaultValue
+		}
+
+		return retValue
+
+	case int8:
+		retValue, err := strconv.ParseInt(strValue, 10, 8)
+		if err != nil {
+			return defaultValue
+		}
+
+		return retValue
+
+	case int16:
+		retValue, err := strconv.ParseInt(strValue, 10, 16)
+		if err != nil {
+			return defaultValue
+		}
+
+		return retValue
 	case bool:
 		retValue, err := strconv.ParseBool(strValue)
 		if err != nil {
@@ -78,4 +110,15 @@ func Get(key string, defaultValue interface{}) interface{} {
 	default:
 		return strValue
 	}
+}
+
+func String(key string, defaultValue interface{}) string {
+	i := Get(key, defaultValue)
+	return fmt.Sprintf("%v\n", i)
+}
+
+func Bool(key string, defaultValue interface{}) bool {
+	i := String(key, defaultValue)
+	parseBool, _ := strconv.ParseBool(i)
+	return parseBool
 }

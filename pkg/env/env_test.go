@@ -41,6 +41,10 @@ const (
 	defTechcraftBaseAge = 10
 	setTechcraftBaseAge = 50
 
+	envTechcraftBaseAge64       = "TECHCRAFT_BASEAGE64"
+	defTechcraftBaseAge64 int64 = 10
+	setTechcraftBaseAge64 int64 = 50
+
 	envTechcraftBaseSalary = "TECHCRAFT_BASE_SALARY"
 	defTechcraftBaseSalary = 10.0000
 	setTechcraftBaseSalary = 50.0000
@@ -78,6 +82,15 @@ func TestGet(t *testing.T) {
 				defaultValue: defTechcraftBaseAge,
 			},
 			want: setTechcraftBaseAge,
+		},
+		{
+			name: "testing integer vars",
+			args: args{
+				key:          envTechcraftBaseAge64,
+				valueInEnv:   "50",
+				defaultValue: defTechcraftBaseAge64,
+			},
+			want: setTechcraftBaseAge64,
 		},
 		{
 			name: "testing float vars",

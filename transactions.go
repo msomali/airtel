@@ -87,7 +87,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt, queryMapOpt)
 
-	reqUrl := requestURL(c.Conf.Environment, TransactionSummary)
+	reqUrl := c.requestURL(TransactionSummary)
 	req := internal.NewRequest(http.MethodGet, reqUrl, nil, opts...)
 
 	res := new(models.ListTransactionsResponse)

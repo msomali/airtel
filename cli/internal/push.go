@@ -48,8 +48,8 @@ func PushCommand(client *http.Client) *Cmd {
 			Usage:   "enquiry about status of the push request",
 		},
 		&cli.StringFlag{
-			Name:    "id",
-			Usage:   "id of the transaction to enquiry about",
+			Name:  "id",
+			Usage: "id of the transaction to enquiry about",
 		},
 		&cli.Int64Flag{
 			Name:    "amount",
@@ -64,7 +64,7 @@ func PushCommand(client *http.Client) *Cmd {
 	}
 	return &Cmd{
 		ApiClient:   client,
-		RequestType: airtel.USSDPush,
+		RequestType: airtel.UssdPush,
 		Name:        "push",
 		Usage:       "send ussd push request",
 		Description: "send ussd push request",

@@ -39,26 +39,25 @@ const (
 	BaseURLStaging                = "https://openapiuat.airtel.africa"
 )
 
-const (
-	TransactionAPIName = "transaction"
-)
 
 type (
 	Environment string
 
 	Config struct {
+		Endpoints          *Endpoints
 		AllowedCountries   map[string][]string
 		DisbursePIN        string
 		CallbackPrivateKey string
 		CallbackAuth       bool
 		PublicKey          string
 		Environment        Environment
+		BaseURL            string
 		ClientID           string
 		Secret             string
 	}
 
 	Client struct {
-		baseURL          string
+		//baseURL          string
 		Conf             *Config
 		base             *internal.BaseClient
 		token            *string
@@ -108,31 +107,31 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	if config.AllowedCountries == nil {
 		m := make(map[string][]string)
 		config.AllowedCountries = m
-		config.SetAllowedCountries(CollectionAPIName, []string{"Tanzania"})
-		config.SetAllowedCountries(DisbursementAPIName, []string{"Tanzania"})
-		config.SetAllowedCountries(AccountAPIName, []string{"Tanzania"})
-		config.SetAllowedCountries(KYCAPIName, []string{"Tanzania"})
-		config.SetAllowedCountries(TransactionAPIName, []string{"Tanzania"})
+		config.SetAllowedCountries(CollectionApiGroup, []string{"Tanzania"})
+		config.SetAllowedCountries(DisbursementApiGroup, []string{"Tanzania"})
+		config.SetAllowedCountries(AccountApiGroup, []string{"Tanzania"})
+		config.SetAllowedCountries(KycApiGroup, []string{"Tanzania"})
+		config.SetAllowedCountries(TransactionApiGroup, []string{"Tanzania"})
 
 	}
 	token := new(string)
 	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
-	baseURL := new(string)
-	env := config.Environment
-	switch env {
-	case STAGING:
-		*baseURL = BaseURLStaging
+	//baseURL := new(string)
+	//env := config.Environment
+	//switch env {
+	//case STAGING:
+	//	*baseURL = BaseURLStaging
+	//
+	//case PRODUCTION:
+	//	*baseURL = BaseURLProduction
+	//
+	//default:
+	//	*baseURL = BaseURLStaging
+	//}
 
-	case PRODUCTION:
-		*baseURL = BaseURLProduction
-
-	default:
-		*baseURL = BaseURLStaging
-	}
-
-	url := *baseURL
+	//	url := *baseURL
 	return &Client{
-		baseURL:          url,
+		//	baseURL:          url,
 		Conf:             config,
 		base:             base,
 		token:            token,

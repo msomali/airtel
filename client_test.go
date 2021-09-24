@@ -113,7 +113,7 @@ func TestConfig_SetAllowedCountries(t *testing.T) {
 				Secret:             "",
 			},
 			args: args{
-				apiName:   CollectionAPIName,
+				apiName:   CollectionApiGroup,
 				countries: []string{"Kenya", "Uganda"},
 			},
 		},

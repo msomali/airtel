@@ -63,7 +63,7 @@ func (c *Client) UserEnquiry(ctx context.Context, request models.AirtelUserEnqui
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := requestURL(c.Conf.Environment, UserEnquiry)
+	reqUrl := c.requestURL(UserEnquiry)
 	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
 
 	res := new(models.AirtelUserEnquiryResponse)

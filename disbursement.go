@@ -62,7 +62,7 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
-	reqUrl := requestURL(c.Conf.Environment, Disbursement)
+	reqUrl := c.requestURL(Disbursement)
 	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
 	res := new(models.AirtelDisburseResponse)
 	_, err = c.base.Do(ctx, "disbursement", req, res)
@@ -95,7 +95,7 @@ func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDi
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := requestURL(c.Conf.Environment, DisbursementEnquiry)
+	reqUrl := c.requestURL(DisbursementEnquiry)
 	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
 	res := new(models.AirtelDisburseEnquiryResponse)
 	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)

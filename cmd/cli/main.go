@@ -31,7 +31,48 @@ import (
 	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/techcraftlabs/airtel/cli"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/pkg/env"
 	"os"
+	"strings"
+)
+
+const (
+	envPublicKey                   = "AIRTEL_MONEY_PUBKEY"
+	envDisbursePin                 = "AIRTEL_MONEY_DISBURSE_PIN"
+	envClientId                    = "AIRTEL_MONEY_CLIENT_ID"
+	envClientSecret                = "AIRTEL_MONEY_CLIENT_SECRET"
+	envDebugMode                   = "AIRTEL_MONEY_DEBUG_MODE"
+	envDeploymentEnv               = "AIRTEL_MONEY_DEPLOYMENT"
+	envCallbackAuth                = "AIRTEL_MONEY_CALLBACK_AUTH"
+	envCallbackPrivKey             = "AIRTEL_MONEY_CALLBACK_PRIVKEY"
+	envCountries                   = "AIRTEL_MONEY_COUNTRIES"
+	envAuthEndpoint                = "AIRTEL_MONEY_AUTH_ENDPOINT"
+	envPushEndpoint                = "AIRTEL_MONEY_PUSH_ENDPOINT"
+	envRefundEndpoint              = "AIRTEL_MONEY_REFUND_ENDPOINT"
+	envPushEnquiryEndpoint         = "AIRTEL_MONEY_PUSH_ENQUIRY_ENDPOINT"
+	envDisbursementEndpoint        = "AIRTEL_MONEY_DISBURSE_ENDPOINT"
+	envDisbursementEnquiryEndpoint = "AIRTEL_MONEY_DISBURSE_ENQUIRY_ENDPOINT"
+	envTransactionSummaryEndpoint  = "AIRTEL_MONEY_SUMMARY_ENDPOINT"
+	envBalanceEnquiryEndpoint      = "AIRTEL_MONEY_BALANCE_ENDPOINT"
+	envUserEnquiryEndpoint         = "AIRTEL_MONEY_USER_ENDPOINT"
+	defPublicKey                   = ""
+	defDisbursePin                 = "4094"
+	defClientId                    = "747b6063-5eea-4464-b27c-a8f89c2e1fe3"
+	defClientSecret                = "9c8ded86-f45a-48f4-a9ee-8063cf8f43a0"
+	defDebugMode                   = true
+	defDeploymentEnv               = "staging"
+	defCallbackAuth                = false
+	defCallbackPrivKey             = ""
+	defCountries                   = "tanzania"
+	defAuthEndpoint                = "/auth/oauth2/token"
+	defPushEndpoint                = "/merchant/v1/payments/"
+	defRefundEndpoint              = "/standard/v1/payments/refund"
+	defPushEnquiryEndpoint         = "/standard/v1/payments/"
+	defDisbursementEndpoint        = "/standard/v1/disbursements/"
+	defDisbursementEnquiryEndpoint = "/standard/v1/disbursements/"
+	defTransactionSummaryEndpoint  = "/merchant/v1/transactions"
+	defBalanceEnquiryEndpoint      = "/standard/v1/users/balance"
+	defUserEnquiryEndpoint         = "/standard/v1/users/"
 )
 
 func callbacker() airtel.PushCallbackFunc {
@@ -41,22 +82,51 @@ func callbacker() airtel.PushCallbackFunc {
 }
 
 func main() {
-	pubKey := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
-	//	pubKey2 := "MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCkq3XbDI1s8Lu7SpUBP+bqOs/MC6PKWz6n/0UkqTiOZqKqaoZClI3BUDTrSIJsrN1Qx7ivBzsaAYfsB0CygSSWay4iyUcnMVEDrNVOJwtWvHxpyWJC5RfKBrweW9b8klFa/CfKRtkK730apy0Kxjg+7fF0tB4O3Ic9Gxuv4pFkbQIDAQAB"
+
+	var (
+		pubKey          = env.String(envPublicKey, defPublicKey)
+		disbursePin     = env.String(envDisbursePin, defDisbursePin)
+		callbackPrivKey = env.String(envCallbackPrivKey, defCallbackPrivKey)
+		clientID        = env.String(envClientId, defClientId)
+		secret          = env.String(envClientSecret, defClientSecret)
+		debugMode       = env.Bool(envDebugMode, defDebugMode)
+		callbackAuth    = env.Bool(envCallbackAuth, defCallbackAuth)
+		deployEnv       = strings.ToLower(env.String(envDeploymentEnv, defDeploymentEnv))
+		countries       = strings.Split(env.String(envCountries, defCountries), " ")
+		endpoints       = &airtel.Endpoints{
+			AuthEndpoint:                env.String(envAuthEndpoint, defAuthEndpoint),
+			PushEndpoint:                env.String(envPushEndpoint, defPushEndpoint),
+			RefundEndpoint:              env.String(envRefundEndpoint, defRefundEndpoint),
+			PushEnquiryEndpoint:         env.String(envPushEnquiryEndpoint, defPushEnquiryEndpoint),
+			DisbursementEndpoint:        env.String(envDisbursementEndpoint, defDisbursementEndpoint),
+			DisbursementEnquiryEndpoint: env.String(envDisbursementEnquiryEndpoint, defDisbursementEnquiryEndpoint),
+			TransactionSummaryEndpoint:  env.String(envTransactionSummaryEndpoint, defTransactionSummaryEndpoint),
+			BalanceEnquiryEndpoint:      env.String(envBalanceEnquiryEndpoint, defBalanceEnquiryEndpoint),
+			UserEnquiryEndpoint:         env.String(envUserEnquiryEndpoint, defUserEnquiryEndpoint),
+		}
+	)
+
 	config := &airtel.Config{
-		AllowedCountries:   nil,
-		DisbursePIN:        "4094",
-		CallbackPrivateKey: "",
-		CallbackAuth:       false,
+		Endpoints: endpoints,
+		AllowedCountries: map[string][]string{
+			airtel.TransactionApiGroup:  countries,
+			airtel.CollectionApiGroup:   countries,
+			airtel.DisbursementApiGroup: countries,
+			airtel.AccountApiGroup:      countries,
+			airtel.KycApiGroup:          countries,
+		},
+		DisbursePIN:        disbursePin,
+		CallbackPrivateKey: callbackPrivKey,
+		CallbackAuth:       callbackAuth,
 		PublicKey:          pubKey,
-		Environment:        airtel.PRODUCTION,
-		ClientID:           "747b6063-5eea-4464-b27c-a8f89c2e1fe3",
-		Secret:             "9c8ded86-f45a-48f4-a9ee-8063cf8f43a0",
+		Environment:        airtel.Environment(deployEnv),
+		ClientID:           clientID,
+		Secret:             secret,
 	}
 
 	fn := callbacker()
 
-	airtelClient := airtel.NewClient(config, fn, true)
+	airtelClient := airtel.NewClient(config, fn, debugMode)
 
 	apiConfig := &http.Config{
 		BaseURL:   "",
