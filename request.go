@@ -150,7 +150,10 @@ type (
 )
 
 func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...internal.RequestOption) *internal.Request {
-	url := c.requestURL(requestType)
+	baseURL := c.Conf.BaseURL
+	endpoints := c.Conf.Endpoints
+	edps := *endpoints
+	url := appendEndpoint(baseURL, requestType.Endpoint(edps))
 	method := requestType.HttpMexprethod()
 	return internal.NewRequest(method, url, payload, opts...)
 }
@@ -179,39 +182,9 @@ func appendEndpoint(url string, endpoint string) string {
 	return ""
 }
 
-func (c *Client) requestURL(requestType RequestType) string {
-	baseURL := c.Conf.BaseURL
-	endpoints := c.Conf.Endpoints
-
-	switch requestType {
-	case Authorization:
-		return appendEndpoint(baseURL, endpoints.AuthEndpoint)
-
-	case UssdPush:
-		return appendEndpoint(baseURL, endpoints.PushEndpoint)
-
-	case Refund:
-		return appendEndpoint(baseURL, endpoints.RefundEndpoint)
-
-	case PushEnquiry:
-
-		return appendEndpoint(baseURL, endpoints.PushEnquiryEndpoint)
-
-	case Disbursement:
-		return appendEndpoint(baseURL, endpoints.DisbursementEndpoint)
-
-	case DisbursementEnquiry:
-		return appendEndpoint(baseURL, endpoints.DisbursementEnquiryEndpoint)
-
-	case TransactionSummary:
-		return appendEndpoint(baseURL, endpoints.TransactionSummaryEndpoint)
-
-	case BalanceEnquiry:
-		return appendEndpoint(baseURL, endpoints.BalanceEnquiryEndpoint)
-
-	case UserEnquiry:
-		return appendEndpoint(baseURL, endpoints.UserEnquiryEndpoint)
-	}
-	return ""
-
-}
+//func (c *Client) requestURL(requestType RequestType) string {
+//	baseURL := c.Conf.BaseURL
+//	endpoints := c.Conf.Endpoints
+//	edps := *endpoints
+//	return appendEndpoint(baseURL,requestType.Endpoint(edps))
+//}

@@ -30,7 +30,6 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
-	"net/http"
 )
 
 type (
@@ -86,9 +85,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 	queryMapOpt := queryParamsOptions(params, queryMap)
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt, queryMapOpt)
-
-	reqUrl := c.requestURL(TransactionSummary)
-	req := internal.NewRequest(http.MethodGet, reqUrl, nil, opts...)
+	req := c.makeInternalRequest(TransactionSummary,nil, opts...)
 
 	res := new(models.ListTransactionsResponse)
 

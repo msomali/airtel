@@ -64,9 +64,7 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
-	reqUrl := c.requestURL(UssdPush)
-
-	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
+	req := c.makeInternalRequest(UssdPush,request, opts...)
 
 	if err != nil {
 		return models.AirtelPushResponse{}, err
@@ -99,9 +97,8 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 	}
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
-	reqUrl := c.requestURL(Refund)
 
-	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
+	req := c.makeInternalRequest(Refund, request, opts...)
 
 	if err != nil {
 		return models.AirtelRefundResponse{}, err

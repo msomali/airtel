@@ -31,7 +31,6 @@ import (
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"net/http"
 )
 
 type (
@@ -63,8 +62,7 @@ func (c *Client) Balance(ctx context.Context, request models.AirtelBalanceEnquir
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := c.requestURL(BalanceEnquiry)
-	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
+	req := c.makeInternalRequest(BalanceEnquiry,request, opts...)
 	res := new(models.AirtelBalanceEnquiryResponse)
 	_, err = c.base.Do(ctx, "balance enquiry", req, res)
 	if err != nil {

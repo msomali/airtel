@@ -31,7 +31,6 @@ import (
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"net/http"
 )
 
 type (
@@ -63,8 +62,8 @@ func (c *Client) UserEnquiry(ctx context.Context, request models.AirtelUserEnqui
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := c.requestURL(UserEnquiry)
-	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
+
+	req := c.makeInternalRequest(UserEnquiry, request, opts...)
 
 	res := new(models.AirtelUserEnquiryResponse)
 	_, err = c.base.Do(ctx, "user enquiry", req, res)

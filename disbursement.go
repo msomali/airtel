@@ -31,7 +31,6 @@ import (
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
-	"net/http"
 )
 
 type DisbursementService interface {
@@ -62,8 +61,8 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
-	reqUrl := c.requestURL(Disbursement)
-	req := internal.NewRequest(http.MethodPost, reqUrl, request, opts...)
+
+	req := c.makeInternalRequest(Disbursement, request, opts...)
 	res := new(models.AirtelDisburseResponse)
 	_, err = c.base.Do(ctx, "disbursement", req, res)
 	if err != nil {
@@ -95,8 +94,7 @@ func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDi
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOption)
-	reqUrl := c.requestURL(DisbursementEnquiry)
-	req := internal.NewRequest(http.MethodGet, reqUrl, request, opts...)
+	req := c.makeInternalRequest(DisbursementEnquiry,request, opts...)
 	res := new(models.AirtelDisburseEnquiryResponse)
 	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)
 	if err != nil {
