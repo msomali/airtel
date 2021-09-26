@@ -84,6 +84,14 @@ func (config *Config) SetAllowedCountries(apiName string, countries []string) {
 	config.AllowedCountries[apiName] = countries
 }
 
+func (c *Client) SetRequestAdapter(adapter RequestAdapter)  {
+	c.reqAdapter = adapter
+}
+
+func (c *Client) SetResponseAdapter(adapter ResponseAdapter)  {
+	c.resAdapter = adapter
+}
+
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
 	if config.AllowedCountries == nil {
 		m := make(map[string][]string)
@@ -102,8 +110,8 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 		Conf:             config,
 		base:             base,
 		token:            token,
-		resAdapter:       &ResAdapter{},
-		reqAdapter:       &ReqAdapter{Conf: config},
+		resAdapter:       &adapter{},
+		reqAdapter:       &adapter{Conf: config},
 		pushCallbackFunc: pushCallbackFunc,
 	}
 }

@@ -80,7 +80,7 @@ func (c *Client) Token(ctx context.Context) (models.TokenResponse, error) {
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
 	res := new(models.TokenResponse)
-	reqName := Authorization.Name()
+	reqName := Authorization.name()
 	_, err := c.base.Do(ctx, reqName, req, res)
 	if err != nil {
 		return models.TokenResponse{}, err

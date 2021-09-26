@@ -55,7 +55,7 @@ const (
 	UserEnquiry
 )
 
-func (t RequestType) HttpMexprethod() string {
+func (t RequestType) httpMethod() string {
 	switch t {
 	case Authorization, UssdPush, Refund, PushCallback, Disbursement:
 		return http.MethodPost
@@ -69,7 +69,7 @@ func (t RequestType) HttpMexprethod() string {
 	}
 }
 
-func (t RequestType) Name() string {
+func (t RequestType) name() string {
 	return []string{"authorization", "ussd push", "refund", "push enquiry", "push callback",
 		"disbursement", "disbursement enquiry", "balance enquiry", "transaction summary",
 		"user enquiry"}[t]
@@ -100,7 +100,7 @@ func (t RequestType) Group() string {
 	}
 }
 
-func (t RequestType) Endpoint(es Endpoints) string {
+func (t RequestType) endpoint(es Endpoints) string {
 	switch t {
 	case Authorization:
 		return es.AuthEndpoint
@@ -153,8 +153,8 @@ func (c *Client) makeInternalRequest(requestType RequestType, payload interface{
 	baseURL := c.Conf.BaseURL
 	endpoints := c.Conf.Endpoints
 	edps := *endpoints
-	url := appendEndpoint(baseURL, requestType.Endpoint(edps))
-	method := requestType.HttpMexprethod()
+	url := appendEndpoint(baseURL, requestType.endpoint(edps))
+	method := requestType.httpMethod()
 	return internal.NewRequest(method, url, payload, opts...)
 }
 
@@ -186,5 +186,5 @@ func appendEndpoint(url string, endpoint string) string {
 //	baseURL := c.Conf.BaseURL
 //	endpoints := c.Conf.Endpoints
 //	edps := *endpoints
-//	return appendEndpoint(baseURL,requestType.Endpoint(edps))
+//	return appendEndpoint(baseURL,requestType.endpoint(edps))
 //}

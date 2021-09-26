@@ -35,7 +35,7 @@ import (
 
 type DisbursementService interface {
 	disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error)
-	TransactionEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
+	DisburseEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
 }
 
 func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
@@ -80,7 +80,7 @@ func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (
 	req := c.makeInternalRequest(Disbursement, request, opts...)
 	res := new(models.DisburseResponse)
 	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.Name())
+	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
 		return models.DisburseResponse{}, err
@@ -88,7 +88,7 @@ func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (
 	return *res, nil
 }
 
-func (c *Client) TransactionEnquiry(ctx context.Context, request models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error) {
+func (c *Client) DisburseEnquiry(ctx context.Context, request models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
 		return models.DisburseEnquiryResponse{}, err

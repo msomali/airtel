@@ -32,8 +32,8 @@ import (
 )
 
 var (
-	_ ResponseAdapter = (*ResAdapter)(nil)
-	_ RequestAdapter  = (*ReqAdapter)(nil)
+	_ ResponseAdapter = (*adapter)(nil)
+	_ RequestAdapter  = (*adapter)(nil)
 )
 
 type (
@@ -41,19 +41,22 @@ type (
 		ToDisburseResponse(response models.DisburseResponse) DisburseResponse
 		ToPushPayResponse(response models.PushResponse) PushPayResponse
 	}
-	ResAdapter struct {
+
+	// adapter acts as a default RequestAdapter and ResponseAdapter. This can be replaced
+	// by other user defined adapters. and then injected to the client using the
+	// Client.SetRequestAdapter or Client.SetResponseAdapter, it is not recommended as of now
+	// 26th September 2021
+	adapter struct {
+		Conf *Config
 	}
 	RequestAdapter interface {
 		ToPushPayRequest(request PushPayRequest) models.PushRequest
 		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
 	}
 
-	ReqAdapter struct {
-		Conf *Config
-	}
 )
 
-func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
+func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
 
 	subCountry, _ := countries.GetByName(request.SubscriberCountry)
 	transCountry, _ := countries.GetByName(request.TransactionCountry)
@@ -82,7 +85,7 @@ func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.PushRequest
 	}
 }
 
-func (r *ReqAdapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
+func (r *adapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
 	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
 		return models.DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
@@ -107,7 +110,7 @@ func (r *ReqAdapter) ToDisburseRequest(request DisburseRequest) (models.Disburse
 	return req, nil
 }
 
-func (r *ResAdapter) ToPushPayResponse(response models.PushResponse) PushPayResponse {
+func (r *adapter) ToPushPayResponse(response models.PushResponse) PushPayResponse {
 	transaction := response.Data.Transaction
 	status := response.Status
 
@@ -142,7 +145,7 @@ func (r *ResAdapter) ToPushPayResponse(response models.PushResponse) PushPayResp
 	}
 }
 
-func (r *ResAdapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
+func (r *adapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
 
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {

@@ -37,7 +37,7 @@ import (
 type CollectionService interface {
 	push(ctx context.Context, request models.PushRequest) (models.PushResponse, error)
 	Refund(ctx context.Context, request models.RefundRequest) (models.RefundResponse, error)
-	Enquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error)
+	PushEnquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error)
 	CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
 }
 
@@ -117,7 +117,7 @@ func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (mode
 
 	res := new(models.RefundResponse)
 	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.Name())
+	rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
 		return models.RefundResponse{}, err
@@ -126,7 +126,7 @@ func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (mode
 
 }
 
-func (c *Client) Enquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error) {
+func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error) {
 
 	country, err := countries.GetByName(request.CountryOfTransaction)
 	if err != nil {
@@ -151,7 +151,7 @@ func (c *Client) Enquiry(ctx context.Context, request models.PushEnquiryRequest)
 	if err != nil {
 		return models.PushEnquiryResponse{}, err
 	}
-	reqName := PushEnquiry.Name()
+	reqName := PushEnquiry.name()
 	res := new(models.PushEnquiryResponse)
 	_, err = c.base.Do(ctx, reqName, req, res)
 	if err != nil {
