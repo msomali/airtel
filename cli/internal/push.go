@@ -28,7 +28,6 @@ package internal
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -73,7 +72,7 @@ func PushCommand(client *http.Client) *Cmd {
 	}
 }
 
-func pushResponsePrintOut(response api.PushPayResponse) {
+func pushResponsePrintOut(response airtel.PushPayResponse) {
 	// initialize tabwriter
 	w := new(tabwriter.Writer)
 

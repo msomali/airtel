@@ -94,19 +94,3 @@ func WithResponseError(err error) ResponseOption {
 		response.Error = err
 	}
 }
-
-//
-//func (response *Response) MarshalJSON() ([]byte, error) {
-//	return json.Marshal(&struct {
-//		StatusCode  int               `json:"status_code"`
-//		Payload     interface{}       `json:"payload"`
-//		PayloadType string            `json:"payload_type"`
-//		Headers     map[string]string `json:"headers"`
-//		Error       string            `json:"error"`
-//	}{
-//		StatusCode: response.StatusCode,
-//		Payload:    nil,
-//		Headers:    response.Headers,
-//		Error:      response.Error.Error(),
-//	})
-//}

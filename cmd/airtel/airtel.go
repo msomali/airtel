@@ -35,7 +35,7 @@ import (
 )
 
 func callbacker() airtel.PushCallbackFunc {
-	return func(request models.AirtelCallbackRequest) error {
+	return func(request models.CallbackRequest) error {
 		return nil
 	}
 }
@@ -76,7 +76,7 @@ func main() {
 	//	TransactionID:      fmt.Sprintf("%v", time.Now().UnixNano()),
 	//}
 	//fmt.Printf("perform push pay\n")
-	//pushPayResponse, err := apiClient.Push(context.TODO(), req)
+	//pushPayResponse, err := apiClient.push(context.TODO(), req)
 	//if err != nil {
 	//	fmt.Printf("error %v\n", err)
 	//	return

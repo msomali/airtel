@@ -34,20 +34,35 @@ import (
 )
 
 type DisbursementService interface {
-	Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error)
-	TransactionEnquiry(ctx context.Context, response models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error)
+	disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error)
+	TransactionEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
 }
 
-func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequest) (models.AirtelDisburseResponse, error) {
+func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
+	disburseRequest, err := c.reqAdapter.ToDisburseRequest(request)
+	if err != nil {
+		return DisburseResponse{}, err
+	}
+
+	disburseResponse, err := c.disburse(ctx, disburseRequest)
+	if err != nil {
+		return DisburseResponse{}, err
+	}
+	response := c.resAdapter.ToDisburseResponse(disburseResponse)
+
+	return response, nil
+}
+
+func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelDisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.AirtelDisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 	var opts []internal.RequestOption
 
@@ -63,26 +78,26 @@ func (c *Client) Disburse(ctx context.Context, request models.AirtelDisburseRequ
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
-	res := new(models.AirtelDisburseResponse)
+	res := new(models.DisburseResponse)
 	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s",env,Disbursement.Group(), Disbursement.Name())
+	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.Name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return models.AirtelDisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 	return *res, nil
 }
 
-func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDisburseEnquiryRequest) (models.AirtelDisburseEnquiryResponse, error) {
+func (c *Client) TransactionEnquiry(ctx context.Context, request models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelDisburseEnquiryResponse{}, err
+		return models.DisburseEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.AirtelDisburseEnquiryResponse{}, err
+		return models.DisburseEnquiryResponse{}, err
 	}
 	var opts []internal.RequestOption
 
@@ -96,11 +111,11 @@ func (c *Client) TransactionEnquiry(ctx context.Context, request models.AirtelDi
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOption)
-	req := c.makeInternalRequest(DisbursementEnquiry,request, opts...)
-	res := new(models.AirtelDisburseEnquiryResponse)
+	req := c.makeInternalRequest(DisbursementEnquiry, request, opts...)
+	res := new(models.DisburseEnquiryResponse)
 	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)
 	if err != nil {
-		return models.AirtelDisburseEnquiryResponse{}, err
+		return models.DisburseEnquiryResponse{}, err
 	}
 	return *res, nil
 }

@@ -23,25 +23,91 @@
  *
  */
 
-package api
+package airtel
 
 import (
+	"fmt"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/pkg/countries"
 )
 
 var (
 	_ ResponseAdapter = (*ResAdapter)(nil)
+	_ RequestAdapter  = (*ReqAdapter)(nil)
 )
 
-type ResponseAdapter interface {
-	ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse
-	ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse
+type (
+	ResponseAdapter interface {
+		ToDisburseResponse(response models.DisburseResponse) DisburseResponse
+		ToPushPayResponse(response models.PushResponse) PushPayResponse
+	}
+	ResAdapter struct {
+	}
+	RequestAdapter interface {
+		ToPushPayRequest(request PushPayRequest) models.PushRequest
+		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
+	}
+
+	ReqAdapter struct {
+		Conf *Config
+	}
+)
+
+func (r *ReqAdapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
+
+	subCountry, _ := countries.GetByName(request.SubscriberCountry)
+	transCountry, _ := countries.GetByName(request.TransactionCountry)
+	return models.PushRequest{
+		Reference: request.Reference,
+		Subscriber: struct {
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			Msisdn   string `json:"msisdn"`
+		}{
+			Country:  subCountry.CodeName,
+			Currency: subCountry.CurrencyCode,
+			Msisdn:   request.SubscriberMsisdn,
+		},
+		Transaction: struct {
+			Amount   int64  `json:"amount"`
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			ID       string `json:"id"`
+		}{
+			Amount:   request.TransactionAmount,
+			Country:  transCountry.CodeName,
+			Currency: transCountry.CurrencyCode,
+			ID:       request.TransactionID,
+		},
+	}
 }
 
-type ResAdapter struct {
+func (r *ReqAdapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
+	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
+	if err != nil {
+		return models.DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
+	}
+	req := models.DisburseRequest{
+		CountryOfTransaction: request.CountryOfTransaction,
+		Payee: struct {
+			Msisdn string `json:"msisdn"`
+		}{
+			Msisdn: request.MSISDN,
+		},
+		Reference: request.Reference,
+		Pin:       encryptedPin,
+		Transaction: struct {
+			Amount int64  `json:"amount"`
+			ID     string `json:"id"`
+		}{
+			Amount: request.Amount,
+			ID:     request.ID,
+		},
+	}
+	return req, nil
 }
 
-func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushPayResponse {
+func (r *ResAdapter) ToPushPayResponse(response models.PushResponse) PushPayResponse {
 	transaction := response.Data.Transaction
 	status := response.Status
 
@@ -76,7 +142,7 @@ func (r *ResAdapter) ToPushPayResponse(response models.AirtelPushResponse) PushP
 	}
 }
 
-func (r *ResAdapter) ToDisburseResponse(response models.AirtelDisburseResponse) DisburseResponse {
+func (r *ResAdapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
 
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {

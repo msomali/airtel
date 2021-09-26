@@ -38,7 +38,7 @@ import (
 )
 
 type Authenticator interface {
-	Token(ctx context.Context) (models.AirtelAuthResponse, error)
+	Token(ctx context.Context) (models.TokenResponse, error)
 }
 
 func (c *Client) checkToken(ctx context.Context) (string, error) {
@@ -63,8 +63,8 @@ func (c *Client) checkToken(ctx context.Context) (string, error) {
 	return token, nil
 }
 
-func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
-	body := models.AirtelAuthRequest{
+func (c *Client) Token(ctx context.Context) (models.TokenResponse, error) {
+	body := models.TokenRequest{
 		ClientID:     c.Conf.ClientID,
 		ClientSecret: c.Conf.Secret,
 		GrantType:    defaultGrantType,
@@ -79,11 +79,11 @@ func (c *Client) Token(ctx context.Context) (models.AirtelAuthResponse, error) {
 	opts = append(opts, internal.WithRequestHeaders(hs))
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
-	res := new(models.AirtelAuthResponse)
+	res := new(models.TokenResponse)
 	reqName := Authorization.Name()
 	_, err := c.base.Do(ctx, reqName, req, res)
 	if err != nil {
-		return models.AirtelAuthResponse{}, err
+		return models.TokenResponse{}, err
 	}
 	duration := time.Duration(res.ExpiresIn)
 	now := time.Now()

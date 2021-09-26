@@ -27,8 +27,7 @@ package cli
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/airtel/api"
-	"github.com/techcraftlabs/airtel/api/http"
+	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/cli/internal"
 	"github.com/techcraftlabs/airtel/internal/io"
 	clix "github.com/urfave/cli/v2"
@@ -37,16 +36,16 @@ import (
 
 type (
 	App struct {
-		client api.Service
+		client airtel.Service
 		app    *clix.App
 	}
 )
 
-func commands(client *http.Client) []*clix.Command {
+func commands(client *airtel.Client) []*clix.Command {
 	tokenCmd := internal.TokenCommand(client).Command()
 	pushCmd := internal.PushCommand(client).Command()
 	disburseCmd := internal.DisburseCommand(client).Command()
-	return appendCommands(tokenCmd, pushCmd,disburseCmd)
+	return appendCommands(tokenCmd, pushCmd, disburseCmd)
 }
 
 func appendCommands(comm ...*clix.Command) []*clix.Command {
@@ -73,7 +72,7 @@ func authors(auth ...*clix.Author) []*clix.Author {
 	return authors
 }
 
-func New(httpApiClient *http.Client) *App {
+func New(httpApiClient *airtel.Client) *App {
 
 	author1 := &clix.Author{
 		Name:  "Pius Alfred",

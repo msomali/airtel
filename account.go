@@ -35,20 +35,20 @@ import (
 
 type (
 	AccountService interface {
-		Balance(ctx context.Context, request models.AirtelBalanceEnquiryRequest) (models.AirtelBalanceEnquiryResponse, error)
+		Balance(ctx context.Context, request models.BalanceEnquiryRequest) (models.BalanceEnquiryResponse, error)
 	}
 )
 
-func (c *Client) Balance(ctx context.Context, request models.AirtelBalanceEnquiryRequest) (models.AirtelBalanceEnquiryResponse, error) {
+func (c *Client) Balance(ctx context.Context, request models.BalanceEnquiryRequest) (models.BalanceEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelBalanceEnquiryResponse{}, err
+		return models.BalanceEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.AirtelBalanceEnquiryResponse{}, err
+		return models.BalanceEnquiryResponse{}, err
 	}
 	var opts []internal.RequestOption
 
@@ -62,11 +62,11 @@ func (c *Client) Balance(ctx context.Context, request models.AirtelBalanceEnquir
 	headersOpt := internal.WithRequestHeaders(hs)
 	endpointOption := internal.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
-	req := c.makeInternalRequest(BalanceEnquiry,request, opts...)
-	res := new(models.AirtelBalanceEnquiryResponse)
+	req := c.makeInternalRequest(BalanceEnquiry, request, opts...)
+	res := new(models.BalanceEnquiryResponse)
 	_, err = c.base.Do(ctx, "balance enquiry", req, res)
 	if err != nil {
-		return models.AirtelBalanceEnquiryResponse{}, err
+		return models.BalanceEnquiryResponse{}, err
 	}
 	return *res, nil
 }

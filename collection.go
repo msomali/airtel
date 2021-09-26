@@ -35,16 +35,27 @@ import (
 )
 
 type CollectionService interface {
-	Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error)
-	Refund(ctx context.Context, request models.AirtelRefundRequest) (models.AirtelRefundResponse, error)
-	Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest) (models.AirtelPushEnquiryResponse, error)
+	push(ctx context.Context, request models.PushRequest) (models.PushResponse, error)
+	Refund(ctx context.Context, request models.RefundRequest) (models.RefundResponse, error)
+	Enquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error)
 	CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
 }
 
-func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (models.AirtelPushResponse, error) {
+func (c *Client) Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error) {
+
+	pushRequest := c.reqAdapter.ToPushPayRequest(request)
+	pushResponse, err := c.push(ctx, pushRequest)
+	if err != nil {
+		return PushPayResponse{}, err
+	}
+	response := c.resAdapter.ToPushPayResponse(pushResponse)
+	return response, nil
+}
+
+func (c *Client) push(ctx context.Context, request models.PushRequest) (models.PushResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelPushResponse{}, err
+		return models.PushResponse{}, err
 	}
 
 	transaction := request.Transaction
@@ -64,28 +75,28 @@ func (c *Client) Push(ctx context.Context, request models.AirtelPushRequest) (mo
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
-	req := c.makeInternalRequest(UssdPush,request, opts...)
+	req := c.makeInternalRequest(UssdPush, request, opts...)
 
 	if err != nil {
-		return models.AirtelPushResponse{}, err
+		return models.PushResponse{}, err
 	}
 
-	res := new(models.AirtelPushResponse)
+	res := new(models.PushResponse)
 	_, err = c.base.Do(ctx, "ussd push", req, res)
 	if err != nil {
-		return models.AirtelPushResponse{}, err
+		return models.PushResponse{}, err
 	}
 	return *res, nil
 }
 
-func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest) (models.AirtelRefundResponse, error) {
+func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (models.RefundResponse, error) {
 	country, err := countries.GetByName(request.CountryOfTransaction)
 	if err != nil {
-		return models.AirtelRefundResponse{}, err
+		return models.RefundResponse{}, err
 	}
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelRefundResponse{}, err
+		return models.RefundResponse{}, err
 	}
 	var opts []internal.RequestOption
 	hs := map[string]string{
@@ -101,29 +112,29 @@ func (c *Client) Refund(ctx context.Context, request models.AirtelRefundRequest)
 	req := c.makeInternalRequest(Refund, request, opts...)
 
 	if err != nil {
-		return models.AirtelRefundResponse{}, err
+		return models.RefundResponse{}, err
 	}
 
-	res := new(models.AirtelRefundResponse)
+	res := new(models.RefundResponse)
 	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s",env,Refund.Group(), Refund.Name())
+	rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.Name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return models.AirtelRefundResponse{}, err
+		return models.RefundResponse{}, err
 	}
 	return *res, nil
 
 }
 
-func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRequest) (models.AirtelPushEnquiryResponse, error) {
+func (c *Client) Enquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error) {
 
 	country, err := countries.GetByName(request.CountryOfTransaction)
 	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
+		return models.PushEnquiryResponse{}, err
 	}
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
+		return models.PushEnquiryResponse{}, err
 	}
 	var opts []internal.RequestOption
 	hs := map[string]string{
@@ -138,19 +149,19 @@ func (c *Client) Enquiry(ctx context.Context, request models.AirtelPushEnquiryRe
 	opts = append(opts, headersOpt, endpointOpt)
 	req := c.makeInternalRequest(PushEnquiry, request, opts...)
 	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
+		return models.PushEnquiryResponse{}, err
 	}
 	reqName := PushEnquiry.Name()
-	res := new(models.AirtelPushEnquiryResponse)
+	res := new(models.PushEnquiryResponse)
 	_, err = c.base.Do(ctx, reqName, req, res)
 	if err != nil {
-		return models.AirtelPushEnquiryResponse{}, err
+		return models.PushEnquiryResponse{}, err
 	}
 	return *res, nil
 }
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	body := new(models.AirtelCallbackRequest)
+	body := new(models.CallbackRequest)
 	err := internal.ReceivePayload(request, body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)

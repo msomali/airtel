@@ -35,20 +35,20 @@ import (
 
 type (
 	KYCService interface {
-		UserEnquiry(ctx context.Context, request models.AirtelUserEnquiryRequest) (models.AirtelUserEnquiryResponse, error)
+		UserEnquiry(ctx context.Context, request models.UserEnquiryRequest) (models.UserEnquiryResponse, error)
 	}
 )
 
-func (c *Client) UserEnquiry(ctx context.Context, request models.AirtelUserEnquiryRequest) (models.AirtelUserEnquiryResponse, error) {
+func (c *Client) UserEnquiry(ctx context.Context, request models.UserEnquiryRequest) (models.UserEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.AirtelUserEnquiryResponse{}, err
+		return models.UserEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.AirtelUserEnquiryResponse{}, err
+		return models.UserEnquiryResponse{}, err
 	}
 	var opts []internal.RequestOption
 
@@ -65,10 +65,10 @@ func (c *Client) UserEnquiry(ctx context.Context, request models.AirtelUserEnqui
 
 	req := c.makeInternalRequest(UserEnquiry, request, opts...)
 
-	res := new(models.AirtelUserEnquiryResponse)
+	res := new(models.UserEnquiryResponse)
 	_, err = c.base.Do(ctx, "user enquiry", req, res)
 	if err != nil {
-		return models.AirtelUserEnquiryResponse{}, err
+		return models.UserEnquiryResponse{}, err
 	}
 	return *res, nil
 }

@@ -28,7 +28,6 @@ package airtel
 import (
 	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
-	"strings"
 	"time"
 )
 
@@ -62,15 +61,17 @@ type (
 		token            *string
 		tokenExpiresAt   time.Time
 		pushCallbackFunc PushCallbackHandler
+		reqAdapter       RequestAdapter
+		resAdapter       ResponseAdapter
 	}
 
 	PushCallbackHandler interface {
-		Handle(request models.AirtelCallbackRequest) error
+		Handle(request models.CallbackRequest) error
 	}
-	PushCallbackFunc func(request models.AirtelCallbackRequest) error
+	PushCallbackFunc func(request models.CallbackRequest) error
 )
 
-func (pf PushCallbackFunc) Handle(request models.AirtelCallbackRequest) error {
+func (pf PushCallbackFunc) Handle(request models.CallbackRequest) error {
 	return pf(request)
 }
 
@@ -81,25 +82,6 @@ func (config *Config) SetAllowedCountries(apiName string, countries []string) {
 	}
 
 	config.AllowedCountries[apiName] = countries
-}
-
-func contains(s []string, str string) bool {
-	for _, v := range s {
-		if strings.ToLower(v) == strings.ToLower(str) {
-			return true
-		}
-	}
-
-	return false
-}
-
-func checkIfCountryIsAllowed(api string, country string, allCountries map[string][]string) bool {
-	a := allCountries[api]
-	if a == nil || len(a) <= 0 {
-		return false
-	}
-
-	return contains(a, country)
 }
 
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
@@ -120,6 +102,8 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 		Conf:             config,
 		base:             base,
 		token:            token,
+		resAdapter:       &ResAdapter{},
+		reqAdapter:       &ReqAdapter{Conf: config},
 		pushCallbackFunc: pushCallbackFunc,
 	}
 }

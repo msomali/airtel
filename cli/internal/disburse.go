@@ -28,7 +28,6 @@ package internal
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api"
 	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/urfave/cli/v2"
 	"os"
@@ -73,7 +72,7 @@ func DisburseCommand(client *http.Client) *Cmd {
 	}
 }
 
-func disburseResponsePrintOut(response api.DisburseResponse) {
+func disburseResponsePrintOut(response airtel.DisburseResponse) {
 	// initialize tabwriter
 	w := new(tabwriter.Writer)
 
@@ -100,4 +99,3 @@ func disburseResponsePrintOut(response api.DisburseResponse) {
 
 	_, _ = fmt.Fprintf(w, "\n")
 }
-

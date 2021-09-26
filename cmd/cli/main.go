@@ -30,7 +30,6 @@ import (
 
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/techcraftlabs/airtel/cli"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/env"
@@ -80,7 +79,7 @@ const (
 )
 
 func callbacker() airtel.PushCallbackFunc {
-	return func(request models.AirtelCallbackRequest) error {
+	return func(request models.CallbackRequest) error {
 		return nil
 	}
 }
@@ -134,9 +133,7 @@ func main() {
 
 	airtelClient := airtel.NewClient(config, fn, debugMode)
 
-	apiClient := http.NewClient(airtelClient)
-
-	app := cli.New(apiClient)
+	app := cli.New(airtelClient)
 
 	if err := app.Run(os.Args); err != nil {
 		fmt.Printf("error: %v\n", err)

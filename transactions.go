@@ -85,7 +85,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 	queryMapOpt := queryParamsOptions(params, queryMap)
 	headersOpt := internal.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt, queryMapOpt)
-	req := c.makeInternalRequest(TransactionSummary,nil, opts...)
+	req := c.makeInternalRequest(TransactionSummary, nil, opts...)
 
 	res := new(models.ListTransactionsResponse)
 

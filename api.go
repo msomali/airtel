@@ -23,11 +23,10 @@
  *
  */
 
-package api
+package airtel
 
 import (
 	"context"
-	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/internal/models"
 )
 
@@ -74,7 +73,7 @@ type (
 	Service interface {
 		Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error)
 		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
-		Summary(ctx context.Context, params airtel.Params) (models.ListTransactionsResponse, error)
-		Token(ctx context.Context) (models.AirtelAuthResponse, error)
+		Summary(ctx context.Context, params Params) (models.ListTransactionsResponse, error)
+		Token(ctx context.Context) (models.TokenResponse, error)
 	}
 )

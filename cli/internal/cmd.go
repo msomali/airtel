@@ -28,8 +28,6 @@ package internal
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api"
-	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	clix "github.com/urfave/cli/v2"
@@ -45,7 +43,7 @@ const (
 
 type (
 	Cmd struct {
-		ApiClient   *http.Client
+		ApiClient   *airtel.Client
 		RequestType airtel.RequestType
 		Name        string
 		Usage       string
@@ -120,7 +118,7 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 			fmt.Printf("enquire about transaction of id %v\n", id)
 			return nil
 		}
-		req := api.PushPayRequest{
+		req := airtel.PushPayRequest{
 			Reference:          ref,
 			SubscriberCountry:  countries.TANZANIA,
 			SubscriberMsisdn:   phone,
@@ -150,12 +148,12 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 			fmt.Printf("enquire about transaction of id %v\n", id)
 			return nil
 		}
-		req := api.DisburseRequest{
-			Reference:          ref,
-			MSISDN: phone,
-			Amount: amount,
+		req := airtel.DisburseRequest{
+			Reference:            ref,
+			MSISDN:               phone,
+			Amount:               amount,
 			CountryOfTransaction: countries.TANZANIA,
-		    ID:      fmt.Sprintf("%d", time.Now().UnixNano()),
+			ID:                   fmt.Sprintf("%d", time.Now().UnixNano()),
 		}
 		disburseResponse, err := c.ApiClient.Disburse(ctx.Context, req)
 		if err != nil {
@@ -181,25 +179,25 @@ func (c *Cmd) OnError(ctx *clix.Context, err error, isSubcommand bool) error {
 func (c *Cmd) PrintOut(payload interface{}, format outFormat) error {
 	switch c.RequestType {
 	case airtel.Authorization:
-		resp, ok := payload.(models.AirtelAuthResponse)
+		resp, ok := payload.(models.TokenResponse)
 		if !ok {
-			return fmt.Errorf("bad request expected models.AirtelAuthResponse")
+			return fmt.Errorf("bad request expected models.TokenResponse")
 		}
 		tokenResponsePrintOut(resp)
 		return nil
 
 	case airtel.UssdPush:
-		resp, ok := payload.(api.PushPayResponse)
+		resp, ok := payload.(airtel.PushPayResponse)
 		if !ok {
-			return fmt.Errorf("bad request expected models.AirtelAuthResponse")
+			return fmt.Errorf("bad request expected models.TokenResponse")
 		}
 		pushResponsePrintOut(resp)
 		return nil
 
 	case airtel.Disbursement:
-		resp, ok := payload.(api.DisburseResponse)
+		resp, ok := payload.(airtel.DisburseResponse)
 		if !ok {
-			return fmt.Errorf("bad request expected models.AirtelDisburseResponse")
+			return fmt.Errorf("bad request expected models.DisburseResponse")
 		}
 		disburseResponsePrintOut(resp)
 		return nil
