@@ -28,13 +28,12 @@ package internal
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"os"
 	"text/tabwriter"
 )
 
-func TokenCommand(client *http.Client) *Cmd {
+func TokenCommand(client *airtel.Client) *Cmd {
 	return &Cmd{
 		ApiClient:   client,
 		RequestType: airtel.Authorization,

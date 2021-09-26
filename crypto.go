@@ -112,9 +112,7 @@ func PinEncryption(pin string, pubKey string) (string, error) {
 	}
 
 	msg := []byte(pin)
-
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
-
 	if err != nil {
 		return "", fmt.Errorf("could not encrypt api key using generated public key: %w", err)
 	}

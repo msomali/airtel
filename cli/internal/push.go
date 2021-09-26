@@ -28,13 +28,12 @@ package internal
 import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
-	"github.com/techcraftlabs/airtel/api/http"
 	"github.com/urfave/cli/v2"
 	"os"
 	"text/tabwriter"
 )
 
-func PushCommand(client *http.Client) *Cmd {
+func PushCommand(client *airtel.Client) *Cmd {
 	flags := []cli.Flag{
 		&cli.StringFlag{
 			Name:    "phone",
