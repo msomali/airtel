@@ -55,7 +55,8 @@ type (
 	}
 
 	Client struct {
-		//baseURL          string
+		rv base.Receiver
+		rp base.Replier
 		Conf             *Config
 		base             *base.Client
 		token            *string
@@ -106,7 +107,7 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	token := new(string)
 	newClient := base.NewClient(base.WithDebugMode(debugMode))
 
-	return &Client{
+	c := &Client{
 		Conf:             config,
 		base:             newClient,
 		token:            token,
@@ -114,4 +115,12 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 		reqAdapter:       &adapter{Conf: config},
 		pushCallbackFunc: pushCallbackFunc,
 	}
+	logger := c.base.Logger
+	dm := c.base.DebugMode
+
+	rv := base.NewReceiver(logger,dm)
+	rp := base.NewReplier(logger,dm)
+	c.rv = rv
+	c.rp = rp
+	return c
 }
