@@ -139,6 +139,7 @@ func (c *Cmd) Action(ctx *clix.Context) error {
 		return nil
 
 	case airtel.Disbursement:
+		fmt.Printf("MAKING DISBURSEMENT CALL")
 		ref := ctx.String("reference")
 		phone := ctx.String("phone")
 		amount := ctx.Int64("amount")

@@ -53,7 +53,6 @@ type (
 		ToPushPayRequest(request PushPayRequest) models.PushRequest
 		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
 	}
-
 )
 
 func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {

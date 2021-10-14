@@ -28,9 +28,9 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
+	"github.com/techcraftlabs/base"
 	"net/http"
 )
 
@@ -62,7 +62,7 @@ func (c *Client) push(ctx context.Context, request models.PushRequest) (models.P
 	countryCodeName := transaction.Country
 	currencyCodeName := transaction.Currency
 
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -72,7 +72,7 @@ func (c *Client) push(ctx context.Context, request models.PushRequest) (models.P
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(UssdPush, request, opts...)
@@ -98,7 +98,7 @@ func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (mode
 	if err != nil {
 		return models.RefundResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type":  "application/json",
 		"Accept":        "*/*",
@@ -106,7 +106,7 @@ func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (mode
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
+	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Refund, request, opts...)
@@ -136,7 +136,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequ
 	if err != nil {
 		return models.PushEnquiryResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type":  "application/json",
 		"Accept":        "*/*",
@@ -144,8 +144,8 @@ func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequ
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
-	endpointOpt := internal.WithEndpoint(request.ID)
+	headersOpt := base.WithRequestHeaders(hs)
+	endpointOpt := base.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOpt)
 	req := c.makeInternalRequest(PushEnquiry, request, opts...)
 	if err != nil {
@@ -162,7 +162,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequ
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
 	body := new(models.CallbackRequest)
-	err := internal.ReceivePayload(request, body)
+	err := base.ReceivePayload(request, body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
 		return

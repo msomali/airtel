@@ -62,7 +62,7 @@ func DisburseCommand(client *airtel.Client) *Cmd {
 	}
 	return &Cmd{
 		ApiClient:   client,
-		RequestType: airtel.UssdPush,
+		RequestType: airtel.Disbursement,
 		Name:        "disburse",
 		Usage:       "disburse to airtel phone number",
 		Description: "disburse to airtel phone number",

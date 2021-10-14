@@ -57,7 +57,7 @@ const (
 	envTransactionSummaryEndpoint  = "AIRTEL_MONEY_SUMMARY_ENDPOINT"
 	envBalanceEnquiryEndpoint      = "AIRTEL_MONEY_BALANCE_ENDPOINT"
 	envUserEnquiryEndpoint         = "AIRTEL_MONEY_USER_ENDPOINT"
-	defBaseURL                     = "https://openapiuat.airtel.africa/"
+	defBaseURL                     = "https://openapi.airtel.africa/"
 	defPublicKey                   = ""
 	defDisbursePin                 = "4094"
 	defClientId                    = "747b6063-5eea-4464-b27c-a8f89c2e1fe3"

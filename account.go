@@ -28,9 +28,9 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
+	"github.com/techcraftlabs/base"
 )
 
 type (
@@ -50,7 +50,7 @@ func (c *Client) Balance(ctx context.Context, request models.BalanceEnquiryReque
 	if err != nil {
 		return models.BalanceEnquiryResponse{}, err
 	}
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 
 	hs := map[string]string{
 		"Content-Type":  "application/json",
@@ -59,8 +59,8 @@ func (c *Client) Balance(ctx context.Context, request models.BalanceEnquiryReque
 		"X-Currency":    country.CurrencyCode,
 		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
-	headersOpt := internal.WithRequestHeaders(hs)
-	endpointOption := internal.WithEndpoint(request.MSISDN)
+	headersOpt := base.WithRequestHeaders(hs)
+	endpointOption := base.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(BalanceEnquiry, request, opts...)
 	res := new(models.BalanceEnquiryResponse)

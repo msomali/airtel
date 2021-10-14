@@ -29,7 +29,7 @@ import (
 	"fmt"
 	"github.com/techcraftlabs/airtel"
 	"github.com/techcraftlabs/airtel/cli/internal"
-	"github.com/techcraftlabs/airtel/internal/io"
+	"github.com/techcraftlabs/base/io"
 	clix "github.com/urfave/cli/v2"
 	"os"
 )
@@ -42,9 +42,9 @@ type (
 )
 
 func commands(client *airtel.Client) []*clix.Command {
-	tokenCmd := internal.TokenCommand(client).Command()
-	pushCmd := internal.PushCommand(client).Command()
-	disburseCmd := internal.DisburseCommand(client).Command()
+	tokenCmd := base.TokenCommand(client).Command()
+	pushCmd := base.PushCommand(client).Command()
+	disburseCmd := base.DisburseCommand(client).Command()
 	return appendCommands(tokenCmd, pushCmd, disburseCmd)
 }
 

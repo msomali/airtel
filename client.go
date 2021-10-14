@@ -26,8 +26,8 @@
 package airtel
 
 import (
-	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/base"
 	"time"
 )
 
@@ -57,7 +57,7 @@ type (
 	Client struct {
 		//baseURL          string
 		Conf             *Config
-		base             *internal.BaseClient
+		base             *base.Client
 		token            *string
 		tokenExpiresAt   time.Time
 		pushCallbackFunc PushCallbackHandler
@@ -84,11 +84,11 @@ func (config *Config) SetAllowedCountries(apiName string, countries []string) {
 	config.AllowedCountries[apiName] = countries
 }
 
-func (c *Client) SetRequestAdapter(adapter RequestAdapter)  {
+func (c *Client) SetRequestAdapter(adapter RequestAdapter) {
 	c.reqAdapter = adapter
 }
 
-func (c *Client) SetResponseAdapter(adapter ResponseAdapter)  {
+func (c *Client) SetResponseAdapter(adapter ResponseAdapter) {
 	c.resAdapter = adapter
 }
 
@@ -104,11 +104,11 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 
 	}
 	token := new(string)
-	base := internal.NewBaseClient(internal.WithDebugMode(debugMode))
+	newClient := base.NewClient(base.WithDebugMode(debugMode))
 
 	return &Client{
 		Conf:             config,
-		base:             base,
+		base:             newClient,
 		token:            token,
 		resAdapter:       &adapter{},
 		reqAdapter:       &adapter{Conf: config},

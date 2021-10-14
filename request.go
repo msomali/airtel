@@ -27,7 +27,7 @@ package airtel
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"strings"
 )
@@ -149,13 +149,13 @@ type (
 	}
 )
 
-func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...internal.RequestOption) *internal.Request {
+func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...base.RequestOption) *base.Request {
 	baseURL := c.Conf.BaseURL
 	endpoints := c.Conf.Endpoints
 	edps := *endpoints
 	url := appendEndpoint(baseURL, requestType.endpoint(edps))
 	method := requestType.httpMethod()
-	return internal.NewRequest(method, url, payload, opts...)
+	return base.NewRequest(method, url, payload, opts...)
 }
 
 func appendEndpoint(url string, endpoint string) string {

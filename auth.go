@@ -32,8 +32,8 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal"
 	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/base"
 	"time"
 )
 
@@ -48,6 +48,7 @@ func (c *Client) checkToken(ctx context.Context) (string, error) {
 		if err != nil {
 			return "", err
 		}
+
 		token = fmt.Sprintf("%s", str.AccessToken)
 	}
 	//Add Auth Header
@@ -70,20 +71,23 @@ func (c *Client) Token(ctx context.Context) (models.TokenResponse, error) {
 		GrantType:    defaultGrantType,
 	}
 
-	var opts []internal.RequestOption
+	var opts []base.RequestOption
 	hs := map[string]string{
 		"Content-Type": "application/json",
 		"Accept":       "*/*",
 	}
 
-	opts = append(opts, internal.WithRequestHeaders(hs))
+	opts = append(opts, base.WithRequestHeaders(hs))
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
 	res := new(models.TokenResponse)
 	reqName := Authorization.name()
-	_, err := c.base.Do(ctx, reqName, req, res)
+	response, err := c.base.Do(ctx, reqName, req, res)
 	if err != nil {
 		return models.TokenResponse{}, err
+	}
+	if response.Error != nil || res.AccessToken == "" {
+		return models.TokenResponse{}, fmt.Errorf("could not obtain token")
 	}
 	duration := time.Duration(res.ExpiresIn)
 	now := time.Now()
@@ -110,7 +114,6 @@ func PinEncryption(pin string, pubKey string) (string, error) {
 	if !isRSAPublicKey {
 		return "", fmt.Errorf("public key parsed is not an RSA public key : %w", err)
 	}
-
 	msg := []byte(pin)
 	encrypted, err := rsa.EncryptPKCS1v15(rand.Reader, publicKey, msg)
 	if err != nil {

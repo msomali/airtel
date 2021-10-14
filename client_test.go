@@ -27,7 +27,7 @@ package airtel
 
 import (
 	"context"
-	"github.com/techcraftlabs/airtel/internal"
+	"github.com/techcraftlabs/base"
 	"net/http"
 	"testing"
 )
@@ -137,8 +137,8 @@ func TestWithEndpoint(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			url, endpoint := tt.args.url, tt.args.endpoint
-			req := internal.NewRequest(http.MethodHead, url, nil, internal.WithEndpoint(endpoint))
-			reqWithCtx, err := internal.NewRequestWithContext(context.TODO(), req)
+			req := base.NewRequest(http.MethodHead, url, nil, base.WithEndpoint(endpoint))
+			reqWithCtx, err := base.NewRequestWithContext(context.TODO(), req)
 			if err != nil {
 				t.Errorf("%v\n", err)
 			}
