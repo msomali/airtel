@@ -34,7 +34,7 @@ import (
 )
 
 type DisbursementService interface {
-	disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
+	Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
 	DisburseEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
 }
 
