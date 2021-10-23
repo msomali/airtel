@@ -28,13 +28,13 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/base"
 )
 
 type DisbursementService interface {
-	disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error)
+	disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
 	DisburseEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
 }
 
@@ -53,16 +53,16 @@ func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (Disburs
 	return response, nil
 }
 
-func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error) {
+func (c *Client) disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return DisburseResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return DisburseResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -78,12 +78,12 @@ func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
-	res := new(models.DisburseResponse)
+	res := new(DisburseResponse)
 	env := c.Conf.Environment
 	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return DisburseResponse{}, err
 	}
 	return *res, nil
 }

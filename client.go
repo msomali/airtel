@@ -26,7 +26,7 @@
 package airtel
 
 import (
-	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/base"
 	"time"
 )

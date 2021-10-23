@@ -28,7 +28,7 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/base"
 )
 

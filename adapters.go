@@ -27,7 +27,7 @@ package airtel
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/airtel/internal/models"
+	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 )
 
@@ -38,7 +38,7 @@ var (
 
 type (
 	ResponseAdapter interface {
-		ToDisburseResponse(response models.DisburseResponse) DisburseResponse
+		ToDisburseResponse(response DisburseResponse) DisburseResponse
 		ToPushPayResponse(response models.PushResponse) PushPayResponse
 	}
 
@@ -51,7 +51,7 @@ type (
 	}
 	RequestAdapter interface {
 		ToPushPayRequest(request PushPayRequest) models.PushRequest
-		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
+		ToDisburseRequest(request DisburseRequest) (DisburseRequest, error)
 	}
 )
 
@@ -84,12 +84,12 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
 	}
 }
 
-func (r *adapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
+func (r *adapter) ToDisburseRequest(request DisburseRequest) (DisburseRequest, error) {
 	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
-		return models.DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
+		return DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}
-	req := models.DisburseRequest{
+	req := DisburseRequest{
 		CountryOfTransaction: request.CountryOfTransaction,
 		Payee: struct {
 			Msisdn string `json:"msisdn"`
@@ -144,7 +144,7 @@ func (r *adapter) ToPushPayResponse(response models.PushResponse) PushPayRespons
 	}
 }
 
-func (r *adapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
+func (r *adapter) ToDisburseResponse(response DisburseResponse) DisburseResponse {
 
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {

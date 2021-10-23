@@ -182,9 +182,3 @@ func appendEndpoint(url string, endpoint string) string {
 	return ""
 }
 
-//func (c *Client) requestURL(requestType RequestType) string {
-//	baseURL := c.Conf.BaseURL
-//	endpoints := c.Conf.Endpoints
-//	edps := *endpoints
-//	return appendEndpoint(baseURL,requestType.endpoint(edps))
-//}
