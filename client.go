@@ -55,8 +55,8 @@ type (
 	}
 
 	Client struct {
-		rv base.Receiver
-		rp base.Replier
+		rv               base.Receiver
+		rp               base.Replier
 		Conf             *Config
 		base             *base.Client
 		token            *string
@@ -118,8 +118,8 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	logger := c.base.Logger
 	dm := c.base.DebugMode
 
-	rv := base.NewReceiver(logger,dm)
-	rp := base.NewReplier(logger,dm)
+	rv := base.NewReceiver(logger, dm)
+	rp := base.NewReplier(logger, dm)
 	c.rv = rv
 	c.rp = rp
 	return c

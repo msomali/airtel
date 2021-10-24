@@ -38,7 +38,7 @@ var (
 
 type (
 	ResponseAdapter interface {
-		ToDisburseResponse(response DisburseResponse) DisburseResponse
+		ToDisburseResponse(response models.DisburseResponse) DisburseResponse
 		ToPushPayResponse(response models.PushResponse) PushPayResponse
 	}
 
@@ -51,7 +51,7 @@ type (
 	}
 	RequestAdapter interface {
 		ToPushPayRequest(request PushPayRequest) models.PushRequest
-		ToDisburseRequest(request DisburseRequest) (DisburseRequest, error)
+		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
 	}
 )
 
@@ -84,12 +84,12 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
 	}
 }
 
-func (r *adapter) ToDisburseRequest(request DisburseRequest) (DisburseRequest, error) {
+func (r *adapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
 	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
-		return DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
+		return models.DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}
-	req := DisburseRequest{
+	req := models.DisburseRequest{
 		CountryOfTransaction: request.CountryOfTransaction,
 		Payee: struct {
 			Msisdn string `json:"msisdn"`
@@ -144,7 +144,7 @@ func (r *adapter) ToPushPayResponse(response models.PushResponse) PushPayRespons
 	}
 }
 
-func (r *adapter) ToDisburseResponse(response DisburseResponse) DisburseResponse {
+func (r *adapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
 
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {

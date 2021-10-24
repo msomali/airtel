@@ -181,4 +181,3 @@ func appendEndpoint(url string, endpoint string) string {
 
 	return ""
 }
-
