@@ -53,16 +53,16 @@ func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (Disburs
 	return response, nil
 }
 
-func (c *Client) disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
+func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return DisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return DisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -78,12 +78,12 @@ func (c *Client) disburse(ctx context.Context, request DisburseRequest) (Disburs
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
-	res := new(DisburseResponse)
+	res := new(models.DisburseResponse)
 	env := c.Conf.Environment
 	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return DisburseResponse{}, err
+		return models.DisburseResponse{}, err
 	}
 	return *res, nil
 }
