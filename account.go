@@ -58,8 +58,6 @@ type (
 	AccountService interface {
 		Balance(ctx context.Context, request BalanceRequest) (BalanceResponse, error)
 	}
-
-	BalanceFunc func(ctx context.Context, request BalanceRequest) (BalanceResponse, error)
 )
 
 func (c *Client) Balance(ctx context.Context, request BalanceRequest) (BalanceResponse, error) {
