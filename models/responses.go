@@ -32,65 +32,6 @@ type TokenResponse struct {
 	Message     string `json:"message,omitempty"`
 }
 
-type PushResponse struct {
-	Data struct {
-		Transaction struct {
-			ID     string `json:"id,omitempty"`
-			Status string `json:"status,omitempty"`
-		} `json:"transaction,omitempty"`
-	} `json:"data,omitempty"`
-	Status struct {
-		Code       string `json:"code,omitempty"`
-		Message    string `json:"message,omitempty"`
-		ResultCode string `json:"result_code,omitempty"`
-		Success    bool   `json:"success,omitempty"`
-	} `json:"status,omitempty"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
-type RefundResponse struct {
-	Data struct {
-		Transaction struct {
-			AirtelMoneyID string `json:"airtel_money_id,omitempty"`
-			Status        string `json:"status,omitempty"`
-		} `json:"transaction,omitempty"`
-	} `json:"data,omitempty"`
-	Status struct {
-		Code       string `json:"code,omitempty"`
-		Message    string `json:"message,omitempty"`
-		ResultCode string `json:"result_code,omitempty"`
-		Success    bool   `json:"success,omitempty"`
-	} `json:"status,omitempty"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
-type PushEnquiryResponse struct {
-	Data struct {
-		Transaction struct {
-			AirtelMoneyID string `json:"airtel_money_id,omitempty"`
-			ID            string `json:"id,omitempty"`
-			Message       string `json:"message,omitempty"`
-			Status        string `json:"status,omitempty"`
-		} `json:"transaction,omitempty"`
-	} `json:"data,omitempty"`
-	Status struct {
-		Code       string `json:"code,omitempty"`
-		Message    string `json:"message,omitempty"`
-		ResultCode string `json:"result_code,omitempty"`
-		Success    bool   `json:"success,omitempty"`
-	} `json:"status,omitempty"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
 type UserEnquiryResponse struct {
 	Data struct {
 		FirstName    string `json:"first_name,omitempty"`
@@ -112,64 +53,6 @@ type UserEnquiryResponse struct {
 		ResultCode string `json:"result_code,omitempty"`
 		Success    bool   `json:"success,omitempty"`
 	} `json:"status,omitempty"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
-type BalanceEnquiryResponse struct {
-	Data struct {
-		Balance       string `json:"balance"`
-		Currency      string `json:"currency"`
-		AccountStatus string `json:"account_status"`
-	} `json:"data"`
-	Status struct {
-		Code       string `json:"code"`
-		Message    string `json:"message"`
-		ResultCode string `json:"result_code"`
-		Success    bool   `json:"success"`
-	} `json:"status"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
-type DisburseResponse struct {
-	Data struct {
-		Transaction struct {
-			ReferenceID   string `json:"reference_id,omitempty"`
-			AirtelMoneyID string `json:"airtel_money_id,omitempty"`
-			ID            string `json:"id,omitempty"`
-		} `json:"transaction,omitempty"`
-	} `json:"data,omitempty"`
-	Status struct {
-		Code       string `json:"code,omitempty"`
-		Message    string `json:"message,omitempty"`
-		ResultCode string `json:"result_code,omitempty"`
-		Success    bool   `json:"success,omitempty"`
-	} `json:"status,omitempty"`
-	ErrorDescription string `json:"error_description,omitempty"`
-	Error            string `json:"error,omitempty"`
-	StatusMessage    string `json:"status_message,omitempty"`
-	StatusCode       string `json:"status_code,omitempty"`
-}
-
-type DisburseEnquiryResponse struct {
-	Data struct {
-		Transaction struct {
-			ID      string `json:"id"`
-			Message string `json:"message"`
-			Status  string `json:"status"`
-		} `json:"transaction"`
-	} `json:"data"`
-	Status struct {
-		Code       string `json:"code"`
-		Message    string `json:"message"`
-		ResultCode string `json:"result_code"`
-		Success    bool   `json:"success"`
-	} `json:"status"`
 	ErrorDescription string `json:"error_description,omitempty"`
 	Error            string `json:"error,omitempty"`
 	StatusMessage    string `json:"status_message,omitempty"`

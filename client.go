@@ -26,7 +26,6 @@
 package airtel
 
 import (
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/base"
 	"time"
 )
@@ -67,12 +66,12 @@ type (
 	}
 
 	PushCallbackHandler interface {
-		Handle(request models.CallbackRequest) error
+		Handle(request InternalCallbackRequest) error
 	}
-	PushCallbackFunc func(request models.CallbackRequest) error
+	PushCallbackFunc func(request InternalCallbackRequest) error
 )
 
-func (pf PushCallbackFunc) Handle(request models.CallbackRequest) error {
+func (pf PushCallbackFunc) Handle(request InternalCallbackRequest) error {
 	return pf(request)
 }
 

@@ -28,18 +28,113 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/base"
 	"net/http"
 )
 
-type CollectionService interface {
-	push(ctx context.Context, request models.PushRequest) (models.PushResponse, error)
-	Refund(ctx context.Context, request models.RefundRequest) (models.RefundResponse, error)
-	PushEnquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error)
-	CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
-}
+type (
+	InternalPushRequest struct {
+		Reference  string `json:"reference"`
+		Subscriber struct {
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			Msisdn   string `json:"msisdn"`
+		} `json:"subscriber"`
+		Transaction struct {
+			Amount   int64  `json:"amount"`
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			ID       string `json:"id"`
+		} `json:"transaction"`
+	}
+	InternalPushEnquiryRequest struct {
+		ID                   string `json:"id"`
+		CountryOfTransaction string `json:"country"`
+	}
+
+	InternalPushResponse struct {
+		Data struct {
+			Transaction struct {
+				ID     string `json:"id,omitempty"`
+				Status string `json:"status,omitempty"`
+			} `json:"transaction,omitempty"`
+		} `json:"data,omitempty"`
+		Status struct {
+			Code       string `json:"code,omitempty"`
+			Message    string `json:"message,omitempty"`
+			ResultCode string `json:"result_code,omitempty"`
+			Success    bool   `json:"success,omitempty"`
+		} `json:"status,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+
+	InternalPushEnquiryResponse struct {
+		Data struct {
+			Transaction struct {
+				AirtelMoneyID string `json:"airtel_money_id,omitempty"`
+				ID            string `json:"id,omitempty"`
+				Message       string `json:"message,omitempty"`
+				Status        string `json:"status,omitempty"`
+			} `json:"transaction,omitempty"`
+		} `json:"data,omitempty"`
+		Status struct {
+			Code       string `json:"code,omitempty"`
+			Message    string `json:"message,omitempty"`
+			ResultCode string `json:"result_code,omitempty"`
+			Success    bool   `json:"success,omitempty"`
+		} `json:"status,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+
+	InternalRefundRequest struct {
+		CountryOfTransaction string `json:"-"`
+		Transaction          struct {
+			AirtelMoneyID string `json:"airtel_money_id"`
+		} `json:"transaction"`
+	}
+
+	InternalCallbackRequest struct {
+		Transaction struct {
+			ID            string `json:"id"`
+			Message       string `json:"message"`
+			StatusCode    string `json:"status_code"`
+			AirtelMoneyID string `json:"airtel_money_id"`
+		} `json:"transaction"`
+		Hash string `json:"hash"`
+	}
+
+	InternalRefundResponse struct {
+		Data struct {
+			Transaction struct {
+				AirtelMoneyID string `json:"airtel_money_id,omitempty"`
+				Status        string `json:"status,omitempty"`
+			} `json:"transaction,omitempty"`
+		} `json:"data,omitempty"`
+		Status struct {
+			Code       string `json:"code,omitempty"`
+			Message    string `json:"message,omitempty"`
+			ResultCode string `json:"result_code,omitempty"`
+			Success    bool   `json:"success,omitempty"`
+		} `json:"status,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+	CollectionService interface {
+		push(ctx context.Context, request InternalPushRequest) (InternalPushResponse, error)
+		Refund(ctx context.Context, request InternalRefundRequest) (InternalRefundResponse, error)
+		PushEnquiry(ctx context.Context, request InternalPushEnquiryRequest) (InternalPushEnquiryResponse, error)
+		CallbackServeHTTP(writer http.ResponseWriter, request *http.Request)
+	}
+)
 
 func (c *Client) Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error) {
 
@@ -52,10 +147,10 @@ func (c *Client) Push(ctx context.Context, request PushPayRequest) (PushPayRespo
 	return response, nil
 }
 
-func (c *Client) push(ctx context.Context, request models.PushRequest) (models.PushResponse, error) {
+func (c *Client) push(ctx context.Context, request InternalPushRequest) (InternalPushResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.PushResponse{}, err
+		return InternalPushResponse{}, err
 	}
 
 	transaction := request.Transaction
@@ -78,25 +173,25 @@ func (c *Client) push(ctx context.Context, request models.PushRequest) (models.P
 	req := c.makeInternalRequest(UssdPush, request, opts...)
 
 	if err != nil {
-		return models.PushResponse{}, err
+		return InternalPushResponse{}, err
 	}
 
-	res := new(models.PushResponse)
+	res := new(InternalPushResponse)
 	_, err = c.base.Do(ctx, "ussd push", req, res)
 	if err != nil {
-		return models.PushResponse{}, err
+		return InternalPushResponse{}, err
 	}
 	return *res, nil
 }
 
-func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (models.RefundResponse, error) {
+func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (InternalRefundResponse, error) {
 	country, err := countries.GetByName(request.CountryOfTransaction)
 	if err != nil {
-		return models.RefundResponse{}, err
+		return InternalRefundResponse{}, err
 	}
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.RefundResponse{}, err
+		return InternalRefundResponse{}, err
 	}
 	var opts []base.RequestOption
 	hs := map[string]string{
@@ -112,29 +207,29 @@ func (c *Client) Refund(ctx context.Context, request models.RefundRequest) (mode
 	req := c.makeInternalRequest(Refund, request, opts...)
 
 	if err != nil {
-		return models.RefundResponse{}, err
+		return InternalRefundResponse{}, err
 	}
 
-	res := new(models.RefundResponse)
+	res := new(InternalRefundResponse)
 	env := c.Conf.Environment
 	rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return models.RefundResponse{}, err
+		return InternalRefundResponse{}, err
 	}
 	return *res, nil
 
 }
 
-func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequest) (models.PushEnquiryResponse, error) {
+func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryRequest) (InternalPushEnquiryResponse, error) {
 
 	country, err := countries.GetByName(request.CountryOfTransaction)
 	if err != nil {
-		return models.PushEnquiryResponse{}, err
+		return InternalPushEnquiryResponse{}, err
 	}
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.PushEnquiryResponse{}, err
+		return InternalPushEnquiryResponse{}, err
 	}
 	var opts []base.RequestOption
 	hs := map[string]string{
@@ -149,19 +244,19 @@ func (c *Client) PushEnquiry(ctx context.Context, request models.PushEnquiryRequ
 	opts = append(opts, headersOpt, endpointOpt)
 	req := c.makeInternalRequest(PushEnquiry, request, opts...)
 	if err != nil {
-		return models.PushEnquiryResponse{}, err
+		return InternalPushEnquiryResponse{}, err
 	}
 	reqName := PushEnquiry.name()
-	res := new(models.PushEnquiryResponse)
+	res := new(InternalPushEnquiryResponse)
 	_, err = c.base.Do(ctx, reqName, req, res)
 	if err != nil {
-		return models.PushEnquiryResponse{}, err
+		return InternalPushEnquiryResponse{}, err
 	}
 	return *res, nil
 }
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	body := new(models.CallbackRequest)
+	body := new(InternalCallbackRequest)
 	err := base.ReceivePayload(request, body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -177,3 +272,6 @@ func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Req
 	}
 	writer.WriteHeader(http.StatusOK)
 }
+
+
+

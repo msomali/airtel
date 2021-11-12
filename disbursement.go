@@ -28,15 +28,74 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/base"
 )
 
-type DisbursementService interface {
-	Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
-	DisburseEnquiry(ctx context.Context, response models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error)
-}
+type (
+	DisburseEnquiryResponse struct {
+		Data struct {
+			Transaction struct {
+				ID      string `json:"id"`
+				Message string `json:"message"`
+				Status  string `json:"status"`
+			} `json:"transaction"`
+		} `json:"data"`
+		Status struct {
+			Code       string `json:"code"`
+			Message    string `json:"message"`
+			ResultCode string `json:"result_code"`
+			Success    bool   `json:"success"`
+		} `json:"status"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+
+	DisburseEnquiryRequest struct {
+		CountryOfTransaction string
+		ID                   string `json:"id"`
+	}
+
+	DisbursementService interface {
+		Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error)
+		DisburseEnquiry(ctx context.Context, response DisburseEnquiryRequest) (DisburseEnquiryResponse, error)
+	}
+
+	InternalDisburseRequest struct {
+		CountryOfTransaction string `json:"-"`
+		Payee                struct {
+			Msisdn string `json:"msisdn"`
+		} `json:"payee"`
+		Reference   string `json:"reference"`
+		Pin         string `json:"pin"`
+		Transaction struct {
+			Amount int64  `json:"amount"`
+			ID     string `json:"id"`
+		} `json:"transaction"`
+	}
+
+	InternalDisburseResponse struct {
+		Data struct {
+			Transaction struct {
+				ReferenceID   string `json:"reference_id,omitempty"`
+				AirtelMoneyID string `json:"airtel_money_id,omitempty"`
+				ID            string `json:"id,omitempty"`
+			} `json:"transaction,omitempty"`
+		} `json:"data,omitempty"`
+		Status struct {
+			Code       string `json:"code,omitempty"`
+			Message    string `json:"message,omitempty"`
+			ResultCode string `json:"result_code,omitempty"`
+			Success    bool   `json:"success,omitempty"`
+		} `json:"status,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+)
 
 func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
 	disburseRequest, err := c.reqAdapter.ToDisburseRequest(request)
@@ -53,16 +112,16 @@ func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (Disburs
 	return response, nil
 }
 
-func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (models.DisburseResponse, error) {
+func (c *Client) disburse(ctx context.Context, request InternalDisburseRequest) (InternalDisburseResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return InternalDisburseResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return InternalDisburseResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -78,26 +137,26 @@ func (c *Client) disburse(ctx context.Context, request models.DisburseRequest) (
 	opts = append(opts, headersOpt)
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
-	res := new(models.DisburseResponse)
+	res := new(InternalDisburseResponse)
 	env := c.Conf.Environment
 	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
 	_, err = c.base.Do(ctx, rn, req, res)
 	if err != nil {
-		return models.DisburseResponse{}, err
+		return InternalDisburseResponse{}, err
 	}
 	return *res, nil
 }
 
-func (c *Client) DisburseEnquiry(ctx context.Context, request models.DisburseEnquiryRequest) (models.DisburseEnquiryResponse, error) {
+func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryRequest) (DisburseEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.DisburseEnquiryResponse{}, err
+		return DisburseEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.DisburseEnquiryResponse{}, err
+		return DisburseEnquiryResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -112,10 +171,10 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request models.DisburseEnq
 	endpointOption := base.WithEndpoint(request.ID)
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(DisbursementEnquiry, request, opts...)
-	res := new(models.DisburseEnquiryResponse)
+	res := new(DisburseEnquiryResponse)
 	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)
 	if err != nil {
-		return models.DisburseEnquiryResponse{}, err
+		return DisburseEnquiryResponse{}, err
 	}
 	return *res, nil
 }

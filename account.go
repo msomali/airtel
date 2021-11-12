@@ -28,27 +28,48 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/base"
 )
 
 type (
+	BalanceEnquiryRequest struct {
+		MSISDN               string
+		CountryOfTransaction string
+	}
+	BalanceEnquiryResponse struct {
+		Data struct {
+			Balance       string `json:"balance"`
+			Currency      string `json:"currency"`
+			AccountStatus string `json:"account_status"`
+		} `json:"data"`
+		Status struct {
+			Code       string `json:"code"`
+			Message    string `json:"message"`
+			ResultCode string `json:"result_code"`
+			Success    bool   `json:"success"`
+		} `json:"status"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+
 	AccountService interface {
-		Balance(ctx context.Context, request models.BalanceEnquiryRequest) (models.BalanceEnquiryResponse, error)
+		Balance(ctx context.Context, request BalanceEnquiryRequest) (BalanceEnquiryResponse, error)
 	}
 )
 
-func (c *Client) Balance(ctx context.Context, request models.BalanceEnquiryRequest) (models.BalanceEnquiryResponse, error) {
+func (c *Client) Balance(ctx context.Context, request BalanceEnquiryRequest) (BalanceEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.BalanceEnquiryResponse{}, err
+		return BalanceEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.BalanceEnquiryResponse{}, err
+		return BalanceEnquiryResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -63,10 +84,10 @@ func (c *Client) Balance(ctx context.Context, request models.BalanceEnquiryReque
 	endpointOption := base.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(BalanceEnquiry, request, opts...)
-	res := new(models.BalanceEnquiryResponse)
+	res := new(BalanceEnquiryResponse)
 	_, err = c.base.Do(ctx, "balance enquiry", req, res)
 	if err != nil {
-		return models.BalanceEnquiryResponse{}, err
+		return BalanceEnquiryResponse{}, err
 	}
 	return *res, nil
 }

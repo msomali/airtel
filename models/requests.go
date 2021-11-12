@@ -31,67 +31,7 @@ type TokenRequest struct {
 	GrantType    string `json:"grant_type"`
 }
 
-type PushRequest struct {
-	Reference  string `json:"reference"`
-	Subscriber struct {
-		Country  string `json:"country"`
-		Currency string `json:"currency"`
-		Msisdn   string `json:"msisdn"`
-	} `json:"subscriber"`
-	Transaction struct {
-		Amount   int64  `json:"amount"`
-		Country  string `json:"country"`
-		Currency string `json:"currency"`
-		ID       string `json:"id"`
-	} `json:"transaction"`
-}
-
-type RefundRequest struct {
-	CountryOfTransaction string `json:"-"`
-	Transaction          struct {
-		AirtelMoneyID string `json:"airtel_money_id"`
-	} `json:"transaction"`
-}
-
-type PushEnquiryRequest struct {
-	ID                   string `json:"id"`
-	CountryOfTransaction string `json:"country"`
-}
-
-type CallbackRequest struct {
-	Transaction struct {
-		ID            string `json:"id"`
-		Message       string `json:"message"`
-		StatusCode    string `json:"status_code"`
-		AirtelMoneyID string `json:"airtel_money_id"`
-	} `json:"transaction"`
-	Hash string `json:"hash"`
-}
-
 type UserEnquiryRequest struct {
 	MSISDN               string
 	CountryOfTransaction string
-}
-
-type BalanceEnquiryRequest struct {
-	MSISDN               string
-	CountryOfTransaction string
-}
-
-type DisburseRequest struct {
-	CountryOfTransaction string `json:"-"`
-	Payee                struct {
-		Msisdn string `json:"msisdn"`
-	} `json:"payee"`
-	Reference   string `json:"reference"`
-	Pin         string `json:"pin"`
-	Transaction struct {
-		Amount int64  `json:"amount"`
-		ID     string `json:"id"`
-	} `json:"transaction"`
-}
-
-type DisburseEnquiryRequest struct {
-	CountryOfTransaction string
-	ID                   string `json:"id"`
 }

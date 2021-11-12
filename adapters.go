@@ -27,7 +27,6 @@ package airtel
 
 import (
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 )
 
@@ -38,8 +37,8 @@ var (
 
 type (
 	ResponseAdapter interface {
-		ToDisburseResponse(response models.DisburseResponse) DisburseResponse
-		ToPushPayResponse(response models.PushResponse) PushPayResponse
+		ToDisburseResponse(response InternalDisburseResponse) DisburseResponse
+		ToPushPayResponse(response InternalPushResponse) PushPayResponse
 	}
 
 	// adapter acts as a default RequestAdapter and ResponseAdapter. This can be replaced
@@ -50,16 +49,16 @@ type (
 		Conf *Config
 	}
 	RequestAdapter interface {
-		ToPushPayRequest(request PushPayRequest) models.PushRequest
-		ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error)
+		ToPushPayRequest(request PushPayRequest) InternalPushRequest
+		ToDisburseRequest(request DisburseRequest) (InternalDisburseRequest, error)
 	}
 )
 
-func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
+func (r *adapter) ToPushPayRequest(request PushPayRequest) InternalPushRequest {
 
 	subCountry, _ := countries.GetByName(request.SubscriberCountry)
 	transCountry, _ := countries.GetByName(request.TransactionCountry)
-	return models.PushRequest{
+	return InternalPushRequest{
 		Reference: request.Reference,
 		Subscriber: struct {
 			Country  string `json:"country"`
@@ -84,12 +83,12 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) models.PushRequest {
 	}
 }
 
-func (r *adapter) ToDisburseRequest(request DisburseRequest) (models.DisburseRequest, error) {
+func (r *adapter) ToDisburseRequest(request DisburseRequest) (InternalDisburseRequest, error) {
 	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
-		return models.DisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
+		return InternalDisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}
-	req := models.DisburseRequest{
+	req := InternalDisburseRequest{
 		CountryOfTransaction: request.CountryOfTransaction,
 		Payee: struct {
 			Msisdn string `json:"msisdn"`
@@ -109,7 +108,7 @@ func (r *adapter) ToDisburseRequest(request DisburseRequest) (models.DisburseReq
 	return req, nil
 }
 
-func (r *adapter) ToPushPayResponse(response models.PushResponse) PushPayResponse {
+func (r *adapter) ToPushPayResponse(response InternalPushResponse) PushPayResponse {
 	transaction := response.Data.Transaction
 	status := response.Status
 
@@ -144,7 +143,7 @@ func (r *adapter) ToPushPayResponse(response models.PushResponse) PushPayRespons
 	}
 }
 
-func (r *adapter) ToDisburseResponse(response models.DisburseResponse) DisburseResponse {
+func (r *adapter) ToDisburseResponse(response InternalDisburseResponse) DisburseResponse {
 
 	isErr := response.Error != "" && response.ErrorDescription != ""
 	if isErr {
