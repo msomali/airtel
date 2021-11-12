@@ -84,11 +84,11 @@ func (c *Client) UserEnquiry(ctx context.Context, request UserEnquiryRequest) (U
 	var opts []base.RequestOption
 
 	hs := map[string]string{
-		"Content-Type":  "application/json",
-		"Accept":        "*/*",
-		"X-Country":     country.CodeName,
-		"X-Currency":    country.CurrencyCode,
-		"Authorization": fmt.Sprintf("Bearer %s", token),
+		"Content-Type":   "application/json",
+		"Accept":         "*/*",
+		"X-Country":      country.CodeName,
+		"X-CurrencyName": country.CurrencyCode,
+		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
 	endpointOption := base.WithEndpoint(request.MSISDN)

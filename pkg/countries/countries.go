@@ -31,78 +31,78 @@ import (
 )
 
 const (
-	UGANDA                          = "UGANDA"
-	NIGERIA                         = "NIGERIA"
-	TANZANIA                        = "TANZANIA"
-	KENYA                           = "KENYA"
-	RWANDA                          = "RWANDA"
-	ZAMBIA                          = "ZAMBIA"
-	GABON                           = "GABON"
-	NIGER                           = "NIGER"
-	CONGO_BRAZZAVILLE               = "CONGO-BRAZZAVILLE"
-	DR_CONGO                        = "DR CONGO"
-	CHAD                            = "CHAD"
-	SEYCHELLES                      = "SEYCHELLES"
-	MADAGASCAR                      = "MADAGASCAR"
-	MALAWI                          = "MALAWI"
-	UGANDA_CODE                     = "UG"
-	NIGERIA_CODE                    = "NG"
-	TANZANIA_CODE                   = "TZ"
-	KENYA_CODE                      = "KE"
-	RWANDA_CODE                     = "RW"
-	ZAMBIA_CODE                     = "ZM"
-	GABON_CODE                      = "GA"
-	NIGER_CODE                      = "NE"
-	CONGO_BRAZZAVILLE_CODE          = "CG"
-	DR_CONGO_CODE                   = "CD"
-	CHAD_CODE                       = "CFA"
-	SEYCHELLES_CODE                 = "SC"
-	MADAGASCAR_CODE                 = "MG"
-	MALAWI_CODE                     = "MW"
-	UGANDA_CURRENCY_CODE            = "UGX"
-	NIGERIA_CURRENCY_CODE           = "NGN"
-	TANZANIA_CURRENCY_CODE          = "TZS"
-	KENYA_CURRENCY_CODE             = "KES"
-	RWANDA_CURRENCY_CODE            = "RWF"
-	ZAMBIA_CURRENCY_CODE            = "ZMW"
-	GABON_CURRENCY_CODE             = "CFA"
-	NIGER_CURRENCY_CODE             = "XOF"
-	CONGO_BRAZZAVILLE_CURRENCY_CODE = "XAF"
-	DR_CONGO_CURRENCY_CODE          = "CDF"
-	CHAD_CURRENCY_CODE              = "XAF"
-	SEYCHELLES_CURRENCY_CODE        = "SCR"
-	MADAGASCAR_CURRENCY_CODE        = "MGA"
-	MALAWI_CURRENCY_CODE            = "MWK"
-	UGANDA_CURRENCY                 = "Ugandan shilling"
-	NIGERIA_CURRENCY                = "Nigerian naira"
-	TANZANIA_CURRENCY               = "Tanzanian shilling"
-	KENYA_CURRENCY                  = "Kenyan shilling"
-	RWANDA_CURRENCY                 = "Rwandan franc"
-	ZAMBIA_CURRENCY                 = "Zambian kwacha"
-	GABON_CURRENCY                  = "CFA franc BEAC"
-	NIGER_CURRENCY                  = "CFA franc BCEAO"
-	CONGO_BRAZZAVILLE_CURRENCY      = "CFA franc BCEA"
-	DR_CONGO_CURRENCY               = "Congolese franc"
-	CHAD_CURRENCY                   = "CFA franc BEAC"
-	SEYCHELLES_CURRENCY             = "Seychelles rupee"
-	MADAGASCAR_CURRENCY             = "Malagasy ariary"
-	MALAWI_CURRENCY                 = "Malawian Kwacha"
+	Uganda                  = "UGANDA"
+	Nigeria                 = "NIGERIA"
+	Tanzania                = "TANZANIA"
+	Kenya                   = "KENYA"
+	Rwanda                  = "RWANDA"
+	Zambia                  = "ZAMBIA"
+	Gabon                   = "GABON"
+	Niger                   = "NIGER"
+	Brazzaville             = "CONGO-BRAZZAVILLE"
+	DrCongo                 = "DR CONGO"
+	CHAD                    = "CHAD"
+	Seychelles              = "SEYCHELLES"
+	Madagascar              = "MADAGASCAR"
+	Malawi                  = "MALAWI"
+	UgandaCodeName          = "UG"
+	NigeriaCodeName         = "NG"
+	TanzaniaCodeName        = "TZ"
+	KenyaCodeName           = "KE"
+	RwandaCodeName          = "RW"
+	ZambiaCodeName          = "ZM"
+	GabonCodeName           = "GA"
+	NigerCodeName           = "NE"
+	BrazzavilleCodeName     = "CG"
+	DrCongoCode             = "CD"
+	ChadCodeName            = "CFA"
+	SeychellesCodeName      = "SC"
+	MadagascarCodeName      = "MG"
+	MalawiCodeName          = "MW"
+	UgandaCurrencyCode      = "UGX"
+	NigeriaCurrencyCode     = "NGN"
+	TanzaniaCurrencyCode    = "TZS"
+	KenyaCurrencyCode       = "KES"
+	RwandaCurrencyCode      = "RWF"
+	ZambiaCurrencyCode      = "ZMW"
+	GabonCurrencyCode       = "CFA"
+	NigerCurrencyCode       = "XOF"
+	BrazzavilleCurrencyCode = "XAF"
+	DrCongoCurrencyCode     = "CDF"
+	ChadCurrencyCode        = "XAF"
+	SeychellesCurrencyCode  = "SCR"
+	MadagascarCurrencyCode  = "MGA"
+	MalawiCurrencyCode      = "MWK"
+	UgandaCurrency          = "Ugandan shilling"
+	NigeriaCurrency         = "Nigerian naira"
+	TanzaniaCurrency        = "Tanzanian shilling"
+	KenyaCurrency           = "Kenyan shilling"
+	RwandaCurrency          = "Rwandan franc"
+	ZambiaCurrency          = "Zambian kwacha"
+	GabonCurrency           = "CFA franc BEAC"
+	NigerCurrency           = "CFA franc BCEAO"
+	BrazzavilleCurrency     = "CFA franc BCEA"
+	DrCongoCurrency         = "Congolese franc"
+	ChadCurrency            = "CFA franc BEAC"
+	SeychellesCurrency      = "Seychelles rupee"
+	MadagascarCurrency      = "Malagasy ariary"
+	MalawiCurrency          = "Malawian Kwacha"
 )
 
 type (
 	Country struct {
-		Name         string
+		CommonName   string
 		CodeName     string
-		Currency     string
+		CurrencyName string
 		CurrencyCode string
 	}
 )
 
 func Names() []string {
 	names := []string{
-		UGANDA, NIGER, NIGERIA, TANZANIA, KENYA, RWANDA,
-		ZAMBIA, GABON, CONGO_BRAZZAVILLE, DR_CONGO, CHAD,
-		SEYCHELLES, MADAGASCAR, MALAWI,
+		Uganda, Niger, Nigeria, Tanzania, Kenya, Rwanda,
+		Zambia, Gabon, Brazzaville, DrCongo, CHAD,
+		Seychelles, Madagascar, Malawi,
 	}
 
 	return names
@@ -110,9 +110,9 @@ func Names() []string {
 
 func GetByName(name string) (Country, error) {
 	name = strings.TrimSpace(strings.ToLower(name))
-	countries := List()
+	countries := list()
 	for _, country := range countries {
-		n := strings.TrimSpace(strings.ToLower(country.Name))
+		n := strings.TrimSpace(strings.ToLower(country.CommonName))
 		if name == n {
 			return country, nil
 		}
@@ -121,104 +121,104 @@ func GetByName(name string) (Country, error) {
 	return Country{}, fmt.Errorf("error: the country %s is not supported", name)
 }
 
-func List() []Country {
+func list() []Country {
 
 	var countries []Country
 	var (
 		uganda = Country{
-			Name:         UGANDA,
-			CodeName:     UGANDA_CODE,
-			Currency:     UGANDA_CURRENCY,
-			CurrencyCode: UGANDA_CURRENCY_CODE,
+			CommonName:   Uganda,
+			CodeName:     UgandaCodeName,
+			CurrencyName: UgandaCurrency,
+			CurrencyCode: UgandaCurrencyCode,
 		}
 
 		sych = Country{
-			Name:         SEYCHELLES,
-			CodeName:     SEYCHELLES_CODE,
-			Currency:     SEYCHELLES_CURRENCY,
-			CurrencyCode: SEYCHELLES_CURRENCY_CODE,
+			CommonName:   Seychelles,
+			CodeName:     SeychellesCodeName,
+			CurrencyName: SeychellesCurrency,
+			CurrencyCode: SeychellesCurrencyCode,
 		}
 
 		brazzaville = Country{
-			Name:         CONGO_BRAZZAVILLE,
-			CodeName:     CONGO_BRAZZAVILLE_CODE,
-			Currency:     CONGO_BRAZZAVILLE_CURRENCY,
-			CurrencyCode: CONGO_BRAZZAVILLE_CURRENCY_CODE,
+			CommonName:   Brazzaville,
+			CodeName:     BrazzavilleCodeName,
+			CurrencyName: BrazzavilleCurrency,
+			CurrencyCode: BrazzavilleCurrencyCode,
 		}
 
 		kenya = Country{
-			Name:         KENYA,
-			CodeName:     KENYA_CODE,
-			Currency:     KENYA_CURRENCY,
-			CurrencyCode: KENYA_CURRENCY_CODE,
+			CommonName:   Kenya,
+			CodeName:     KenyaCodeName,
+			CurrencyName: KenyaCurrency,
+			CurrencyCode: KenyaCurrencyCode,
 		}
 
 		nigeria = Country{
-			Name:         NIGERIA,
-			CodeName:     NIGERIA_CODE,
-			Currency:     NIGERIA_CURRENCY,
-			CurrencyCode: NIGERIA_CURRENCY_CODE,
+			CommonName:   Nigeria,
+			CodeName:     NigeriaCodeName,
+			CurrencyName: NigeriaCurrency,
+			CurrencyCode: NigeriaCurrencyCode,
 		}
 
 		rwanda = Country{
-			Name:         RWANDA,
-			CodeName:     RWANDA_CODE,
-			Currency:     RWANDA_CURRENCY,
-			CurrencyCode: RWANDA_CURRENCY_CODE,
+			CommonName:   Rwanda,
+			CodeName:     RwandaCodeName,
+			CurrencyName: RwandaCurrency,
+			CurrencyCode: RwandaCurrencyCode,
 		}
 
 		niger = Country{
-			Name:         NIGER,
-			CodeName:     NIGER_CODE,
-			Currency:     NIGER_CURRENCY,
-			CurrencyCode: NIGER_CURRENCY_CODE,
+			CommonName:   Nigeria,
+			CodeName:     NigerCodeName,
+			CurrencyName: NigerCurrency,
+			CurrencyCode: NigerCurrencyCode,
 		}
 
 		chad = Country{
-			Name:         CHAD,
-			CodeName:     CHAD_CODE,
-			Currency:     CHAD_CURRENCY,
-			CurrencyCode: CHAD_CURRENCY_CODE,
+			CommonName:   CHAD,
+			CodeName:     ChadCodeName,
+			CurrencyName: ChadCurrency,
+			CurrencyCode: ChadCurrencyCode,
 		}
 
 		congo = Country{
-			Name:         DR_CONGO,
-			CodeName:     DR_CONGO_CODE,
-			Currency:     DR_CONGO_CURRENCY,
-			CurrencyCode: DR_CONGO_CURRENCY_CODE,
+			CommonName:   DrCongo,
+			CodeName:     DrCongoCode,
+			CurrencyName: DrCongoCurrency,
+			CurrencyCode: DrCongoCurrencyCode,
 		}
 
 		madagascar = Country{
-			Name:         MADAGASCAR,
-			CodeName:     MADAGASCAR_CODE,
-			Currency:     MADAGASCAR_CURRENCY,
-			CurrencyCode: MADAGASCAR_CURRENCY_CODE,
+			CommonName:   Madagascar,
+			CodeName:     MadagascarCodeName,
+			CurrencyName: MadagascarCurrency,
+			CurrencyCode: MadagascarCurrencyCode,
 		}
 
 		zambia = Country{
-			Name:         ZAMBIA,
-			CodeName:     ZAMBIA_CODE,
-			Currency:     ZAMBIA_CURRENCY,
-			CurrencyCode: ZAMBIA_CURRENCY_CODE,
+			CommonName:   Zambia,
+			CodeName:     ZambiaCodeName,
+			CurrencyName: ZambiaCurrency,
+			CurrencyCode: ZambiaCurrencyCode,
 		}
 
 		gabon = Country{
-			Name:         GABON,
-			CodeName:     GABON_CODE,
-			Currency:     GABON_CURRENCY,
-			CurrencyCode: GABON_CURRENCY_CODE,
+			CommonName:   Gabon,
+			CodeName:     GabonCodeName,
+			CurrencyName: GabonCurrency,
+			CurrencyCode: GabonCurrencyCode,
 		}
 		tz = Country{
-			Name:         TANZANIA,
-			CodeName:     TANZANIA_CODE,
-			Currency:     TANZANIA_CURRENCY,
-			CurrencyCode: TANZANIA_CURRENCY_CODE,
+			CommonName:   Tanzania,
+			CodeName:     TanzaniaCodeName,
+			CurrencyName: TanzaniaCurrency,
+			CurrencyCode: TanzaniaCurrencyCode,
 		}
 		malawi = Country{
-			Name:         MALAWI,
-			CodeName:     MALAWI_CODE,
-			Currency:     MALAWI_CURRENCY,
-			CurrencyCode: MALAWI_CURRENCY_CODE,
+			CommonName:   Malawi,
+			CodeName:     MalawiCodeName,
+			CurrencyName: MalawiCurrency,
+			CurrencyCode: MalawiCurrencyCode,
 		}
 	)
 
@@ -226,4 +226,28 @@ func List() []Country {
 		brazzaville, rwanda, kenya, madagascar, zambia, sych, chad, niger, nigeria)
 
 	return countries
+}
+
+func GetCodeName(countryName string)(string,error){
+	countryName = strings.TrimSpace(strings.ToLower(countryName))
+    countries := list()
+    for _, country := range countries {
+        n := strings.TrimSpace(strings.ToLower(country.CommonName))
+        if countryName == n {
+            return country.CodeName,nil
+        }
+    }
+    return "",fmt.Errorf("error: the country %s is not supported", countryName)
+}
+
+func GetCurrencyCode(countryName string)(string,error){
+    countryName = strings.TrimSpace(strings.ToLower(countryName))
+    countries := list()
+    for _, country := range countries {
+        n := strings.TrimSpace(strings.ToLower(country.CommonName))
+        if countryName == n {
+            return country.CurrencyCode,nil
+        }
+    }
+    return "",fmt.Errorf("error: the country %s is not supported", countryName)
 }

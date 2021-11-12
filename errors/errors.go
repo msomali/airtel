@@ -49,7 +49,7 @@ const (
 	ESB000014 = "An error occurred while fetching the transaction status"
 	ESB000033 = "Invalid MSISDN Length. MSISDN Length should be {0}"
 	ESB000034 = "Invalid Country Command"
-	ESB000035 = "Invalid Currency CodeName"
+	ESB000035 = "Invalid CurrencyName CodeName"
 	ESB000036 = "Invalid MSISDN Length. MSISDN Length should be {0} and should start with 0"
 	ESB000039 = "Vendor is not configured to do transaction in the country {0}"
 )

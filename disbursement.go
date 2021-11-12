@@ -126,11 +126,11 @@ func (c *Client) disburse(ctx context.Context, request InternalDisburseRequest) 
 	var opts []base.RequestOption
 
 	hs := map[string]string{
-		"Content-Type":  "application/json",
-		"Accept":        "*/*",
-		"X-Country":     country.CodeName,
-		"X-Currency":    country.CurrencyCode,
-		"Authorization": fmt.Sprintf("Bearer %s", token),
+		"Content-Type":   "application/json",
+		"Accept":         "*/*",
+		"X-Country":      country.CodeName,
+		"X-CurrencyName": country.CurrencyCode,
+		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 
 	headersOpt := base.WithRequestHeaders(hs)
@@ -161,11 +161,11 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 	var opts []base.RequestOption
 
 	hs := map[string]string{
-		"Content-Type":  "application/json",
-		"Accept":        "*/*",
-		"X-Country":     country.CodeName,
-		"X-Currency":    country.CurrencyCode,
-		"Authorization": fmt.Sprintf("Bearer %s", token),
+		"Content-Type":   "application/json",
+		"Accept":         "*/*",
+		"X-Country":      country.CodeName,
+		"X-CurrencyName": country.CurrencyCode,
+		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
 	endpointOption := base.WithEndpoint(request.ID)
