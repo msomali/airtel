@@ -31,17 +31,40 @@ import (
 )
 
 const (
-	PRODUCTION     Environment = "production"
-	STAGING        Environment = "staging"
-	prodBaseURL                = "https://openapi.airtel.africa"
-	stagingBaseURL             = "https://openapiuat.airtel.africa"
+	PRODUCTION                           Environment = "production"
+	STAGING                              Environment = "staging"
+	prodBaseURL                                      = "https://openapi.airtel.africa"
+	stagingBaseURL                                   = "https://openapiuat.airtel.africa"
+	defAirtelAuthEndpoint                            = "/auth/oauth2/token"
+	defAirtelPushEndpoint                            = "/merchant/v1/payments/"
+	defAirtelRefundEndpoint                          = "/standard/v1/payments/refund"
+	defAirtelPushEnquiryEndpoint                     = "/standard/v1/payments/"
+	defAirtelDisbursementEndpoint                    = "/standard/v1/disbursements/"
+	defAirtelDisbursementEnquiryEndpoint             = "/standard/v1/disbursements/"
+	defAirtelTransactionSummaryEndpoint              = "/merchant/v1/transactions"
+	defAirtelBalanceEnquiryEndpoint                  = "/standard/v1/users/balance"
+	defAirtelUserEnquiryEndpoint                     = "/standard/v1/users/"
 )
+
+func endpoints() *Endpoints {
+	return &Endpoints{
+		AuthEndpoint:                defAirtelAuthEndpoint,
+		PushEndpoint:                defAirtelPushEndpoint,
+		RefundEndpoint:              defAirtelRefundEndpoint,
+		PushEnquiryEndpoint:         defAirtelPushEnquiryEndpoint,
+		DisbursementEndpoint:        defAirtelDisbursementEndpoint,
+		DisbursementEnquiryEndpoint: defAirtelDisbursementEnquiryEndpoint,
+		TransactionSummaryEndpoint:  defAirtelTransactionSummaryEndpoint,
+		BalanceEnquiryEndpoint:      defAirtelBalanceEnquiryEndpoint,
+		UserEnquiryEndpoint:         defAirtelUserEnquiryEndpoint,
+	}
+}
 
 type (
 	Environment string
 
 	Config struct {
-		Endpoints          *Endpoints
+	//	Endpoints          *Endpoints
 		AllowedCountries   map[ApiGroup][]string
 		DisbursePIN        string
 		CallbackPrivateKey string
@@ -54,6 +77,7 @@ type (
 
 	Client struct {
 		baseURL           string
+		endpoints          *Endpoints
 		rv                base.Receiver
 		rp                base.Replier
 		Conf              *Config
@@ -92,6 +116,10 @@ func (c *Client) SetDisburseAdapter(adapter DisbursementAdapter) {
 	c.disburseAdapter = adapter
 }
 
+func (c *Client) SetEndpoints(e *Endpoints) {
+	c.endpoints = e
+}
+
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
 	var (
 		baseURL string
@@ -120,6 +148,7 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 
 	c := &Client{
 		baseURL: baseURL,
+		endpoints: endpoints(),
 		Conf:    config,
 		base:    newClient,
 		token:   token,
