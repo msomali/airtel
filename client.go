@@ -64,7 +64,7 @@ type (
 	Environment string
 
 	Config struct {
-	//	Endpoints          *Endpoints
+		//	Endpoints          *Endpoints
 		AllowedCountries   map[ApiGroup][]string
 		DisbursePIN        string
 		CallbackPrivateKey string
@@ -77,7 +77,7 @@ type (
 
 	Client struct {
 		baseURL           string
-		endpoints          *Endpoints
+		endpoints         *Endpoints
 		rv                base.Receiver
 		rp                base.Replier
 		Conf              *Config
@@ -147,11 +147,11 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	newClient := base.NewClient(base.WithDebugMode(debugMode))
 
 	c := &Client{
-		baseURL: baseURL,
+		baseURL:   baseURL,
 		endpoints: endpoints(),
-		Conf:    config,
-		base:    newClient,
-		token:   token,
+		Conf:      config,
+		base:      newClient,
+		token:     token,
 		disburseAdapter: &disburseAdapter{
 			Conf: config,
 		},
