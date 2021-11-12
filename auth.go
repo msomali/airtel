@@ -43,7 +43,7 @@ type (
 		TokenType   string `json:"token_type,omitempty"`
 		Message     string `json:"message,omitempty"`
 	}
-	TokenRequest struct {
+	tokenRequest struct {
 		ClientID     string `json:"client_id"`
 		ClientSecret string `json:"client_secret"`
 		GrantType    string `json:"grant_type"`
@@ -78,7 +78,7 @@ func (c *Client) checkToken(ctx context.Context) (string, error) {
 }
 
 func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
-	body := TokenRequest{
+	body := tokenRequest{
 		ClientID:     c.Conf.ClientID,
 		ClientSecret: c.Conf.Secret,
 		GrantType:    defaultGrantType,
@@ -110,7 +110,7 @@ func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
 	return *res, nil
 }
 
-func PinEncryption(pin string, pubKey string) (string, error) {
+func pinEncryption(pin string, pubKey string) (string, error) {
 
 	decodedBase64, err := base64.StdEncoding.DecodeString(pubKey)
 	if err != nil {

@@ -37,11 +37,15 @@ func contains(s []string, str string) bool {
 	return false
 }
 
+// CheckCountry returns true if the country is listed as supported in the api group
+// it returns false if not
+// It is useful in scenario where one wants to send push pay request in a country that is
+// not registered during airtel integration. But for this to work, all api groups and their
+// supported countries need to be registered in the Client
 func CheckCountry(api string, country string, allCountries map[string][]string) bool {
 	a := allCountries[api]
 	if a == nil || len(a) <= 0 {
 		return false
 	}
-
 	return contains(a, country)
 }

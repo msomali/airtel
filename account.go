@@ -33,11 +33,11 @@ import (
 )
 
 type (
-	BalanceEnquiryRequest struct {
+	BalanceRequest struct {
 		MSISDN               string
 		CountryOfTransaction string
 	}
-	BalanceEnquiryResponse struct {
+	BalanceResponse struct {
 		Data struct {
 			Balance       string `json:"balance"`
 			Currency      string `json:"currency"`
@@ -56,20 +56,22 @@ type (
 	}
 
 	AccountService interface {
-		Balance(ctx context.Context, request BalanceEnquiryRequest) (BalanceEnquiryResponse, error)
+		Balance(ctx context.Context, request BalanceRequest) (BalanceResponse, error)
 	}
+
+	BalanceFunc func(ctx context.Context, request BalanceRequest) (BalanceResponse, error)
 )
 
-func (c *Client) Balance(ctx context.Context, request BalanceEnquiryRequest) (BalanceEnquiryResponse, error) {
+func (c *Client) Balance(ctx context.Context, request BalanceRequest) (BalanceResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return BalanceEnquiryResponse{}, err
+		return BalanceResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.Get(countryName)
 	if err != nil {
-		return BalanceEnquiryResponse{}, err
+		return BalanceResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -84,10 +86,10 @@ func (c *Client) Balance(ctx context.Context, request BalanceEnquiryRequest) (Ba
 	endpointOption := base.WithEndpoint(request.MSISDN)
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(BalanceEnquiry, request, opts...)
-	res := new(BalanceEnquiryResponse)
+	res := new(BalanceResponse)
 	_, err = c.base.Do(ctx, "balance enquiry", req, res)
 	if err != nil {
-		return BalanceEnquiryResponse{}, err
+		return BalanceResponse{}, err
 	}
 	return *res, nil
 }

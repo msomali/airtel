@@ -70,7 +70,7 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) InternalPushRequest {
 			Msisdn:   request.SubscriberMsisdn,
 		},
 		Transaction: struct {
-			Amount   int64  `json:"amount"`
+			Amount   float64 `json:"amount"`
 			Country  string `json:"country"`
 			Currency string `json:"currency"`
 			ID       string `json:"id"`
@@ -84,7 +84,7 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) InternalPushRequest {
 }
 
 func (r *adapter) ToDisburseRequest(request DisburseRequest) (InternalDisburseRequest, error) {
-	encryptedPin, err := PinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
+	encryptedPin, err := pinEncryption(r.Conf.DisbursePIN, r.Conf.PublicKey)
 	if err != nil {
 		return InternalDisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
 	}
@@ -98,7 +98,7 @@ func (r *adapter) ToDisburseRequest(request DisburseRequest) (InternalDisburseRe
 		Reference: request.Reference,
 		Pin:       encryptedPin,
 		Transaction: struct {
-			Amount int64  `json:"amount"`
+			Amount float64  `json:"amount"`
 			ID     string `json:"id"`
 		}{
 			Amount: request.Amount,
