@@ -90,12 +90,12 @@ type (
 	}
 
 	PushCallbackHandler interface {
-		Handle(request InternalCallbackRequest) error
+		Handle(request CallbackRequest) error
 	}
-	PushCallbackFunc func(request InternalCallbackRequest) error
+	PushCallbackFunc func(request CallbackRequest) error
 )
 
-func (pf PushCallbackFunc) Handle(request InternalCallbackRequest) error {
+func (pf PushCallbackFunc) Handle(request CallbackRequest) error {
 	return pf(request)
 }
 

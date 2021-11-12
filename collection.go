@@ -109,7 +109,7 @@ type (
 		} `json:"transaction"`
 	}
 
-	InternalCallbackRequest struct {
+	CallbackRequest struct {
 		Transaction struct {
 			ID            string `json:"id"`
 			Message       string `json:"message"`
@@ -265,7 +265,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryReq
 }
 
 func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Request) {
-	body := new(InternalCallbackRequest)
+	body := new(CallbackRequest)
 	err := base.ReceivePayload(request, body)
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
