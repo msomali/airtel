@@ -31,10 +31,10 @@ import (
 )
 
 const (
-	PRODUCTION        Environment = "production"
-	STAGING           Environment = "staging"
-	BaseURLProduction             = "https://openapi.airtel.africa"
-	BaseURLStaging                = "https://openapiuat.airtel.africa"
+	PRODUCTION     Environment = "production"
+	STAGING        Environment = "staging"
+	prodBaseURL                = "https://openapi.airtel.africa"
+	stagingBaseURL             = "https://openapiuat.airtel.africa"
 )
 
 type (
@@ -48,12 +48,12 @@ type (
 		CallbackAuth       bool
 		PublicKey          string
 		Environment        Environment
-		BaseURL            string
 		ClientID           string
 		Secret             string
 	}
 
 	Client struct {
+		baseURL           string
 		rv                base.Receiver
 		rp                base.Replier
 		Conf              *Config
@@ -93,6 +93,18 @@ func (c *Client) SetDisburseAdapter(adapter DisbursementAdapter) {
 }
 
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
+	var (
+		baseURL string
+	)
+
+	if config.Environment == STAGING {
+		baseURL = stagingBaseURL
+	}
+
+	if config.Environment == PRODUCTION {
+		baseURL = prodBaseURL
+	}
+
 	if config.AllowedCountries == nil {
 		m := make(map[ApiGroup][]string)
 		config.AllowedCountries = m
@@ -107,9 +119,10 @@ func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode b
 	newClient := base.NewClient(base.WithDebugMode(debugMode))
 
 	c := &Client{
-		Conf:  config,
-		base:  newClient,
-		token: token,
+		baseURL: baseURL,
+		Conf:    config,
+		base:    newClient,
+		token:   token,
 		disburseAdapter: &disburseAdapter{
 			Conf: config,
 		},

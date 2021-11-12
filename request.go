@@ -150,10 +150,9 @@ type (
 )
 
 func (c *Client) makeInternalRequest(requestType RequestType, payload interface{}, opts ...base.RequestOption) *base.Request {
-	baseURL := c.Conf.BaseURL
 	endpoints := c.Conf.Endpoints
 	edps := *endpoints
-	url := appendEndpoint(baseURL, requestType.endpoint(edps))
+	url := appendEndpoint(c.baseURL, requestType.endpoint(edps))
 	method := requestType.httpMethod()
 	return base.NewRequest(method, url, payload, opts...)
 }
