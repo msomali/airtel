@@ -119,7 +119,7 @@ func (c *Client) disburse(ctx context.Context, request InternalDisburseRequest) 
 	}
 
 	countryName := request.CountryOfTransaction
-	country, err := countries.GetByName(countryName)
+	country, err := countries.Get(countryName)
 	if err != nil {
 		return InternalDisburseResponse{}, err
 	}
@@ -154,7 +154,7 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 	}
 
 	countryName := request.CountryOfTransaction
-	country, err := countries.GetByName(countryName)
+	country, err := countries.Get(countryName)
 	if err != nil {
 		return DisburseEnquiryResponse{}, err
 	}

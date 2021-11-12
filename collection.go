@@ -185,7 +185,7 @@ func (c *Client) push(ctx context.Context, request InternalPushRequest) (Interna
 }
 
 func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (InternalRefundResponse, error) {
-	country, err := countries.GetByName(request.CountryOfTransaction)
+	country, err := countries.Get(request.CountryOfTransaction)
 	if err != nil {
 		return InternalRefundResponse{}, err
 	}
@@ -223,7 +223,7 @@ func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (Int
 
 func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryRequest) (InternalPushEnquiryResponse, error) {
 
-	country, err := countries.GetByName(request.CountryOfTransaction)
+	country, err := countries.Get(request.CountryOfTransaction)
 	if err != nil {
 		return InternalPushEnquiryResponse{}, err
 	}

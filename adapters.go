@@ -56,8 +56,8 @@ type (
 
 func (r *adapter) ToPushPayRequest(request PushPayRequest) InternalPushRequest {
 
-	subCountry, _ := countries.GetByName(request.SubscriberCountry)
-	transCountry, _ := countries.GetByName(request.TransactionCountry)
+	subCountry, _ := countries.Get(request.SubscriberCountry)
+	transCountry, _ := countries.Get(request.TransactionCountry)
 	return InternalPushRequest{
 		Reference: request.Reference,
 		Subscriber: struct {

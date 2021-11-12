@@ -77,7 +77,7 @@ func (c *Client) UserEnquiry(ctx context.Context, request UserEnquiryRequest) (U
 	}
 
 	countryName := request.CountryOfTransaction
-	country, err := countries.GetByName(countryName)
+	country, err := countries.Get(countryName)
 	if err != nil {
 		return UserEnquiryResponse{}, err
 	}

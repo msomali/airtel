@@ -108,7 +108,7 @@ func Names() []string {
 	return names
 }
 
-func GetByName(name string) (Country, error) {
+func Get(name string) (Country, error) {
 	name = strings.TrimSpace(strings.ToLower(name))
 	countries := list()
 	for _, country := range countries {
@@ -226,6 +226,18 @@ func list() []Country {
 		brazzaville, rwanda, kenya, madagascar, zambia, sych, chad, niger, nigeria)
 
 	return countries
+}
+
+func Search(countryName string)bool{
+	countryName = strings.TrimSpace(strings.ToLower(countryName))
+    countries := list()
+    for _, country := range countries {
+        n := strings.TrimSpace(strings.ToLower(country.CommonName))
+        if countryName == n {
+            return true
+        }
+    }
+    return false
 }
 
 func GetCodeName(countryName string)(string,error){

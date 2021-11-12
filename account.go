@@ -67,7 +67,7 @@ func (c *Client) Balance(ctx context.Context, request BalanceEnquiryRequest) (Ba
 	}
 
 	countryName := request.CountryOfTransaction
-	country, err := countries.GetByName(countryName)
+	country, err := countries.Get(countryName)
 	if err != nil {
 		return BalanceEnquiryResponse{}, err
 	}
