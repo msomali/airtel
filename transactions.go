@@ -88,7 +88,7 @@ func (c *Client) Summary(ctx context.Context, params Params) (ListTransactionsRe
 
 	res := new(ListTransactionsResponse)
 
-	_, err = c.base.Do(ctx, "transaction summary", req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return ListTransactionsResponse{}, err
 	}

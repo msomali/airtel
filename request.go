@@ -33,7 +33,7 @@ import (
 )
 
 const (
-	defaultGrantType     = "client_credentials"
+	defaultGrantType = "client_credentials"
 )
 
 const (
@@ -148,7 +148,7 @@ func (c *Client) makeInternalRequest(requestType RequestType, payload interface{
 	edps := *endpoints
 	url := appendEndpoint(c.baseURL, requestType.endpoint(edps))
 	method := requestType.httpMethod()
-	return base.NewRequest(method, url, payload, opts...)
+	return base.NewRequest(requestType.name(), method, url, payload, opts...)
 }
 
 func appendEndpoint(url string, endpoint string) string {

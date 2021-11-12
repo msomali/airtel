@@ -94,8 +94,8 @@ func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
 	res := new(TokenResponse)
-	reqName := Authorization.name()
-	response, err := c.base.Do(ctx, reqName, req, res)
+	//	reqName := Authorization.name()
+	response, err := c.base.Do(ctx, req, res)
 	if err != nil {
 		return TokenResponse{}, err
 	}

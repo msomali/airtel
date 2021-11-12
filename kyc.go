@@ -97,7 +97,7 @@ func (c *Client) UserEnquiry(ctx context.Context, request UserEnquiryRequest) (U
 	req := c.makeInternalRequest(UserEnquiry, request, opts...)
 
 	res := new(UserEnquiryResponse)
-	_, err = c.base.Do(ctx, "user enquiry", req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return UserEnquiryResponse{}, err
 	}

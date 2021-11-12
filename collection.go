@@ -186,7 +186,7 @@ func (c *Client) push(ctx context.Context, request InternalPushRequest) (Interna
 	}
 
 	res := new(InternalPushResponse)
-	_, err = c.base.Do(ctx, "ussd push", req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return InternalPushResponse{}, err
 	}
@@ -220,9 +220,9 @@ func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (Int
 	}
 
 	res := new(InternalRefundResponse)
-	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.name())
-	_, err = c.base.Do(ctx, rn, req, res)
+	//env := c.Conf.Environment
+	//rn := fmt.Sprintf("%v: %s: %s", env, Refund.Group(), Refund.name())
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return InternalRefundResponse{}, err
 	}
@@ -255,9 +255,9 @@ func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryReq
 	if err != nil {
 		return InternalPushEnquiryResponse{}, err
 	}
-	reqName := PushEnquiry.name()
+	//reqName := PushEnquiry.name()
 	res := new(InternalPushEnquiryResponse)
-	_, err = c.base.Do(ctx, reqName, req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return InternalPushEnquiryResponse{}, err
 	}

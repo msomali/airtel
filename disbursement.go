@@ -149,9 +149,9 @@ func (c *Client) disburse(ctx context.Context, request InternalDisburseRequest) 
 
 	req := c.makeInternalRequest(Disbursement, request, opts...)
 	res := new(InternalDisburseResponse)
-	env := c.Conf.Environment
-	rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
-	_, err = c.base.Do(ctx, rn, req, res)
+	//env := c.Conf.Environment
+	//rn := fmt.Sprintf("%v: %s: %s", env, Disbursement.Group(), Disbursement.name())
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return InternalDisburseResponse{}, err
 	}
@@ -183,7 +183,7 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(DisbursementEnquiry, request, opts...)
 	res := new(DisburseEnquiryResponse)
-	_, err = c.base.Do(ctx, "disbursement enquiry", req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return DisburseEnquiryResponse{}, err
 	}

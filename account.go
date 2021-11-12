@@ -85,7 +85,7 @@ func (c *Client) Balance(ctx context.Context, request BalanceRequest) (BalanceRe
 	opts = append(opts, headersOpt, endpointOption)
 	req := c.makeInternalRequest(BalanceEnquiry, request, opts...)
 	res := new(BalanceResponse)
-	_, err = c.base.Do(ctx, "balance enquiry", req, res)
+	_, err = c.base.Do(ctx, req, res)
 	if err != nil {
 		return BalanceResponse{}, err
 	}
