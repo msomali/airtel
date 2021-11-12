@@ -28,7 +28,6 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/base"
 )
 
@@ -45,7 +44,7 @@ type (
 		Offset int64 `json:"offset"`
 	}
 	TransactionService interface {
-		Summary(ctx context.Context, params Params) (models.ListTransactionsResponse, error)
+		Summary(ctx context.Context, params Params) (ListTransactionsResponse, error)
 	}
 )
 
@@ -67,11 +66,11 @@ func queryParamsOptions(params Params, m map[string]string) base.RequestOption {
 	return base.WithQueryParams(m)
 }
 
-func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransactionsResponse, error) {
+func (c *Client) Summary(ctx context.Context, params Params) (ListTransactionsResponse, error) {
 
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.ListTransactionsResponse{}, err
+		return ListTransactionsResponse{}, err
 	}
 
 	var opts []base.RequestOption
@@ -87,11 +86,53 @@ func (c *Client) Summary(ctx context.Context, params Params) (models.ListTransac
 	opts = append(opts, headersOpt, queryMapOpt)
 	req := c.makeInternalRequest(TransactionSummary, nil, opts...)
 
-	res := new(models.ListTransactionsResponse)
+	res := new(ListTransactionsResponse)
 
 	_, err = c.base.Do(ctx, "transaction summary", req, res)
 	if err != nil {
-		return models.ListTransactionsResponse{}, err
+		return ListTransactionsResponse{}, err
 	}
 	return *res, nil
+}
+
+type ListTransactionsResponse struct {
+	Data struct {
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+		Count            int    `json:"count"`
+		Transactions     []struct {
+			Charges struct {
+				Service int `json:"service"`
+			} `json:"charges"`
+			Payee struct {
+				Currency string `json:"currency"`
+				Msisdn   int    `json:"msisdn"`
+				Name     string `json:"name"`
+			} `json:"payee"`
+			Payer struct {
+				Currency string `json:"currency"`
+				Msisdn   int    `json:"msisdn"`
+				Name     string `json:"name"`
+			} `json:"payer"`
+			Service struct {
+				Type string `json:"type"`
+			} `json:"service"`
+			Transaction struct {
+				AirtelMoneyID   string `json:"airtel_money_id"`
+				Amount          int    `json:"amount"`
+				CreatedAt       int    `json:"created_at"`
+				ID              int64  `json:"id"`
+				ReferenceNumber string `json:"reference_number"`
+				Status          string `json:"status"`
+			} `json:"transaction"`
+		} `json:"transactions"`
+	} `json:"data"`
+	Status struct {
+		Code       int    `json:"code"`
+		Message    string `json:"message"`
+		ResultCode string `json:"result_code"`
+		Success    bool   `json:"success"`
+	} `json:"status"`
 }

@@ -32,14 +32,27 @@ import (
 	"crypto/x509"
 	"encoding/base64"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/base"
 	"time"
 )
 
-type Authenticator interface {
-	Token(ctx context.Context) (models.TokenResponse, error)
-}
+type (
+	TokenResponse struct {
+		AccessToken string `json:"access_token,omitempty"`
+		ExpiresIn   int    `json:"expires_in,omitempty"`
+		TokenType   string `json:"token_type,omitempty"`
+		Message     string `json:"message,omitempty"`
+	}
+	TokenRequest struct {
+		ClientID     string `json:"client_id"`
+		ClientSecret string `json:"client_secret"`
+		GrantType    string `json:"grant_type"`
+	}
+
+	Authenticator interface {
+		Token(ctx context.Context) (TokenResponse, error)
+	}
+)
 
 func (c *Client) checkToken(ctx context.Context) (string, error) {
 	var token string
@@ -64,8 +77,8 @@ func (c *Client) checkToken(ctx context.Context) (string, error) {
 	return token, nil
 }
 
-func (c *Client) Token(ctx context.Context) (models.TokenResponse, error) {
-	body := models.TokenRequest{
+func (c *Client) Token(ctx context.Context) (TokenResponse, error) {
+	body := TokenRequest{
 		ClientID:     c.Conf.ClientID,
 		ClientSecret: c.Conf.Secret,
 		GrantType:    defaultGrantType,
@@ -80,14 +93,14 @@ func (c *Client) Token(ctx context.Context) (models.TokenResponse, error) {
 	opts = append(opts, base.WithRequestHeaders(hs))
 	req := c.makeInternalRequest(Authorization, body, opts...)
 
-	res := new(models.TokenResponse)
+	res := new(TokenResponse)
 	reqName := Authorization.name()
 	response, err := c.base.Do(ctx, reqName, req, res)
 	if err != nil {
-		return models.TokenResponse{}, err
+		return TokenResponse{}, err
 	}
 	if response.Error != nil || res.AccessToken == "" {
-		return models.TokenResponse{}, fmt.Errorf("could not obtain token")
+		return TokenResponse{}, fmt.Errorf("could not obtain token")
 	}
 	duration := time.Duration(res.ExpiresIn)
 	now := time.Now()

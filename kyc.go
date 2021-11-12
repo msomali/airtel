@@ -28,27 +28,58 @@ package airtel
 import (
 	"context"
 	"fmt"
-	"github.com/techcraftlabs/airtel/models"
 	"github.com/techcraftlabs/airtel/pkg/countries"
 	"github.com/techcraftlabs/base"
 )
 
 type (
+	UserEnquiryResponse struct {
+		Data struct {
+			FirstName    string `json:"first_name,omitempty"`
+			Grade        string `json:"grade,omitempty"`
+			IsBarred     bool   `json:"is_barred,omitempty"`
+			IsPinSet     bool   `json:"is_pin_set,omitempty"`
+			LastName     string `json:"last_name,omitempty"`
+			Msisdn       int    `json:"msisdn,omitempty"`
+			RegStatus    string `json:"reg_status,omitempty"`
+			RegisteredID string `json:"registered_id,omitempty"`
+			Registration struct {
+				ID     string `json:"id,omitempty"`
+				Status string `json:"status,omitempty"`
+			} `json:"registration,omitempty"`
+		} `json:"data,omitempty"`
+		Status struct {
+			Code       string `json:"code,omitempty"`
+			Message    string `json:"message,omitempty"`
+			ResultCode string `json:"result_code,omitempty"`
+			Success    bool   `json:"success,omitempty"`
+		} `json:"status,omitempty"`
+		ErrorDescription string `json:"error_description,omitempty"`
+		Error            string `json:"error,omitempty"`
+		StatusMessage    string `json:"status_message,omitempty"`
+		StatusCode       string `json:"status_code,omitempty"`
+	}
+
+	UserEnquiryRequest struct {
+		MSISDN               string
+		CountryOfTransaction string
+	}
+
 	KYCService interface {
-		UserEnquiry(ctx context.Context, request models.UserEnquiryRequest) (models.UserEnquiryResponse, error)
+		UserEnquiry(ctx context.Context, request UserEnquiryRequest) (UserEnquiryResponse, error)
 	}
 )
 
-func (c *Client) UserEnquiry(ctx context.Context, request models.UserEnquiryRequest) (models.UserEnquiryResponse, error) {
+func (c *Client) UserEnquiry(ctx context.Context, request UserEnquiryRequest) (UserEnquiryResponse, error) {
 	token, err := c.checkToken(ctx)
 	if err != nil {
-		return models.UserEnquiryResponse{}, err
+		return UserEnquiryResponse{}, err
 	}
 
 	countryName := request.CountryOfTransaction
 	country, err := countries.GetByName(countryName)
 	if err != nil {
-		return models.UserEnquiryResponse{}, err
+		return UserEnquiryResponse{}, err
 	}
 	var opts []base.RequestOption
 
@@ -65,10 +96,10 @@ func (c *Client) UserEnquiry(ctx context.Context, request models.UserEnquiryRequ
 
 	req := c.makeInternalRequest(UserEnquiry, request, opts...)
 
-	res := new(models.UserEnquiryResponse)
+	res := new(UserEnquiryResponse)
 	_, err = c.base.Do(ctx, "user enquiry", req, res)
 	if err != nil {
-		return models.UserEnquiryResponse{}, err
+		return UserEnquiryResponse{}, err
 	}
 	return *res, nil
 }

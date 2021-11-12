@@ -272,6 +272,3 @@ func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Req
 	}
 	writer.WriteHeader(http.StatusOK)
 }
-
-
-
