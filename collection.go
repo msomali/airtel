@@ -33,7 +33,16 @@ import (
 	"net/http"
 )
 
+var _ CollectionAdapter = (*collectAdapter)(nil)
+
 type (
+	collectAdapter struct{}
+
+	CollectionAdapter interface {
+		ToInternalRequest(request PushPayRequest) InternalPushRequest
+		ToModifiedResponse(response InternalPushResponse) PushPayResponse
+	}
+
 	InternalPushRequest struct {
 		Reference  string `json:"reference"`
 		Subscriber struct {
@@ -42,10 +51,10 @@ type (
 			Msisdn   string `json:"msisdn"`
 		} `json:"subscriber"`
 		Transaction struct {
-			Amount   float64  `json:"amount"`
-			Country  string `json:"country"`
-			Currency string `json:"currency"`
-			ID       string `json:"id"`
+			Amount   float64 `json:"amount"`
+			Country  string  `json:"country"`
+			Currency string  `json:"currency"`
+			ID       string  `json:"id"`
 		} `json:"transaction"`
 	}
 	InternalPushEnquiryRequest struct {
@@ -138,12 +147,12 @@ type (
 
 func (c *Client) Push(ctx context.Context, request PushPayRequest) (PushPayResponse, error) {
 
-	pushRequest := c.reqAdapter.ToPushPayRequest(request)
+	pushRequest := c.collectionAdapter.ToInternalRequest(request)
 	pushResponse, err := c.push(ctx, pushRequest)
 	if err != nil {
 		return PushPayResponse{}, err
 	}
-	response := c.resAdapter.ToPushPayResponse(pushResponse)
+	response := c.collectionAdapter.ToModifiedResponse(pushResponse)
 	return response, nil
 }
 
@@ -271,4 +280,67 @@ func (c *Client) CallbackServeHTTP(writer http.ResponseWriter, request *http.Req
 		return
 	}
 	writer.WriteHeader(http.StatusOK)
+}
+
+func (p *collectAdapter) ToInternalRequest(request PushPayRequest) InternalPushRequest {
+	subCountry, _ := countries.Get(request.SubscriberCountry)
+	transCountry, _ := countries.Get(request.TransactionCountry)
+	return InternalPushRequest{
+		Reference: request.Reference,
+		Subscriber: struct {
+			Country  string `json:"country"`
+			Currency string `json:"currency"`
+			Msisdn   string `json:"msisdn"`
+		}{
+			Country:  subCountry.CodeName,
+			Currency: subCountry.CurrencyCode,
+			Msisdn:   request.SubscriberMsisdn,
+		},
+		Transaction: struct {
+			Amount   float64 `json:"amount"`
+			Country  string  `json:"country"`
+			Currency string  `json:"currency"`
+			ID       string  `json:"id"`
+		}{
+			Amount:   request.TransactionAmount,
+			Country:  transCountry.CodeName,
+			Currency: transCountry.CurrencyCode,
+			ID:       request.TransactionID,
+		},
+	}
+}
+
+func (p *collectAdapter) ToModifiedResponse(response InternalPushResponse) PushPayResponse {
+	transaction := response.Data.Transaction
+	status := response.Status
+
+	if !status.Success {
+		return PushPayResponse{
+			ResultCode:    status.ResultCode,
+			Success:       status.Success,
+			StatusMessage: status.Message,
+			StatusCode:    status.Code,
+		}
+	}
+	isErr := response.Error != "" && response.ErrorDescription != ""
+	if isErr {
+		resp := PushPayResponse{
+			ErrorDescription: response.ErrorDescription,
+			Error:            response.Error,
+			StatusMessage:    response.StatusMessage,
+			StatusCode:       response.StatusCode,
+		}
+		return resp
+	}
+
+	return PushPayResponse{
+		ID:               transaction.ID,
+		Status:           transaction.Status,
+		ResultCode:       status.ResultCode,
+		Success:          status.Success,
+		ErrorDescription: response.ErrorDescription,
+		Error:            response.Error,
+		StatusMessage:    response.StatusMessage,
+		StatusCode:       response.StatusCode,
+	}
 }

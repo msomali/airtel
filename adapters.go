@@ -71,9 +71,9 @@ func (r *adapter) ToPushPayRequest(request PushPayRequest) InternalPushRequest {
 		},
 		Transaction: struct {
 			Amount   float64 `json:"amount"`
-			Country  string `json:"country"`
-			Currency string `json:"currency"`
-			ID       string `json:"id"`
+			Country  string  `json:"country"`
+			Currency string  `json:"currency"`
+			ID       string  `json:"id"`
 		}{
 			Amount:   request.TransactionAmount,
 			Country:  transCountry.CodeName,
@@ -98,8 +98,8 @@ func (r *adapter) ToDisburseRequest(request DisburseRequest) (InternalDisburseRe
 		Reference: request.Reference,
 		Pin:       encryptedPin,
 		Transaction: struct {
-			Amount float64  `json:"amount"`
-			ID     string `json:"id"`
+			Amount float64 `json:"amount"`
+			ID     string  `json:"id"`
 		}{
 			Amount: request.Amount,
 			ID:     request.ID,

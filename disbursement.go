@@ -32,7 +32,18 @@ import (
 	"github.com/techcraftlabs/base"
 )
 
+var _ DisbursementAdapter = (*disburseAdapter)(nil)
+
 type (
+	disburseAdapter struct {
+		Conf *Config
+	}
+
+	DisbursementAdapter interface {
+		ToModifiedResponse(response InternalDisburseResponse) DisburseResponse
+		ToInternalRequest(request DisburseRequest) (InternalDisburseRequest, error)
+	}
+
 	DisburseEnquiryResponse struct {
 		Data struct {
 			Transaction struct {
@@ -71,8 +82,8 @@ type (
 		Reference   string `json:"reference"`
 		Pin         string `json:"pin"`
 		Transaction struct {
-			Amount float64  `json:"amount"`
-			ID     string `json:"id"`
+			Amount float64 `json:"amount"`
+			ID     string  `json:"id"`
 		} `json:"transaction"`
 	}
 
@@ -98,7 +109,7 @@ type (
 )
 
 func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (DisburseResponse, error) {
-	disburseRequest, err := c.reqAdapter.ToDisburseRequest(request)
+	disburseRequest, err := c.disburseAdapter.ToInternalRequest(request)
 	if err != nil {
 		return DisburseResponse{}, err
 	}
@@ -107,7 +118,7 @@ func (c *Client) Disburse(ctx context.Context, request DisburseRequest) (Disburs
 	if err != nil {
 		return DisburseResponse{}, err
 	}
-	response := c.resAdapter.ToDisburseResponse(disburseResponse)
+	response := c.disburseAdapter.ToModifiedResponse(disburseResponse)
 
 	return response, nil
 }
@@ -177,4 +188,56 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 		return DisburseEnquiryResponse{}, err
 	}
 	return *res, nil
+}
+
+func (d *disburseAdapter) ToModifiedResponse(response InternalDisburseResponse) DisburseResponse {
+	isErr := response.Error != "" && response.ErrorDescription != ""
+	if isErr {
+		resp := DisburseResponse{
+			ErrorDescription: response.ErrorDescription,
+			Error:            response.Error,
+			StatusMessage:    response.StatusMessage,
+			StatusCode:       response.StatusCode,
+		}
+
+		return resp
+	}
+	transaction := response.Data.Transaction
+	status := response.Status
+
+	return DisburseResponse{
+		ID:            transaction.ID,
+		Reference:     transaction.ReferenceID,
+		AirtelMoneyID: transaction.AirtelMoneyID,
+		ResultCode:    status.ResultCode,
+		Success:       status.Success,
+		StatusMessage: status.Message,
+		StatusCode:    status.Code,
+	}
+
+}
+
+func (d *disburseAdapter) ToInternalRequest(request DisburseRequest) (InternalDisburseRequest, error) {
+	encryptedPin, err := pinEncryption(d.Conf.DisbursePIN, d.Conf.PublicKey)
+	if err != nil {
+		return InternalDisburseRequest{}, fmt.Errorf("could not encrypt key: %w", err)
+	}
+	req := InternalDisburseRequest{
+		CountryOfTransaction: request.CountryOfTransaction,
+		Payee: struct {
+			Msisdn string `json:"msisdn"`
+		}{
+			Msisdn: request.MSISDN,
+		},
+		Reference: request.Reference,
+		Pin:       encryptedPin,
+		Transaction: struct {
+			Amount float64 `json:"amount"`
+			ID     string  `json:"id"`
+		}{
+			Amount: request.Amount,
+			ID:     request.ID,
+		},
+	}
+	return req, nil
 }

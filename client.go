@@ -42,7 +42,7 @@ type (
 
 	Config struct {
 		Endpoints          *Endpoints
-		AllowedCountries   map[string][]string
+		AllowedCountries   map[ApiGroup][]string
 		DisbursePIN        string
 		CallbackPrivateKey string
 		CallbackAuth       bool
@@ -54,15 +54,15 @@ type (
 	}
 
 	Client struct {
-		rv               base.Receiver
-		rp               base.Replier
-		Conf             *Config
-		base             *base.Client
-		token            *string
-		tokenExpiresAt   time.Time
-		pushCallbackFunc PushCallbackHandler
-		reqAdapter       RequestAdapter
-		resAdapter       ResponseAdapter
+		rv                base.Receiver
+		rp                base.Replier
+		Conf              *Config
+		base              *base.Client
+		token             *string
+		tokenExpiresAt    time.Time
+		pushCallbackFunc  PushCallbackHandler
+		disburseAdapter   DisbursementAdapter
+		collectionAdapter CollectionAdapter
 	}
 
 	PushCallbackHandler interface {
@@ -75,44 +75,46 @@ func (pf PushCallbackFunc) Handle(request InternalCallbackRequest) error {
 	return pf(request)
 }
 
-func (config *Config) SetAllowedCountries(apiName string, countries []string) {
+func (config *Config) SetAllowedCountries(apiName ApiGroup, countries []string) {
 	if config.AllowedCountries == nil {
-		m := make(map[string][]string)
+		m := make(map[ApiGroup][]string)
 		config.AllowedCountries = m
 	}
 
 	config.AllowedCountries[apiName] = countries
 }
 
-func (c *Client) SetRequestAdapter(adapter RequestAdapter) {
-	c.reqAdapter = adapter
+func (c *Client) SetCollectionAdapter(adapter CollectionAdapter) {
+	c.collectionAdapter = adapter
 }
 
-func (c *Client) SetResponseAdapter(adapter ResponseAdapter) {
-	c.resAdapter = adapter
+func (c *Client) SetDisburseAdapter(adapter DisbursementAdapter) {
+	c.disburseAdapter = adapter
 }
 
 func NewClient(config *Config, pushCallbackFunc PushCallbackHandler, debugMode bool) *Client {
 	if config.AllowedCountries == nil {
-		m := make(map[string][]string)
+		m := make(map[ApiGroup][]string)
 		config.AllowedCountries = m
-		config.SetAllowedCountries(CollectionApiGroup, []string{"Tanzania"})
-		config.SetAllowedCountries(DisbursementApiGroup, []string{"Tanzania"})
-		config.SetAllowedCountries(AccountApiGroup, []string{"Tanzania"})
-		config.SetAllowedCountries(KycApiGroup, []string{"Tanzania"})
-		config.SetAllowedCountries(TransactionApiGroup, []string{"Tanzania"})
+		config.SetAllowedCountries(Collection, []string{"Tanzania"})
+		config.SetAllowedCountries(Disburse, []string{"Tanzania"})
+		config.SetAllowedCountries(Account, []string{"Tanzania"})
+		config.SetAllowedCountries(KYC, []string{"Tanzania"})
+		config.SetAllowedCountries(Transaction, []string{"Tanzania"})
 
 	}
 	token := new(string)
 	newClient := base.NewClient(base.WithDebugMode(debugMode))
 
 	c := &Client{
-		Conf:             config,
-		base:             newClient,
-		token:            token,
-		resAdapter:       &adapter{},
-		reqAdapter:       &adapter{Conf: config},
-		pushCallbackFunc: pushCallbackFunc,
+		Conf:  config,
+		base:  newClient,
+		token: token,
+		disburseAdapter: &disburseAdapter{
+			Conf: config,
+		},
+		pushCallbackFunc:  pushCallbackFunc,
+		collectionAdapter: &collectAdapter{},
 	}
 	logger := c.base.Logger
 	dm := c.base.DebugMode

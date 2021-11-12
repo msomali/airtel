@@ -228,38 +228,38 @@ func list() []Country {
 	return countries
 }
 
-func Search(countryName string)bool{
+func Search(countryName string) bool {
 	countryName = strings.TrimSpace(strings.ToLower(countryName))
-    countries := list()
-    for _, country := range countries {
-        n := strings.TrimSpace(strings.ToLower(country.CommonName))
-        if countryName == n {
-            return true
-        }
-    }
-    return false
+	countries := list()
+	for _, country := range countries {
+		n := strings.TrimSpace(strings.ToLower(country.CommonName))
+		if countryName == n {
+			return true
+		}
+	}
+	return false
 }
 
-func GetCodeName(countryName string)(string,error){
+func GetCodeName(countryName string) (string, error) {
 	countryName = strings.TrimSpace(strings.ToLower(countryName))
-    countries := list()
-    for _, country := range countries {
-        n := strings.TrimSpace(strings.ToLower(country.CommonName))
-        if countryName == n {
-            return country.CodeName,nil
-        }
-    }
-    return "",fmt.Errorf("error: the country %s is not supported", countryName)
+	countries := list()
+	for _, country := range countries {
+		n := strings.TrimSpace(strings.ToLower(country.CommonName))
+		if countryName == n {
+			return country.CodeName, nil
+		}
+	}
+	return "", fmt.Errorf("error: the country %s is not supported", countryName)
 }
 
-func GetCurrencyCode(countryName string)(string,error){
-    countryName = strings.TrimSpace(strings.ToLower(countryName))
-    countries := list()
-    for _, country := range countries {
-        n := strings.TrimSpace(strings.ToLower(country.CommonName))
-        if countryName == n {
-            return country.CurrencyCode,nil
-        }
-    }
-    return "",fmt.Errorf("error: the country %s is not supported", countryName)
+func GetCurrencyCode(countryName string) (string, error) {
+	countryName = strings.TrimSpace(strings.ToLower(countryName))
+	countries := list()
+	for _, country := range countries {
+		n := strings.TrimSpace(strings.ToLower(country.CommonName))
+		if countryName == n {
+			return country.CurrencyCode, nil
+		}
+	}
+	return "", fmt.Errorf("error: the country %s is not supported", countryName)
 }

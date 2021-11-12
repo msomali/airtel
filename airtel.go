@@ -25,7 +25,30 @@
 
 package airtel
 
+const (
+	Auth ApiGroup = iota
+	Account
+	Collection
+	Disburse
+	KYC
+	Transaction
+)
+
+func (group ApiGroup) String() string {
+	names := []string{
+		"authorization",
+		"account",
+		"collection",
+		"disbursement",
+		"kyc",
+		"transactions",
+	}
+
+	return names[group]
+}
+
 type (
+	ApiGroup       uint8
 	PushPayRequest struct {
 		Reference          string
 		SubscriberCountry  string
