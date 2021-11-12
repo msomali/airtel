@@ -54,8 +54,8 @@ const (
 	ESB000039 = "Vendor is not configured to do transaction in the country {0}"
 )
 
-var (
-	Codes = map[string]string{
+func Codes()map[string]string{
+	return map[string]string{
 		"ESB000001": ESB000001,
 		"ESB000004": ESB000004,
 		"ESB000008": ESB000008,
@@ -67,4 +67,5 @@ var (
 		"ESB000036": ESB000036,
 		"ESB000039": ESB000039,
 	}
-)
+}
+
