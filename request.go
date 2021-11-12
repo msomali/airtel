@@ -34,12 +34,6 @@ import (
 
 const (
 	defaultGrantType     = "client_credentials"
-	AuthApiGroup         = "authorization"
-	CollectionApiGroup   = "collection"
-	DisbursementApiGroup = "disbursement"
-	AccountApiGroup      = "account"
-	KycApiGroup          = "kyc"
-	TransactionApiGroup  = "transaction"
 )
 
 const (
@@ -78,22 +72,22 @@ func (t RequestType) name() string {
 func (t RequestType) Group() string {
 	switch t {
 	case Authorization:
-		return AuthApiGroup
+		return Auth.String()
 
 	case PushCallback, Refund, PushEnquiry, UssdPush:
-		return CollectionApiGroup
+		return Collection.String()
 
 	case Disbursement, DisbursementEnquiry:
-		return DisbursementApiGroup
+		return Disburse.String()
 
 	case BalanceEnquiry:
-		return AccountApiGroup
+		return Account.String()
 
 	case UserEnquiry:
-		return KycApiGroup
+		return KYC.String()
 
 	case TransactionSummary:
-		return TransactionApiGroup
+		return Transaction.String()
 
 	default:
 		return "unknown/unsupported api group"

@@ -49,7 +49,7 @@ func Test_CheckCountry(t *testing.T) {
 		{
 			name: "check if not allowed is false",
 			args: args{
-				api:          CollectionApiGroup,
+				api:          Collection.String(),
 				country:      "Burundi",
 				allCountries: all,
 			},
@@ -58,7 +58,7 @@ func Test_CheckCountry(t *testing.T) {
 		{
 			name: "checking if it returns true when the country is allowed",
 			args: args{
-				api:          CollectionApiGroup,
+				api:          Collection.String(),
 				country:      "tanzania",
 				allCountries: all,
 			},
