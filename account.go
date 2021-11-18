@@ -77,7 +77,7 @@ func (c *Client) Balance(ctx context.Context, request BalanceRequest) (BalanceRe
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)

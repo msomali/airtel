@@ -140,7 +140,7 @@ func (c *Client) disburse(ctx context.Context, request InternalDisburseRequest) 
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 
@@ -175,7 +175,7 @@ func (c *Client) DisburseEnquiry(ctx context.Context, request DisburseEnquiryReq
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)

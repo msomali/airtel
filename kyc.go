@@ -87,7 +87,7 @@ func (c *Client) UserEnquiry(ctx context.Context, request UserEnquiryRequest) (U
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)

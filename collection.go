@@ -172,7 +172,7 @@ func (c *Client) push(ctx context.Context, request InternalPushRequest) (Interna
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      countryCodeName,
-		"X-CurrencyName": currencyCodeName,
+		"X-Currency": currencyCodeName,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 
@@ -207,7 +207,7 @@ func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (Int
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
@@ -245,7 +245,7 @@ func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryReq
 		"Content-Type":   "application/json",
 		"Accept":         "*/*",
 		"X-Country":      country.CodeName,
-		"X-CurrencyName": country.CurrencyCode,
+		"X-Currency": country.CurrencyCode,
 		"Authorization":  fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
