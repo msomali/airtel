@@ -8,7 +8,7 @@ specification: https://developer.airtel.africa/documentation
     - [collection](#collection)
     - [disbursement](#disbursement)
     - [account](#account)
-    - [transaction](#transaction)
+    - [transaction](#transactions)
     - [KYC](#KYC)
     
 
@@ -155,17 +155,17 @@ func main() {
 
 ## disbursement
 ## account
-## transaction
+## transactions
 ## KYC
 ## coverage:
 
-- [x] **Authorization**
-- [x] **Encryption**
-- [x] **Collection**
-- [x] **Disbursement**
-- [x] **Account**
-- [x] **Transactions**
-- [x] **KYC**
+- [x] [**Authorization**](#authorization)
+- [x] [**Encryption**](#authorization)
+- [x] [**Collection**](#collection)
+- [x] [**Disbursement**](#disbursement)
+- [x] [**Account**](#account)
+- [x] [**Transactions**](#transactions)
+- [x] [**KYC**](#KYC)
 - [ ] Billers Callback
 - [ ] IMT Callback
 - [ ] Remittance
