@@ -1,5 +1,19 @@
 # airtel
-golang airtel money wrapper (REST API) covering
+
+## usage
+
+    $ go get github.com/airteldata/airtel
+
+```go
+
+package main
+
+import (
+	"github.com/techcraftlabs/airtel"
+)
+
+```
+Airtel Money REST API Client written in golang covering:
 
 - [x] Authorization
 - [x] Encryption
@@ -8,5 +22,7 @@ golang airtel money wrapper (REST API) covering
 - [x] Account
 - [x] Transactions
 - [x] KYC
+- [ ] Billers Callback
+- [ ] IMT Callback
 - [ ] Remittance
 
