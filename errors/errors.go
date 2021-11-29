@@ -35,8 +35,8 @@ type (
 	}
 )
 
-func (c *Code) Error() string {
-	return c.Desc
+func (e *Code) Error() string {
+	return e.Desc
 }
 
 func (e *Code) Unwrap() error { return e.Err }

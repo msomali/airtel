@@ -169,11 +169,11 @@ func (c *Client) push(ctx context.Context, request InternalPushRequest) (Interna
 	var opts []base.RequestOption
 
 	hs := map[string]string{
-		"Content-Type":   "application/json",
-		"Accept":         "*/*",
-		"X-Country":      countryCodeName,
-		"X-Currency": currencyCodeName,
-		"Authorization":  fmt.Sprintf("Bearer %s", token),
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     countryCodeName,
+		"X-Currency":    currencyCodeName,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 
 	headersOpt := base.WithRequestHeaders(hs)
@@ -204,11 +204,11 @@ func (c *Client) Refund(ctx context.Context, request InternalRefundRequest) (Int
 	}
 	var opts []base.RequestOption
 	hs := map[string]string{
-		"Content-Type":   "application/json",
-		"Accept":         "*/*",
-		"X-Country":      country.CodeName,
-		"X-Currency": country.CurrencyCode,
-		"Authorization":  fmt.Sprintf("Bearer %s", token),
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
 	opts = append(opts, headersOpt)
@@ -242,11 +242,11 @@ func (c *Client) PushEnquiry(ctx context.Context, request InternalPushEnquiryReq
 	}
 	var opts []base.RequestOption
 	hs := map[string]string{
-		"Content-Type":   "application/json",
-		"Accept":         "*/*",
-		"X-Country":      country.CodeName,
-		"X-Currency": country.CurrencyCode,
-		"Authorization":  fmt.Sprintf("Bearer %s", token),
+		"Content-Type":  "application/json",
+		"Accept":        "*/*",
+		"X-Country":     country.CodeName,
+		"X-Currency":    country.CurrencyCode,
+		"Authorization": fmt.Sprintf("Bearer %s", token),
 	}
 	headersOpt := base.WithRequestHeaders(hs)
 	endpointOpt := base.WithEndpoint(request.ID)
